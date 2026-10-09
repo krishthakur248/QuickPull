@@ -109,6 +109,16 @@ const tripSchema = new mongoose.Schema(
           enum: ['pending', 'paid', 'cancelled'],
           default: 'pending',
         },
+        // Review-related flags — persisted so popup survives tab close / disconnect
+        reviewPending: {
+          type: Boolean,
+          default: false,
+        },
+        reviewTrigger: {
+          type: String,
+          enum: ['completed', 'cancelled_after_accept', null],
+          default: null,
+        },
       },
     ],
 

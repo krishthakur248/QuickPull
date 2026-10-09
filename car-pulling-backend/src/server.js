@@ -26,7 +26,24 @@ const io = socketIO(server, {
 });
 
 // Connect to MongoDB
-connectDB();
+connectDB().then(async () => {
+  // ── Auto-migration: backfill ratingSum / ratingCount on old User docs ──
+  // Uses { $exists: false } filter — idempotent, runs in milliseconds after
+  // the first deployment. No Render shell or manual step required.
+  try {
+    const mongoose = require('mongoose');
+    const result = await mongoose.connection.collection('users').updateMany(
+      { ratingSum: { $exists: false } },
+      { $set: { ratingSum: 0, ratingCount: 0 } }
+    );
+    if (result.modifiedCount > 0) {
+      console.log(`✅ [MIGRATION] Backfilled ratingSum/ratingCount on ${result.modifiedCount} user(s)`);
+    }
+  } catch (migErr) {
+    // Non-fatal — log and continue. Will retry on next restart.
+    console.warn('⚠️  [MIGRATION] ratingSum backfill failed (non-fatal):', migErr.message);
+  }
+});
 
 // Middleware
 const corsOptions = {
@@ -81,6 +98,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/trips', require('./routes/trip.routes'));
 app.use('/api/messages', require('./routes/message.routes'));
+app.use('/api/reviews', require('./routes/review.routes'));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

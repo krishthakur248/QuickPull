@@ -126,4 +126,39 @@ class TripServiceAPI {
       throw error;
     }
   }
+
+  // ─── Review Methods ────────────────────────────────────────────────────────
+
+  // Get pending review requests for the current user
+  static async getPendingReviews() {
+    try {
+      const response = await apiClient.get('/reviews/pending');
+      return response;
+    } catch (error) {
+      console.error('Get pending reviews error:', error);
+      throw error;
+    }
+  }
+
+  // Submit a star review for a driver
+  static async submitReview(bookingId, rating, comment = '') {
+    try {
+      const response = await apiClient.post('/reviews/submit', { bookingId, rating, comment });
+      return response;
+    } catch (error) {
+      console.error('Submit review error:', error);
+      throw error;
+    }
+  }
+
+  // Skip (dismiss) a pending review
+  static async skipReview(bookingId) {
+    try {
+      const response = await apiClient.post('/reviews/skip', { bookingId });
+      return response;
+    } catch (error) {
+      console.error('Skip review error:', error);
+      throw error;
+    }
+  }
 }

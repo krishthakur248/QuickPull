@@ -29,7 +29,8 @@ exports.getUserById = async (req, res) => {
 // GET USER RATINGS
 exports.getUserRatings = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('rating totalRides totalReviews firstName lastName profileImage');
+    const { computeScore10 } = require('../config/ratingConfig');
+    const user = await User.findById(req.params.id).select('rating totalRides totalReviews firstName lastName profileImage ratingSum ratingCount');
 
     if (!user) {
       return res.status(404).json({
@@ -38,12 +39,17 @@ exports.getUserRatings = async (req, res) => {
       });
     }
 
+    const score10 = computeScore10(user.ratingSum || 0, user.ratingCount || 0);
+
     res.json({
       success: true,
       ratings: {
-        rating: user.rating,
-        totalRides: user.totalRides,
+        rating:       user.rating,
+        totalRides:   user.totalRides,
         totalReviews: user.totalReviews,
+        ratingSum:    user.ratingSum   || 0,
+        ratingCount:  user.ratingCount || 0,
+        score10,  // null when ratingCount === 0
       },
     });
   } catch (error) {

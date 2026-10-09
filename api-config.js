@@ -81,6 +81,11 @@ const API_ENDPOINTS = {
   getNearbyDrivers: `${API_BASE_URL}/users/nearby-drivers`,
   getDriverInfo:    (id) => `${API_BASE_URL}/users/${id}/driver-info`,
   addRating:        (id) => `${API_BASE_URL}/users/${id}/add-rating`,
+
+  // Reviews
+  reviewsPending: `${API_BASE_URL}/reviews/pending`,
+  reviewSubmit:   `${API_BASE_URL}/reviews/submit`,
+  reviewSkip:     `${API_BASE_URL}/reviews/skip`,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

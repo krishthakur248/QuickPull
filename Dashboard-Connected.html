@@ -1227,8 +1227,9 @@
                             </div>
                             <div class="flex items-center gap-3 text-xs text-[#92adc9] mb-3">
                                 <div class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[14px]">star</span>
-                                    <span>${ride.driver.rating || 5.0}</span>
+                                    <span class="material-symbols-outlined text-[14px] text-yellow-400">star</span>
+                                    <span id="driver-score-${ride._id}">${ride.driverScore10 ? ride.driverScore10 + '/10' : (ride.driverRatingCount === 0 ? '<span class="text-[#92adc9] text-[10px]">New</span>' : (ride.driver.rating || 5.0))}</span>
+                                    ${ride.driverRatingCount > 0 ? `<span class="text-[10px] opacity-60">· ${ride.driverRatingCount} reviews</span>` : ''}
                                 </div>
                                 <div class="w-1 h-1 rounded-full bg-[#233648]"></div>
                                 <div class="flex items-center gap-1">
@@ -1352,7 +1353,11 @@
                             </div>
                             <div class="min-w-0">
                                 <p class="text-white font-bold text-xs truncate">${trip.driver.firstName} ${trip.driver.lastName}</p>
-                                <p class="text-[10px] text-[#92adc9]">★${trip.driver.rating || 5.0}</p>
+                                <p class="text-[10px] text-[#92adc9]">${
+                                    trip.driver.ratingCount > 0
+                                        ? '★ ' + (trip.driver.score10 || trip.driver.rating || '—') + '/10'
+                                        : '<span class="text-[9px]">New driver</span>'
+                                }</p>
                             </div>
                         </div>
                         <span class="${statusBadgeColor} px-1.5 py-0.5 rounded text-[9px] font-bold flex-shrink-0">${statusText}</span>
@@ -2475,5 +2480,266 @@
             closeBtn.classList.add('hidden');
         }
     </script>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- REVIEW POPUP MODAL                                                   -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="reviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="ReviewManager.skip()"></div>
+
+        <!-- Card -->
+        <div class="relative z-10 w-full max-w-sm bg-gradient-to-b from-[#192633] to-[#111a22] rounded-2xl border border-[#233648] shadow-2xl overflow-hidden">
+
+            <!-- Accent top bar -->
+            <div class="h-1 w-full bg-gradient-to-r from-primary via-purple-500 to-secondary"></div>
+
+            <!-- Body -->
+            <div class="p-6">
+                <h2 id="reviewModalTitle" class="text-lg font-bold text-white mb-1">Rate your driver</h2>
+                <p class="text-xs text-[#92adc9] mb-5">How was your experience?</p>
+
+                <!-- Driver info -->
+                <div id="reviewDriverInfo" class="flex items-center gap-3 mb-5 bg-[#233648]/60 rounded-xl p-3">
+                    <div id="reviewDriverAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0"></div>
+                    <div>
+                        <p id="reviewDriverName" class="text-white font-bold text-sm"></p>
+                        <p id="reviewDriverRating" class="text-[#92adc9] text-xs mt-0.5"></p>
+                    </div>
+                </div>
+
+                <!-- Star selector -->
+                <div class="flex justify-center gap-2 mb-5" id="starContainer" role="group" aria-label="Star rating">
+                    <!-- stars injected by JS -->
+                </div>
+
+                <!-- Comment -->
+                <textarea id="reviewComment"
+                    class="w-full bg-[#233648] text-white text-sm rounded-xl p-3 resize-none border border-[#2d465e] focus:border-primary focus:outline-none placeholder-[#4a6070] transition-colors"
+                    rows="3"
+                    maxlength="300"
+                    placeholder="Optional — any comments? (max 300 chars)"
+                    aria-label="Optional comment"
+                ></textarea>
+                <p class="text-right text-[10px] text-[#4a6070] mt-1"><span id="reviewCharCount">0</span>/300</p>
+
+                <!-- Actions -->
+                <div class="flex gap-3 mt-4">
+                    <button
+                        id="reviewSkipBtn"
+                        onclick="ReviewManager.skip()"
+                        class="flex-1 py-2.5 rounded-xl bg-[#233648] hover:bg-[#2d465e] text-[#92adc9] text-sm font-bold transition-all"
+                    >Skip</button>
+                    <button
+                        id="reviewSubmitBtn"
+                        onclick="ReviewManager.submit()"
+                        disabled
+                        class="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold transition-all opacity-40 cursor-not-allowed"
+                    >Submit</button>
+                </div>
+
+                <!-- Success state (hidden until submit) -->
+                <div id="reviewSuccess" class="hidden text-center py-4">
+                    <div class="text-4xl mb-2">🎉</div>
+                    <p class="text-white font-bold">Thanks for your feedback!</p>
+                    <p class="text-xs text-[#92adc9] mt-1">Your review helps keep QuickPull great.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ════════════════════════════════════════════════════════════════════════
+    // ReviewManager — handles the review popup lifecycle
+    // ════════════════════════════════════════════════════════════════════════
+    const ReviewManager = (() => {
+        let _queue   = [];  // array of pending review objects
+        let _current = null;
+        let _selectedRating = 0;
+
+        // ── Build star selector ──────────────────────────────────────────────
+        function _buildStars() {
+            const container = document.getElementById('starContainer');
+            container.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.dataset.star = i;
+                btn.setAttribute('aria-label', `${i} star${i > 1 ? 's' : ''}`);
+                btn.className = 'text-4xl transition-transform duration-100 hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded select-none';
+                btn.textContent = '☆';
+                btn.addEventListener('click', () => _selectStar(i));
+                btn.addEventListener('mouseenter', () => _highlightStars(i));
+                container.appendChild(btn);
+            }
+            container.addEventListener('mouseleave', () => _highlightStars(_selectedRating));
+        }
+
+        function _highlightStars(n) {
+            document.querySelectorAll('#starContainer button').forEach((btn, idx) => {
+                btn.textContent = idx < n ? '★' : '☆';
+                btn.style.color  = idx < n ? '#facc15' : '#4a6070';
+            });
+        }
+
+        function _selectStar(n) {
+            _selectedRating = n;
+            _highlightStars(n);
+            const submitBtn = document.getElementById('reviewSubmitBtn');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        }
+
+        // ── Populate modal with driver info ──────────────────────────────────
+        function _populate(review) {
+            const d = review.driver || {};
+            const initials = ((d.firstName || '?')[0] + (d.lastName || '?')[0]).toUpperCase();
+            document.getElementById('reviewDriverAvatar').textContent = initials;
+            document.getElementById('reviewDriverName').textContent =
+                d.firstName ? `${d.firstName} ${d.lastName}` : 'Your driver';
+
+            const ratingEl = document.getElementById('reviewDriverRating');
+            if (d.score10) {
+                ratingEl.textContent = `⭐ ${d.score10}/10 · ${d.ratingCount || 0} review${d.ratingCount !== 1 ? 's' : ''}`;
+            } else {
+                ratingEl.textContent = '✨ New driver';
+            }
+        }
+
+        // ── Show the modal for the first item in the queue ───────────────────
+        function _showNext() {
+            if (_queue.length === 0) return;
+            _current = _queue[0];
+            _selectedRating = 0;
+
+            // Reset UI
+            document.getElementById('reviewComment').value = '';
+            document.getElementById('reviewCharCount').textContent = '0';
+            document.getElementById('reviewSuccess').classList.add('hidden');
+            document.getElementById('reviewSubmitBtn').disabled = true;
+            document.getElementById('reviewSubmitBtn').classList.add('opacity-40', 'cursor-not-allowed');
+            document.getElementById('reviewSkipBtn').classList.remove('hidden');
+            document.getElementById('reviewSubmitBtn').classList.remove('hidden');
+
+            _buildStars();
+            _populate(_current);
+            document.getElementById('reviewModal').classList.remove('hidden');
+        }
+
+        function _close() {
+            document.getElementById('reviewModal').classList.add('hidden');
+            _current = null;
+            _selectedRating = 0;
+            // If there are more queued, show next after a short pause
+            if (_queue.length > 0) {
+                setTimeout(_showNext, 600);
+            }
+        }
+
+        // ── Public API ───────────────────────────────────────────────────────
+        return {
+            // Add a pending review to the queue (from socket event OR from API poll)
+            enqueue(review) {
+                // Avoid duplicates in queue
+                const alreadyQueued = _queue.some(r => r.bookingId === review.bookingId || r.tripId === review.tripId);
+                if (alreadyQueued) return;
+                _queue.push(review);
+                if (_queue.length === 1) _showNext(); // auto-show if queue was empty
+            },
+
+            async skip() {
+                if (!_current) { _close(); return; }
+                const bookingId = _current.bookingId || _current.tripId;
+                _queue.shift();
+                try {
+                    await TripServiceAPI.skipReview(bookingId);
+                } catch (e) { console.warn('[REVIEW] skip error (non-fatal):', e.message); }
+                _close();
+            },
+
+            async submit() {
+                if (!_current || _selectedRating === 0) return;
+                const bookingId = _current.bookingId || _current.tripId;
+                const comment   = document.getElementById('reviewComment').value.trim();
+                const submitBtn = document.getElementById('reviewSubmitBtn');
+                const skipBtn   = document.getElementById('reviewSkipBtn');
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting…';
+
+                try {
+                    const res = await TripServiceAPI.submitReview(bookingId, _selectedRating, comment);
+                    if (res && res.success) {
+                        _queue.shift();
+                        // Show success briefly
+                        document.getElementById('reviewSuccess').classList.remove('hidden');
+                        submitBtn.classList.add('hidden');
+                        skipBtn.classList.add('hidden');
+                        setTimeout(() => _close(), 2000);
+                    } else {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit';
+                        if (typeof showNotification === 'function') {
+                            showNotification(res && res.message ? res.message : 'Error submitting review', 'error');
+                        }
+                    }
+                } catch (err) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                    const msg = err && err.message ? err.message : 'Error submitting review';
+                    if (typeof showNotification === 'function') showNotification(msg, 'error');
+                }
+            },
+
+            // Fetch pending reviews from server and queue them (used on page load / reconnect)
+            async checkPending() {
+                try {
+                    const res = await TripServiceAPI.getPendingReviews();
+                    if (res && res.pending && res.pending.length > 0) {
+                        console.log('[REVIEW] Found', res.pending.length, 'pending review(s) from server');
+                        res.pending.forEach(r => this.enqueue(r));
+                    }
+                } catch (e) {
+                    console.warn('[REVIEW] checkPending error (non-fatal):', e.message);
+                }
+            }
+        };
+    })();
+
+    // Character counter for comment textarea
+    document.getElementById('reviewComment').addEventListener('input', function() {
+        document.getElementById('reviewCharCount').textContent = this.value.length;
+    });
+
+    // Hook into the existing socket setup — listen for review popup events
+    const _origSetup = typeof setupSocketListeners === 'function' ? setupSocketListeners : null;
+    // We patch the socket AFTER it's created (when window.riderSocket is available)
+    function _attachReviewSocketListener(socket) {
+        if (!socket) return;
+        socket.on('show-review-popup', (data) => {
+            console.log('[REVIEW] Received show-review-popup event:', data);
+            ReviewManager.enqueue(data);
+        });
+        // Re-check pending on reconnect (handles offline case)
+        socket.on('connect', () => {
+            setTimeout(() => ReviewManager.checkPending(), 1500);
+        });
+    }
+
+    // Wait for socket to be ready, then attach listener
+    (function _waitForSocket() {
+        if (window.riderSocket) {
+            _attachReviewSocketListener(window.riderSocket);
+        } else {
+            setTimeout(_waitForSocket, 300);
+        }
+    })();
+
+    // On page load, check for pending reviews (handles offline/refresh scenario)
+    window.addEventListener('load', async () => {
+        // Small delay to let auth + socket settle
+        setTimeout(() => ReviewManager.checkPending(), 2500);
+    });
+    </script>
+
 </body>
 </html>

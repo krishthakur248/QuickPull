@@ -2,6 +2,7 @@ const Trip = require('../models/Trip');
 const User = require('../models/User');
 const { generateUniqueCode, calculateDistance, checkRouteOverlap, getOSRMRoute } = require('../utils/helpers');
 const { matchRoutes, calculateFareSplit } = require('../utils/matchingEngine');
+const { computeScore10 } = require('../config/ratingConfig');
 
 // Per-km rates by vehicle type (in ₹)
 const RATE_PER_KM = {
@@ -198,7 +199,7 @@ exports.findMatches = async (req, res) => {
                 }
             }
         })
-        .populate('driver', 'firstName lastName rating totalRides vehicle vehicleNumber vehicleColor profileImage')
+        .populate('driver', 'firstName lastName rating totalRides vehicle vehicleNumber vehicleColor profileImage ratingSum ratingCount')
         .limit(30);
 
         console.log(`[FIND-MATCHES] STEP-B: $near (${maxDistance}km) returned ${candidates.length} candidate(s)`);
@@ -327,6 +328,12 @@ exports.findMatches = async (req, res) => {
                 const matchScore = Math.round((matchResult.overlapRatio || 0.5) * 100);
 
                 const tripObj = trip.toObject();
+
+                // Compute Bayesian score for driver card display
+                const driverRatingSum   = trip.driver ? (trip.driver.ratingSum || 0)   : 0;
+                const driverRatingCount = trip.driver ? (trip.driver.ratingCount || 0) : 0;
+                const driverScore10 = computeScore10(driverRatingSum, driverRatingCount);
+
                 matchedTrips.push({
                     ...tripObj,
                     matchScore,
@@ -338,7 +345,10 @@ exports.findMatches = async (req, res) => {
                     fareSplit:         matchResult.fareSplit,
                     estimatedFare:     estimatedFare,
                     estimatedDistance: parseFloat(tripDistanceKm.toFixed(2)),
-                    ratePerKm:         ratePerKm
+                    ratePerKm:         ratePerKm,
+                    // Driver rating fields for card display
+                    driverScore10,
+                    driverRatingCount
                 });
 
                 console.log(`[FIND-MATCHES] ✓ MATCHED  score=${matchScore}% overlap=${matchResult.overlapDistanceKm?.toFixed(2)}km`);
@@ -644,8 +654,8 @@ exports.cancelRiderRequest = async (req, res) => {
         console.log('cancelRiderRequest called with:', { userId, tripId, riderId });
 
         const trip = await Trip.findById(tripId)
-            .populate('driver', 'firstName lastName')
-            .populate('riders.riderId', 'firstName lastName');
+            .populate('driver', 'firstName lastName profileImage ratingSum ratingCount')
+            .populate('riders.riderId', 'firstName lastName isSimulation');
 
         if (!trip) {
             return res.status(404).json({ success: false, message: 'Trip not found' });
@@ -671,8 +681,27 @@ exports.cancelRiderRequest = async (req, res) => {
             });
         }
 
-        // Remove rider from trip
         const removedRider = trip.riders[riderIndex];
+
+        // ── Review trigger logic ──────────────────────────────────────────────
+        // Only trigger a review popup if the driver had already accepted the rider.
+        // Status 'confirmed' means driver accepted. 'matched' means not yet accepted.
+        const driverHadAccepted = removedRider.status === 'confirmed' || removedRider.status === 'ongoing';
+
+        // Check if the passenger cancelling is a simulation user
+        const passengerUser = removedRider.riderId;
+        const isSimPassenger = passengerUser && passengerUser.isSimulation;
+
+        // Mark reviewPending BEFORE removing from array (we need data for the socket emit)
+        const shouldTriggerReview = driverHadAccepted && !isSimPassenger;
+
+        if (shouldTriggerReview) {
+            removedRider.reviewPending = true;
+            removedRider.reviewTrigger = 'cancelled_after_accept';
+            removedRider.status = 'cancelled'; // Update status before removal reference is lost
+        }
+
+        // Remove rider from trip
         trip.riders.splice(riderIndex, 1);
         trip.occupiedSeats -= 1;
 
@@ -689,6 +718,29 @@ exports.cancelRiderRequest = async (req, res) => {
                 message: 'A rider has cancelled their request',
                 timestamp: new Date()
             });
+
+            // ── Send review popup to the cancelling passenger ─────────────────
+            if (shouldTriggerReview) {
+                const driverDoc = trip.driver;
+                const driverScore10 = computeScore10(
+                    driverDoc ? driverDoc.ratingSum : 0,
+                    driverDoc ? driverDoc.ratingCount : 0
+                );
+
+                io.to(`user_${riderIdString}`).emit('show-review-popup', {
+                    tripId:    trip._id,
+                    bookingId: trip._id,
+                    trigger:   'cancelled_after_accept',
+                    driver: driverDoc ? {
+                        _id:         driverDoc._id,
+                        firstName:   driverDoc.firstName,
+                        lastName:    driverDoc.lastName,
+                        profileImage: driverDoc.profileImage,
+                        score10:     driverScore10,
+                        ratingCount: driverDoc.ratingCount || 0
+                    } : null
+                });
+            }
         }
 
         res.status(200).json({
@@ -770,10 +822,24 @@ exports.completeTrip = async (req, res) => {
             trip.route = finalRoute;
         }
 
-        // Mark riders as completed
+        // Fetch driver info for the review popup payload
+        const driverUser = await User.findById(userId).select('firstName lastName profileImage ratingSum ratingCount');
+        const driverScore10 = computeScore10(
+            driverUser ? driverUser.ratingSum : 0,
+            driverUser ? driverUser.ratingCount : 0
+        );
+
+        // Mark riders as completed AND set reviewPending for eligible riders
+        // Eligible = confirmed or ongoing (driver already accepted them)
         trip.riders.forEach(rider => {
-            if (rider.status === 'accepted') {
+            const wasActive = rider.status === 'confirmed' || rider.status === 'ongoing' || rider.status === 'accepted';
+            if (wasActive) {
                 rider.status = 'completed';
+                // Only set review flag if not already reviewed
+                if (!rider.reviewPending) {
+                    rider.reviewPending = true;
+                    rider.reviewTrigger = 'completed';
+                }
             }
         });
 
@@ -784,11 +850,31 @@ exports.completeTrip = async (req, res) => {
         if (io) {
             // Notify all riders in this trip
             trip.riders.forEach(rider => {
-                io.to(`user_${rider.riderId}`).emit('trip-completed', {
+                const riderIdStr = rider.riderId ? rider.riderId.toString() : null;
+                if (!riderIdStr) return;
+
+                io.to(`user_${riderIdStr}`).emit('trip-completed', {
                     tripId: trip._id,
                     status: 'completed',
                     message: `Trip has been completed by the driver`
                 });
+
+                // Send review popup to eligible riders (confirmed/completed)
+                if (rider.reviewPending) {
+                    io.to(`user_${riderIdStr}`).emit('show-review-popup', {
+                        tripId:    trip._id,
+                        bookingId: trip._id,
+                        trigger:   'completed',
+                        driver: driverUser ? {
+                            _id:         driverUser._id,
+                            firstName:   driverUser.firstName,
+                            lastName:    driverUser.lastName,
+                            profileImage: driverUser.profileImage,
+                            score10:     driverScore10,
+                            ratingCount: driverUser.ratingCount || 0
+                        } : null
+                    });
+                }
             });
 
             // Also notify via trip room

@@ -105,6 +105,23 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    // Bayesian rating fields — updated atomically on each review submit.
+    // ratingSum is the raw sum of all 1-5 star values; ratingCount is the count.
+    // score10 = ((C * PRIOR10) + ratingSum*2) / (C + ratingCount)
+    ratingSum: {
+      type: Number,
+      default: 0,
+    },
+    ratingCount: {
+      type: Number,
+      default: 0,
+    },
+    // Set true for simulation / admin-created accounts so we skip review popups
+    // and exclude their reviews from real driver aggregates.
+    isSimulation: {
+      type: Boolean,
+      default: false,
+    },
 
     // Account Status
     isActive: {
