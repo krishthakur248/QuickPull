@@ -502,7 +502,7 @@
             </div>
             <div class="flex gap-2">
                 <button id="joinRideConfirmBtn" onclick="confirmJoinRide()" class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
-                    <span id="joinRideBtnText">Join Ride</span>
+                    <span id="joinRideBtnText">Send Request</span>
                 </button>
                 <button onclick="closeJoinModal()" class="flex-1 bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-xl font-bold transition-colors">
                     Cancel
@@ -1206,7 +1206,7 @@
 
                 // Show Join Ride button (all rides here are truly available - no requests sent)
                 const buttonHTML = `
-                    <button onclick="openJoinRideModal('${ride._id}', '${ride.driver.firstName}', ${estimatedFare}, ${ride.availableSeats}, ${ride.occupiedSeats}, ${ride.matchScore}, ${estimatedDistance}, ${ratePerKm})" class="w-full mt-3 bg-primary hover:bg-blue-600 text-white text-sm font-bold h-9 rounded-full transition-all shadow-[0_2px_8px_rgba(19,127,236,0.4)]">
+                    <button id="cardJoinBtn_${ride._id}" onclick="openJoinRideModal('${ride._id}', '${ride.driver.firstName}', ${estimatedFare}, ${ride.availableSeats}, ${ride.occupiedSeats}, ${ride.matchScore}, ${estimatedDistance}, ${ratePerKm})" class="w-full mt-3 bg-primary hover:bg-blue-600 text-white text-sm font-bold h-9 rounded-full transition-all shadow-[0_2px_8px_rgba(19,127,236,0.4)]">
                         Request to Join
                     </button>
                 `;
@@ -1940,9 +1940,31 @@
             }
         }
 
+        function resetJoinRideState() {
+            const btn = document.getElementById('joinRideConfirmBtn');
+            const btnTxt = document.getElementById('joinRideBtnText');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+            if (btnTxt) {
+                btnTxt.innerHTML = 'Send Request';
+            }
+            if (selectedRideForJoin) {
+                const cardBtn = document.getElementById(`cardJoinBtn_${selectedRideForJoin}`);
+                if (cardBtn) {
+                    cardBtn.disabled = false;
+                    cardBtn.innerHTML = 'Request to Join';
+                }
+            }
+        }
+
         function openJoinRideModal(rideId, driverName, fare, availableSeats, occupiedSeats, matchScore, estimatedDistance, ratePerKm) {
             selectedRideForJoin = rideId;
             currentRideFare = fare; // Store the fare for this ride
+
+            // Ensure button is in default active state (never stuck in loading/spinner)
+            resetJoinRideState();
 
             // Default values if not provided
             estimatedDistance = estimatedDistance || 0;
@@ -1973,6 +1995,7 @@
         }
 
         function closeJoinModal() {
+            resetJoinRideState();
             document.getElementById('joinRideModal').classList.add('hidden');
             selectedRideForJoin = null;
         }
@@ -1980,15 +2003,27 @@
         async function confirmJoinRide() {
             const btn    = document.getElementById('joinRideConfirmBtn');
             const btnTxt = document.getElementById('joinRideBtnText');
+            const currentRideId = selectedRideForJoin;
+            const cardBtn = currentRideId ? document.getElementById(`cardJoinBtn_${currentRideId}`) : null;
 
             // ── Loading state ──
             const setLoading = (loading) => {
-                btn.disabled = loading;
-                btnTxt.innerHTML = loading
-                    ? '<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>'
-                    : 'Join Ride';
-                btn.classList.toggle('opacity-70', loading);
-                btn.classList.toggle('cursor-not-allowed', loading);
+                if (btn) {
+                    btn.disabled = loading;
+                    btn.classList.toggle('opacity-70', loading);
+                    btn.classList.toggle('cursor-not-allowed', loading);
+                }
+                if (btnTxt) {
+                    btnTxt.innerHTML = loading
+                        ? '<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Sending...'
+                        : 'Send Request';
+                }
+                if (cardBtn) {
+                    cardBtn.disabled = loading;
+                    cardBtn.innerHTML = loading
+                        ? '<span class="inline-flex items-center gap-2 justify-center"><svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg> Sending...</span>'
+                        : 'Request to Join';
+                }
             };
 
             try {
@@ -2030,13 +2065,13 @@
                         searchRides();
                     }, 2000);
                 } else {
-                    setLoading(false);
                     showNotification('Error joining ride', 'error');
                 }
             } catch (error) {
-                setLoading(false);
                 console.error('Error joining ride:', error);
                 showNotification('Error joining ride', 'error');
+            } finally {
+                setLoading(false);
             }
         }
 
