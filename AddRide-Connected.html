@@ -1544,8 +1544,12 @@
                 dragging: true, scrollWheelZoom: true, doubleClickZoom: true
             }).setView([centerLat, centerLng], 12);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 18
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19,
+                keepBuffer: 6,
+                crossOrigin: true
             }).addTo(window.activeTripMapInstance);
 
             // Force map to recalculate its size (critical for hidden→visible containers)
@@ -1953,9 +1957,12 @@
 
                 window.riderMapInstance = L.map('riderMapContainer').setView([centerLat, centerLng], 13);
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 19,
+                    keepBuffer: 6,
+                    crossOrigin: true
                 }).addTo(window.riderMapInstance);
 
                 // Add rider pickup marker (blue) - This is where the rider wants to be picked up
@@ -2338,9 +2345,12 @@
 
                 mapInstance = L.map('mapContainer').setView([initialLat, initialLng], 13);
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 19,
+                    keepBuffer: 6,
+                    crossOrigin: true
                 }).addTo(mapInstance);
 
                 // Set marker on click
@@ -2655,6 +2665,11 @@
 
         // Call debug function before completing trip
         window.debugTripCompletion = debugTripCompletion;
+
+        // Register service worker for instant tile caching on HTTP/HTTPS
+        if (window.location.protocol.startsWith('http') && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
     </script>
 </body>
 
