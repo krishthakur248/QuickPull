@@ -501,8 +501,8 @@
                 <!-- Populated dynamically -->
             </div>
             <div class="flex gap-2">
-                <button onclick="confirmJoinRide()" class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
-                    Join Ride
+                <button id="joinRideConfirmBtn" onclick="confirmJoinRide()" class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+                    <span id="joinRideBtnText">Join Ride</span>
                 </button>
                 <button onclick="closeJoinModal()" class="flex-1 bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-xl font-bold transition-colors">
                     Cancel
@@ -1978,6 +1978,19 @@
         }
 
         async function confirmJoinRide() {
+            const btn    = document.getElementById('joinRideConfirmBtn');
+            const btnTxt = document.getElementById('joinRideBtnText');
+
+            // ── Loading state ──
+            const setLoading = (loading) => {
+                btn.disabled = loading;
+                btnTxt.innerHTML = loading
+                    ? '<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>'
+                    : 'Join Ride';
+                btn.classList.toggle('opacity-70', loading);
+                btn.classList.toggle('cursor-not-allowed', loading);
+            };
+
             try {
                 if (!selectedRideForJoin) {
                     showNotification('Error: Ride not selected', 'error');
@@ -1991,6 +2004,7 @@
                     return;
                 }
 
+                setLoading(true);
                 console.log('[DEBUG] Joining trip with pickup:', pickupPoint, 'destination:', destinationLocation);
 
                 const response = await TripServiceAPI.joinTrip(
@@ -2016,9 +2030,11 @@
                         searchRides();
                     }, 2000);
                 } else {
+                    setLoading(false);
                     showNotification('Error joining ride', 'error');
                 }
             } catch (error) {
+                setLoading(false);
                 console.error('Error joining ride:', error);
                 showNotification('Error joining ride', 'error');
             }

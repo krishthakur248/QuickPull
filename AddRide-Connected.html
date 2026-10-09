@@ -1790,13 +1790,13 @@
                     actionsHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="action-btn" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;"><i class="fas fa-ban"></i> Trip Full</span>
-                            <button class="action-btn" style="background:#ef4444;color:white;" onclick="rejectRiderRequest('${riderId}', '${riderName.replace(/'/g, "\\'")}', '${tripId}')"><i class="fas fa-times"></i> Reject</button>
+                            <button class="action-btn" style="background:#ef4444;color:white;" onclick="rejectRiderRequest('${riderId}', '${riderName.replace(/'/g, "\\'")}'  , '${tripId}', this)"><i class="fas fa-times"></i> Reject</button>
                         </div>`;
                 } else {
                     actionsHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
-                            <button class="action-btn" style="background:#22C55E;color:white;" onclick="acceptRiderRequest('${riderId}', '${riderName.replace(/'/g, "\\'")}', '${tripId}')"><i class="fas fa-check"></i> Accept</button>
-                            <button class="action-btn" style="background:#ef4444;color:white;" onclick="rejectRiderRequest('${riderId}', '${riderName.replace(/'/g, "\\'")}', '${tripId}')"><i class="fas fa-times"></i> Reject</button>
+                            <button class="action-btn" style="background:#22C55E;color:white;" onclick="acceptRiderRequest('${riderId}', '${riderName.replace(/'/g, "\\'")}'  , '${tripId}', this)"><i class="fas fa-check"></i> Accept</button>
+                            <button class="action-btn" style="background:#ef4444;color:white;" onclick="rejectRiderRequest('${riderId}', '${riderName.replace(/'/g, "\\'")}'  , '${tripId}', this)"><i class="fas fa-times"></i> Reject</button>
                         </div>`;
                 }
 
@@ -2537,8 +2537,24 @@
             }
         }
 
+        // Shared spinner helper for action buttons
+        function _btnLoading(btn, loading, originalHTML) {
+            if (!btn) return;
+            const spinnerSVG = '<svg class="animate-spin h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>';
+            btn.disabled = loading;
+            btn.style.opacity = loading ? '0.7' : '1';
+            btn.style.cursor  = loading ? 'not-allowed' : '';
+            btn.innerHTML = loading ? spinnerSVG : originalHTML;
+        }
+
         // Accept rider request
-        async function acceptRiderRequest(riderId, riderName, tripId) {
+        async function acceptRiderRequest(riderId, riderName, tripId, btn) {
+            const origHTML = btn ? btn.innerHTML : '';
+            _btnLoading(btn, true, origHTML);
+            // Also disable sibling reject button while in-flight
+            const siblingReject = btn && btn.parentElement ? btn.parentElement.querySelector('[style*="ef4444"]') : null;
+            if (siblingReject) siblingReject.disabled = true;
+
             try {
                 const response = await TripServiceAPI.respondToRider(tripId, riderId, 'accept');
 
@@ -2555,17 +2571,27 @@
                         loadActiveTrip();
                     }, 1000);
                 } else {
+                    _btnLoading(btn, false, origHTML);
+                    if (siblingReject) siblingReject.disabled = false;
                     showNotification('Failed to accept request', 'error');
                 }
             } catch (error) {
+                _btnLoading(btn, false, origHTML);
+                if (siblingReject) siblingReject.disabled = false;
                 console.error('Error accepting request:', error);
                 showNotification('Error accepting request', 'error');
             }
         }
 
         // Reject rider request
-        async function rejectRiderRequest(riderId, riderName, tripId) {
+        async function rejectRiderRequest(riderId, riderName, tripId, btn) {
             if (!confirm(`Reject ${riderName}'s request?`)) return;
+
+            const origHTML = btn ? btn.innerHTML : '';
+            _btnLoading(btn, true, origHTML);
+            // Also disable sibling accept button while in-flight
+            const siblingAccept = btn && btn.parentElement ? btn.parentElement.querySelector('[style*="22C55E"]') : null;
+            if (siblingAccept) siblingAccept.disabled = true;
 
             try {
                 const response = await TripServiceAPI.respondToRider(tripId, riderId, 'reject');
@@ -2578,9 +2604,13 @@
                         loadActiveTrip();
                     }, 500);
                 } else {
+                    _btnLoading(btn, false, origHTML);
+                    if (siblingAccept) siblingAccept.disabled = false;
                     showNotification('Failed to reject request', 'error');
                 }
             } catch (error) {
+                _btnLoading(btn, false, origHTML);
+                if (siblingAccept) siblingAccept.disabled = false;
                 console.error('Error rejecting request:', error);
                 showNotification('Error rejecting request', 'error');
             }

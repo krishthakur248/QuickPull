@@ -696,13 +696,16 @@ exports.cancelRiderRequest = async (req, res) => {
         const shouldTriggerReview = driverHadAccepted && !isSimPassenger;
 
         if (shouldTriggerReview) {
+            // Keep the rider entry in the array so the review controller can find them.
+            // Mark as cancelled with review flags; they are no longer occupying a seat.
             removedRider.reviewPending = true;
             removedRider.reviewTrigger = 'cancelled_after_accept';
-            removedRider.status = 'cancelled'; // Update status before removal reference is lost
+            removedRider.status = 'cancelled';
+            // Do NOT splice — review controller needs to find this rider entry.
+        } else {
+            // Pre-acceptance cancel: remove rider entirely from array.
+            trip.riders.splice(riderIndex, 1);
         }
-
-        // Remove rider from trip
-        trip.riders.splice(riderIndex, 1);
         trip.occupiedSeats -= 1;
 
         await trip.save();
