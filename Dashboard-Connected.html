@@ -1476,13 +1476,14 @@
                         <div class="text-secondary font-bold text-lg">₹${fare}</div>
                     </div>
 
-                    ${riderData?.eta?.pickupSeconds ? `
+                    ${(riderData?.eta?.pickupSeconds || riderData?.eta?.tripSeconds) ? `
                     <div class="bg-gradient-to-r from-blue-950/60 to-emerald-950/40 p-3 rounded-lg border border-emerald-500/30">
-                        <div class="text-[#92adc9] text-xs mb-1 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-xs text-emerald-400">directions_car</span> Driver Arrival ETA
+                        <div class="text-[#92adc9] text-xs mb-1 flex items-center justify-between">
+                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs text-emerald-400">directions_car</span> Driver Arrival ETA</span>
+                            <span class="text-[10px] text-gray-400">estimate</span>
                         </div>
-                        <div class="text-emerald-400 font-bold text-base">${formatEtaMinutes(riderData.eta.pickupSeconds)}</div>
-                        ${riderData.eta.tripSeconds ? `<div class="text-xs text-blue-300 mt-1">Trip duration: ${formatEtaMinutes(riderData.eta.tripSeconds)}</div>` : ''}
+                        ${riderData.eta.pickupSeconds ? `<div class="text-emerald-400 font-bold text-sm">Driver reaches you in ${formatPickupEta(riderData.eta.pickupSeconds)}</div>` : ''}
+                        ${riderData.eta.tripSeconds ? `<div class="text-xs text-blue-300 mt-1">Trip takes ${formatTripEta(riderData.eta.tripSeconds)}</div>` : ''}
                     </div>` : ''}
 
                     <div class="bg-[#151f2a] p-3 rounded-lg">
@@ -2409,12 +2410,12 @@
         // ── ETA helpers ────────────────────────────────────────────────────────
 
         /**
-         * Convert seconds to a display string like "3 min" or "arriving now".
-         * Minimum shown: 1 min. Under 60 s: "arriving now".
+         * Convert seconds for driver pickup arrival.
+         * Only pickup line may return 'arriving now' (when under 60 s).
          * @param {number|null} seconds
-         * @returns {string}
+         * @returns {string|null}
          */
-        function formatEtaMinutes(seconds) {
+        function formatPickupEta(seconds) {
             if (seconds === null || seconds === undefined || isNaN(seconds)) return null;
             if (seconds < 60) return 'arriving now';
             const mins = Math.max(1, Math.round(seconds / 60));
@@ -2422,10 +2423,27 @@
         }
 
         /**
-         * Build the ETA HTML block for one rider card.
-         * If ETA data is missing, returns an empty string (nothing shown).
-         * @param {object} riderData  — the rider sub-document from the trip
-         * @param {string} tripId
+         * Convert seconds for trip duration.
+         * NEVER returns 'arriving now'.
+         * When under 60 s, returns 'less than 1 min'.
+         * Otherwise returns 'about Y min' (rounded, min 1 min).
+         * @param {number|null} seconds
+         * @returns {string|null}
+         */
+        function formatTripEta(seconds) {
+            if (seconds === null || seconds === undefined || isNaN(seconds)) return null;
+            if (seconds < 60) return 'less than 1 min';
+            const mins = Math.max(1, Math.round(seconds / 60));
+            return `about ${mins} min`;
+        }
+
+        /**
+         * Backward-compatibility wrapper for any other callers
+         */
+        function formatEtaMinutes(seconds) {
+            return formatPickupEta(seconds);
+        }
+
         /**
          * Build the ETA HTML block for one rider card.
          * For confirmed rides, always renders a container (#eta-block-${tripId}) so that
@@ -2439,24 +2457,25 @@
             if (!riderData || riderData.status !== 'confirmed') return '';
 
             const eta = riderData.eta;
-            const pickupStr = eta ? formatEtaMinutes(eta.pickupSeconds) : null;
-            const tripStr   = eta ? formatEtaMinutes(eta.tripSeconds) : null;
+            const pickupStr = eta ? formatPickupEta(eta.pickupSeconds) : null;
+            const tripStr   = eta ? formatTripEta(eta.tripSeconds) : null;
 
             if (pickupStr || tripStr) {
                 return `
                 <div id="eta-block-${tripId}" class="mt-1.5 mb-1.5 p-2 rounded-lg bg-blue-950/40 border border-emerald-500/30 space-y-1">
+                    ${pickupStr ? `
                     <div class="flex items-center justify-between text-xs">
                         <span class="text-[#92adc9] flex items-center gap-1 font-medium text-[11px]">
                             <span class="material-symbols-outlined text-sm text-emerald-400">directions_car</span>
                             Driver reaches you in
                         </span>
-                        <span class="text-emerald-400 font-bold text-xs">${pickupStr || 'Arriving soon'}</span>
-                    </div>
+                        <span class="text-emerald-400 font-bold text-xs">${pickupStr}</span>
+                    </div>` : ''}
                     ${tripStr ? `
                     <div class="flex items-center justify-between text-[11px]">
                         <span class="text-[#92adc9] flex items-center gap-1">
                             <span class="material-symbols-outlined text-sm text-blue-400">schedule</span>
-                            Trip duration
+                            Trip takes
                         </span>
                         <span class="text-blue-300 font-semibold">${tripStr}</span>
                     </div>` : ''}
@@ -2464,7 +2483,7 @@
                         <span class="flex items-center gap-1 text-emerald-400/90">
                             <span class="size-1.5 rounded-full bg-emerald-400 animate-ping inline-block"></span> Live ETA
                         </span>
-                        <span>AI estimated</span>
+                        <span>estimate</span>
                     </div>
                 </div>`;
             }
@@ -2492,8 +2511,8 @@
          */
         function updateRiderEtaDisplay(tripId, pickupSeconds, tripSeconds) {
             console.log('[ETA] updateRiderEtaDisplay called for trip:', tripId, { pickupSeconds, tripSeconds });
-            const pickupStr = formatEtaMinutes(pickupSeconds);
-            const tripStr   = formatEtaMinutes(tripSeconds);
+            const pickupStr = formatPickupEta(pickupSeconds);
+            const tripStr   = formatTripEta(tripSeconds);
 
             // Update in-memory acceptedRides cache
             if (Array.isArray(acceptedRides)) {
@@ -2519,21 +2538,27 @@
                 return;
             }
 
+            if (!pickupStr && !tripStr) {
+                block.style.display = 'none';
+                return;
+            }
+
             block.style.display = '';
             block.className = 'mt-1.5 mb-1.5 p-2 rounded-lg bg-blue-950/40 border border-emerald-500/30 space-y-1';
             block.innerHTML = `
+                ${pickupStr ? `
                 <div class="flex items-center justify-between text-xs">
                     <span class="text-[#92adc9] flex items-center gap-1 font-medium text-[11px]">
                         <span class="material-symbols-outlined text-sm text-emerald-400">directions_car</span>
                         Driver reaches you in
                     </span>
-                    <span class="text-emerald-400 font-bold text-xs">${pickupStr || 'Arriving soon'}</span>
-                </div>
+                    <span class="text-emerald-400 font-bold text-xs">${pickupStr}</span>
+                </div>` : ''}
                 ${tripStr ? `
                 <div class="flex items-center justify-between text-[11px]">
                     <span class="text-[#92adc9] flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm text-blue-400">schedule</span>
-                        Trip duration
+                        Trip takes
                     </span>
                     <span class="text-blue-300 font-semibold">${tripStr}</span>
                 </div>` : ''}
@@ -2541,7 +2566,7 @@
                     <span class="flex items-center gap-1 text-emerald-400/90">
                         <span class="size-1.5 rounded-full bg-emerald-400 animate-ping inline-block"></span> Live ETA
                     </span>
-                    <span>AI estimated</span>
+                    <span>estimate</span>
                 </div>`;
         }
 

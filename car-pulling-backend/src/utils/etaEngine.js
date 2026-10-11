@@ -330,44 +330,72 @@ async function computeRideEta(trip, rider, io) {
     const riderDropoffCoords = rider.dropoffPoint?.coordinates?.coordinates
                             || rider.dropoffPoint?.coordinates;
 
-    if (!riderPickupCoords || !riderDropoffCoords) {
-      console.warn(`${TAG} Rider pickup/dropoff coordinates missing — skipping ETA`);
+    if (!riderPickupCoords || !Array.isArray(riderPickupCoords) || riderPickupCoords.length < 2) {
+      console.warn(`${TAG} Rider pickup coordinates missing — skipping ETA`);
       return;
     }
 
-    // Extract lat/lng clearly — coordinates are [lng, lat]
-    const riderPickupLng  = riderPickupCoords[0];
-    const riderPickupLat  = riderPickupCoords[1];
-    const riderDropoffLng = riderDropoffCoords[0];
-    const riderDropoffLat = riderDropoffCoords[1];
+    // Extract named variables for pickup: [lng, lat]
+    const riderPickupLng = Number(riderPickupCoords[0]);
+    const riderPickupLat = Number(riderPickupCoords[1]);
+
+    if (isNaN(riderPickupLng) || isNaN(riderPickupLat)) {
+      console.warn(`${TAG} Rider pickup coordinates invalid numbers — skipping ETA`);
+      return;
+    }
 
     console.log(`${TAG} Rider pickup: lat=${riderPickupLat}, lng=${riderPickupLng}`);
-    console.log(`${TAG} Rider dropoff: lat=${riderDropoffLat}, lng=${riderDropoffLng}`);
 
-    // ── Step 3: Get OSRM summaries for both legs ───────────────────────
-    // getRouteSummary takes [lng, lat] arrays (OSRM format)
-    const [pickupLeg, tripLeg] = await Promise.all([
-      getRouteSummary(
-        [driverLng, driverLat],
-        [riderPickupLng, riderPickupLat],
-        'pickup-leg'
-      ),
-      getRouteSummary(
+    // Check if valid drop-off point exists
+    const hasDropoff = Array.isArray(riderDropoffCoords)
+      && riderDropoffCoords.length >= 2
+      && typeof riderDropoffCoords[0] === 'number'
+      && typeof riderDropoffCoords[1] === 'number'
+      && !isNaN(riderDropoffCoords[0])
+      && !isNaN(riderDropoffCoords[1])
+      && (riderDropoffCoords[0] !== 0 || riderDropoffCoords[1] !== 0);
+
+    let riderDropoffLng = null;
+    let riderDropoffLat = null;
+
+    if (hasDropoff) {
+      riderDropoffLng = Number(riderDropoffCoords[0]);
+      riderDropoffLat = Number(riderDropoffCoords[1]);
+      console.log(`${TAG} Rider dropoff: lat=${riderDropoffLat}, lng=${riderDropoffLng}`);
+    } else {
+      console.log(`${TAG} Rider dropoff point is missing — trip leg will not be calculated`);
+    }
+
+    // ── Step 3: Get OSRM summaries ─────────────────────────────────────
+    // getRouteSummary takes [longitude, latitude] order (OSRM format)
+    const pickupLeg = await getRouteSummary(
+      [driverLng, driverLat],
+      [riderPickupLng, riderPickupLat],
+      'pickup-leg'
+    );
+
+    if (!pickupLeg) {
+      console.warn(`${TAG} OSRM failed for pickup leg — saving no ETA`);
+      return;
+    }
+    console.log(`${TAG} Pickup leg OSRM: ${pickupLeg.durationSeconds?.toFixed(0)}s, ${pickupLeg.distanceMeters?.toFixed(0)}m`);
+
+    // Only fetch trip leg if drop-off point is present
+    let tripLeg = null;
+    if (hasDropoff) {
+      tripLeg = await getRouteSummary(
         [riderPickupLng, riderPickupLat],
         [riderDropoffLng, riderDropoffLat],
         'trip-leg'
-      )
-    ]);
-
-    console.log(`${TAG} Pickup leg OSRM: ${pickupLeg?.durationSeconds?.toFixed(0)}s, ${pickupLeg?.distanceMeters?.toFixed(0)}m`);
-    console.log(`${TAG} Trip leg OSRM:   ${tripLeg?.durationSeconds?.toFixed(0)}s,   ${tripLeg?.distanceMeters?.toFixed(0)}m`);
-
-    if (!pickupLeg || !tripLeg) {
-      console.warn(`${TAG} OSRM failed for one or both legs — saving no ETA`);
-      return;
+      );
+      if (tripLeg) {
+        console.log(`${TAG} Trip leg OSRM: ${tripLeg.durationSeconds?.toFixed(0)}s, ${tripLeg.distanceMeters?.toFixed(0)}m`);
+      } else {
+        console.warn(`${TAG} OSRM route failed for trip leg`);
+      }
     }
 
-    // ── Step 4: Run predictions for both legs ──────────────────────────
+    // ── Step 4: Run predictions ────────────────────────────────────────
     const pickupResult = predictEta({
       pickup_lat     : driverLat,
       pickup_lon     : driverLng,
@@ -377,30 +405,39 @@ async function computeRideEta(trip, rider, io) {
       osrm_distance_m: pickupLeg.distanceMeters
     });
 
-    const tripResult = predictEta({
-      pickup_lat     : riderPickupLat,
-      pickup_lon     : riderPickupLng,
-      dropoff_lat    : riderDropoffLat,
-      dropoff_lon    : riderDropoffLng,
-      osrm_duration_s: tripLeg.durationSeconds,
-      osrm_distance_m: tripLeg.distanceMeters
-    });
+    let tripResult = null;
+    if (tripLeg) {
+      tripResult = predictEta({
+        pickup_lat     : riderPickupLat,
+        pickup_lon     : riderPickupLng,
+        dropoff_lat    : riderDropoffLat,
+        dropoff_lon    : riderDropoffLng,
+        osrm_duration_s: tripLeg.durationSeconds,
+        osrm_distance_m: tripLeg.distanceMeters
+      });
+      console.log(`${TAG} Trip ETA: ${tripResult.eta_seconds?.toFixed(0)}s (${tripResult.source})`);
+    } else {
+      tripResult = {
+        eta_seconds: null,
+        source: null,
+        reason: hasDropoff ? 'OSRM route failed for trip leg' : 'dropoff point missing'
+      };
+      console.log(`${TAG} Trip ETA: null (${tripResult.reason})`);
+    }
 
     console.log(`${TAG} Pickup ETA: ${pickupResult.eta_seconds?.toFixed(0)}s (${pickupResult.source})`);
-    console.log(`${TAG} Trip ETA:   ${tripResult.eta_seconds?.toFixed(0)}s (${tripResult.source})`);
 
     // ── Step 5: Save eta sub-document to the Trip ──────────────────────
-    // We use findOneAndUpdate to avoid any conflict with other in-flight saves
     const etaDoc = {
       pickupSeconds    : pickupResult.eta_seconds,
       tripSeconds      : tripResult.eta_seconds,
       osrmPickupSeconds: pickupLeg.durationSeconds,
-      osrmTripSeconds  : tripLeg.durationSeconds,
+      osrmTripSeconds  : tripLeg?.durationSeconds || null,
       osrmPickupMeters : pickupLeg.distanceMeters,
-      osrmTripMeters   : tripLeg.distanceMeters,
+      osrmTripMeters   : tripLeg?.distanceMeters || null,
       pickupSource     : pickupResult.source,
       tripSource       : tripResult.source,
-      reason           : [pickupResult.reason, tripResult.reason].join(' | '),
+      reason           : [pickupResult.reason, tripResult.reason].filter(Boolean).join(' | '),
       modelVersion     : MODEL_VERSION,
       computedAt       : new Date()
     };
