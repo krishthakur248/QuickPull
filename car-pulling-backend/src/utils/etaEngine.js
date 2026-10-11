@@ -281,10 +281,20 @@ async function computeRideEta(trip, rider, io) {
 
   try {
     const tripId  = trip._id.toString();
-    const riderId = rider.riderId.toString ? rider.riderId.toString()
-                                           : rider.riderId._id?.toString();
-    const driverId = trip.driver.toString ? trip.driver.toString()
-                                          : trip.driver._id?.toString();
+
+    // ── Extract rider and driver IDs safely ──────────────────────────────
+    // When respondToRider calls us, trip.driver is a POPULATED object
+    // {_id, firstName, lastName}, NOT a raw ObjectId.
+    // Calling .toString() on a plain object returns '[object Object]',
+    // which breaks User.findById() and socket room names.
+    // We must use ._id when the field is populated.
+    const riderId = (rider.riderId?._id || rider.riderId)?.toString();
+    const driverId = (trip.driver?._id  || trip.driver)?.toString();
+
+    if (!riderId || !driverId) {
+      console.warn(`${TAG} Could not extract valid rider/driver IDs — skipping ETA`);
+      return;
+    }
 
     console.log(`${TAG} Computing ETA for trip=${tripId} rider=${riderId}`);
 
