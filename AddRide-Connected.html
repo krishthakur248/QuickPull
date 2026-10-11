@@ -1077,7 +1077,96 @@
                         }, 300);
                     }
                 });
+
+                // Listen for ETA updates — driver sees the same estimate as the rider
+                socket.on('eta-update', (data) => {
+                    console.log('[ETA] Driver received eta-update:', data);
+                    if (data && data.tripId && data.riderId) {
+                        // Update the ETA block inside the accepted rider card
+                        updateDriverEtaDisplay(data.riderId, data.tripId, data.pickupSeconds, data.tripSeconds);
+                    }
+                });
+
             }, 100);
+        }
+
+        // ── ETA helpers for the driver screen ────────────────────────────────────
+
+        /**
+         * Convert seconds to a short display string. Under 60 s = 'arriving now'.
+         * @param {number|null} seconds
+         * @returns {string|null}
+         */
+        function driverFormatEta(seconds) {
+            if (seconds === null || seconds === undefined || isNaN(seconds)) return null;
+            if (seconds < 60) return 'arriving now';
+            return 'about ' + Math.max(1, Math.round(seconds / 60)) + ' min';
+        }
+
+        /**
+         * Build the ETA HTML block shown inside the driver's rider card.
+         * Only shown for confirmed (accepted) riders that have ETA data.
+         * @param {object} rider  — rider sub-document from the trip
+         * @param {string} tripId
+         * @returns {string} HTML
+         */
+        function buildDriverEtaHtml(rider, tripId) {
+            const eta = rider && rider.eta;
+            if (!eta || rider.status !== 'confirmed') return '';
+
+            const pickupStr = driverFormatEta(eta.pickupSeconds);
+            const tripStr   = driverFormatEta(eta.tripSeconds);
+            if (!pickupStr && !tripStr) return '';
+
+            const riderId = typeof rider.riderId === 'string' ? rider.riderId
+                          : (rider.riderId?._id || rider.riderId);
+
+            return `
+            <div id="driver-eta-${riderId}-${tripId}"
+                 class="mt-1 mb-1 text-xs bg-blue-50 border border-blue-200 rounded px-2 py-1 space-y-0.5">
+                ${pickupStr ? `
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Rider pickup</span>
+                    <span class="font-semibold text-blue-700">${pickupStr}</span>
+                </div>` : ''}
+                ${tripStr ? `
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Rider trip</span>
+                    <span class="font-semibold text-blue-700">${tripStr}</span>
+                </div>` : ''}
+                <div class="text-[10px] text-gray-400 text-right">estimate</div>
+            </div>`;
+        }
+
+        /**
+         * Update the ETA block for a rider card when an eta-update socket event arrives.
+         * @param {string} riderId
+         * @param {string} tripId
+         * @param {number|null} pickupSeconds
+         * @param {number|null} tripSeconds
+         */
+        function updateDriverEtaDisplay(riderId, tripId, pickupSeconds, tripSeconds) {
+            const block = document.getElementById('driver-eta-' + riderId + '-' + tripId);
+            if (!block) return;
+
+            const pickupStr = driverFormatEta(pickupSeconds);
+            const tripStr   = driverFormatEta(tripSeconds);
+
+            if (!pickupStr && !tripStr) { block.style.display = 'none'; return; }
+
+            block.style.display = '';
+            block.innerHTML = `
+                ${pickupStr ? `
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Rider pickup</span>
+                    <span class="font-semibold text-blue-700">${pickupStr}</span>
+                </div>` : ''}
+                ${tripStr ? `
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Rider trip</span>
+                    <span class="font-semibold text-blue-700">${tripStr}</span>
+                </div>` : ''}
+                <div class="text-[10px] text-gray-400 text-right">estimate</div>`;
         }
 
         // Populate profile email in dropdown
@@ -1813,7 +1902,8 @@
                             <h4 class="font-bold text-sm text-gray-900">${riderName}</h4>
                             ${timeAgo ? `<span class="text-xs text-gray-400">${timeAgo}</span>` : ''}
                         </div>
-                        <p class="text-xs text-gray-500 mt-0.5">Fare: ₹${rider.fare || 'TBD'} ${rider.seatsRequested ? `· ${rider.seatsRequested} seat${rider.seatsRequested > 1 ? 's' : ''}` : ''}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Fare: &#x20B9;${rider.fare || 'TBD'} ${rider.seatsRequested ? `&middot; ${rider.seatsRequested} seat${rider.seatsRequested > 1 ? 's' : ''}` : ''}</p>
+                        ${buildDriverEtaHtml(rider, tripId)}
                         <div class="mt-2">${actionsHTML}</div>
                     </div>
                 </div>`;

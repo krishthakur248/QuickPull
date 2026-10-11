@@ -1,0 +1,30 @@
+{
+  "features": [
+    {
+      "order": 0,
+      "name": "osrm_duration",
+      "unit": "seconds",
+      "how": "duration of the OSRM driving route (car profile)"
+    },
+    {
+      "order": 1,
+      "name": "osrm_distance",
+      "unit": "meters",
+      "how": "distance of the OSRM driving route"
+    },
+    {
+      "order": 2,
+      "name": "haversine_km",
+      "unit": "kilometers",
+      "how": "straight-line distance, haversine formula, Earth radius 6371 km, from pickup and dropoff latitude/longitude"
+    },
+    {
+      "order": 3,
+      "name": "osrm_speed_kmh",
+      "unit": "km/h",
+      "how": "(osrm_distance / 1000) / (max(osrm_duration, 1) / 3600)"
+    }
+  ],
+  "inputs_note": "latitude and longitude are always passed as separate named arguments, never as [lng, lat] arrays",
+  "fallback_rule": "use plain OSRM duration if any OSRM value is missing, negative or NaN, or any feature is outside input_ranges.json min/max"
+}

@@ -3,6 +3,8 @@ const User = require('../models/User');
 const { generateUniqueCode, calculateDistance, checkRouteOverlap, getOSRMRoute } = require('../utils/helpers');
 const { matchRoutes, calculateFareSplit } = require('../utils/matchingEngine');
 const { computeScore10 } = require('../config/ratingConfig');
+// ETA engine — pure Node.js inference, no Python or HTTP needed
+const { computeRideEta } = require('../utils/etaEngine');
 
 // Per-km rates by vehicle type (in ₹)
 const RATE_PER_KM = {
@@ -595,6 +597,20 @@ exports.respondToRider = async (req, res) => {
 
         await trip.save();
 
+        // ── ETA: run in background after saving, NEVER block the accept response ──
+        // If computeRideEta fails for any reason the rider is still accepted normally.
+        if (action === 'accept') {
+            const acceptedRider = trip.riders[riderIndex];
+            const io = req.app.get('io');
+            // setImmediate pushes this to the next event loop tick so the HTTP
+            // response is sent first, then ETA computation begins.
+            setImmediate(() => {
+                computeRideEta(trip, acceptedRider, io).catch(etaErr => {
+                    console.error('[ETA] Background computeRideEta error (non-fatal):', etaErr.message);
+                });
+            });
+        }
+
         // Emit real-time notification via Socket.io
         const io = req.app.get('io');
         if (io) {
@@ -838,6 +854,8 @@ exports.completeTrip = async (req, res) => {
             const wasActive = rider.status === 'confirmed' || rider.status === 'ongoing' || rider.status === 'accepted';
             if (wasActive) {
                 rider.status = 'completed';
+                // Record the real finish time so we can later compare ETA vs actual
+                rider.completedAt = new Date();
                 // Only set review flag if not already reviewed
                 if (!rider.reviewPending) {
                     rider.reviewPending = true;

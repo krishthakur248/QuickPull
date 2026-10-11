@@ -1,0 +1,142 @@
+[
+  {
+    "case": 1,
+    "expected_eta_seconds": 657.9830922972587,
+    "py_eta_seconds": 657.9830922972587,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.74560546875,
+      "pickup_lon": -73.99820709228516,
+      "dropoff_lat": 40.75204849243164,
+      "dropoff_lon": -73.97744750976561,
+      "osrm_duration_s": 298.2,
+      "osrm_distance_m": 2665.2
+    }
+  },
+  {
+    "case": 2,
+    "expected_eta_seconds": 381.400462325368,
+    "py_eta_seconds": 381.400462325368,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.780567169189446,
+      "pickup_lon": -73.94854736328125,
+      "dropoff_lat": 40.78667831420898,
+      "dropoff_lon": -73.95249938964844,
+      "osrm_duration_s": 219.8,
+      "osrm_distance_m": 1513.6
+    }
+  },
+  {
+    "case": 3,
+    "expected_eta_seconds": 1210.9305412719293,
+    "py_eta_seconds": 1210.9305412719293,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.770469665527344,
+      "pickup_lon": -73.96652221679686,
+      "dropoff_lat": 40.7409553527832,
+      "dropoff_lon": -74.00769805908203,
+      "osrm_duration_s": 731.3,
+      "osrm_distance_m": 6584.4
+    }
+  },
+  {
+    "case": 4,
+    "expected_eta_seconds": 1442.016179169236,
+    "py_eta_seconds": 1442.016179169236,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.80094909667969,
+      "pickup_lon": -73.96800994873048,
+      "dropoff_lat": 40.739864349365234,
+      "dropoff_lon": -73.98174285888672,
+      "osrm_duration_s": 949.3,
+      "osrm_distance_m": 10164.6
+    }
+  },
+  {
+    "case": 5,
+    "expected_eta_seconds": 881.13122099866,
+    "py_eta_seconds": 881.13122099866,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.75194549560546,
+      "pickup_lon": -73.97813415527344,
+      "dropoff_lat": 40.78106689453125,
+      "dropoff_lon": -73.97254943847656,
+      "osrm_duration_s": 489.5,
+      "osrm_distance_m": 4258.5
+    }
+  },
+  {
+    "case": 6,
+    "expected_eta_seconds": 554.0830375679062,
+    "py_eta_seconds": 554.0830375679062,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.762916564941406,
+      "pickup_lon": -73.96753692626953,
+      "dropoff_lat": 40.767356872558594,
+      "dropoff_lon": -73.9881362915039,
+      "osrm_duration_s": 197.2,
+      "osrm_distance_m": 2169.2
+    }
+  },
+  {
+    "case": 7,
+    "expected_eta_seconds": 284.25760348500455,
+    "py_eta_seconds": 284.25760348500455,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.74821472167969,
+      "pickup_lon": -73.97647094726561,
+      "dropoff_lat": 40.75382995605469,
+      "dropoff_lon": -73.98185729980467,
+      "osrm_duration_s": 137.7,
+      "osrm_distance_m": 1043.0
+    }
+  },
+  {
+    "case": 8,
+    "expected_eta_seconds": 348.09463451301036,
+    "py_eta_seconds": 348.09463451301036,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.80149459838867,
+      "pickup_lon": -73.93644714355469,
+      "dropoff_lat": 40.79339218139648,
+      "dropoff_lon": -73.94304656982422,
+      "osrm_duration_s": 190.1,
+      "osrm_distance_m": 1387.6
+    }
+  },
+  {
+    "case": 9,
+    "expected_eta_seconds": 519.4661937022643,
+    "py_eta_seconds": 519.4661937022643,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.73925018310546,
+      "pickup_lon": -73.99546813964845,
+      "dropoff_lat": 40.75159454345703,
+      "dropoff_lon": -74.00151824951173,
+      "osrm_duration_s": 266.9,
+      "osrm_distance_m": 2052.8
+    }
+  },
+  {
+    "case": 10,
+    "expected_eta_seconds": 329.0173075417352,
+    "py_eta_seconds": 329.0173075417352,
+    "diff": 0.0,
+    "input": {
+      "pickup_lat": 40.7209358215332,
+      "pickup_lon": -73.9975357055664,
+      "dropoff_lat": 40.72232818603516,
+      "dropoff_lon": -73.98725128173827,
+      "osrm_duration_s": 170.2,
+      "osrm_distance_m": 1259.9
+    }
+  }
+]

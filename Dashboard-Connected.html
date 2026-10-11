@@ -1368,8 +1368,9 @@
                         <span class="${statusBadgeColor} px-1.5 py-0.5 rounded text-[9px] font-bold flex-shrink-0">${statusText}</span>
                     </div>
                     <div class="flex items-center justify-between text-[10px] text-[#92adc9] mb-1 px-1">
-                        <span>Fare: <span class="text-secondary font-bold">₹${riderData.fare || 0}</span></span>
+                        <span>Fare: <span class="text-secondary font-bold">&#x20B9;${riderData.fare || 0}</span></span>
                     </div>
+                    ${buildRiderEtaHtml(riderData, trip._id)}
                     <div class="flex gap-1">
                         <button onclick="showTripDetails('${trip._id}')" class="flex-1 bg-primary/20 hover:bg-primary/30 text-primary text-[9px] font-bold py-1 rounded transition-all">
                             Details
@@ -2396,7 +2397,103 @@
             }
         }
 
-        // Socket.io setup for real-time updates
+        // ── ETA helpers ────────────────────────────────────────────────────────
+
+        /**
+         * Convert seconds to a display string like "3 min" or "arriving now".
+         * Minimum shown: 1 min. Under 60 s: "arriving now".
+         * @param {number|null} seconds
+         * @returns {string}
+         */
+        function formatEtaMinutes(seconds) {
+            if (seconds === null || seconds === undefined || isNaN(seconds)) return null;
+            if (seconds < 60) return 'arriving now';
+            const mins = Math.max(1, Math.round(seconds / 60));
+            return `about ${mins} min`;
+        }
+
+        /**
+         * Build the ETA HTML block for one rider card.
+         * If ETA data is missing, returns an empty string (nothing shown).
+         * @param {object} riderData  — the rider sub-document from the trip
+         * @param {string} tripId
+         * @returns {string} HTML
+         */
+        function buildRiderEtaHtml(riderData, tripId) {
+            const eta = riderData && riderData.eta;
+            // Only show ETA on confirmed rides (driver already accepted)
+            if (!eta || riderData.status !== 'confirmed') return '';
+
+            const pickupStr = formatEtaMinutes(eta.pickupSeconds);
+            const tripStr   = formatEtaMinutes(eta.tripSeconds);
+
+            // If both are missing, hide the block entirely
+            if (!pickupStr && !tripStr) return '';
+
+            return `
+                <div id="eta-block-${tripId}" class="mt-1 mb-1 bg-blue-900/20 border border-blue-700/30 rounded px-2 py-1 space-y-0.5">
+                    ${pickupStr ? `
+                    <div class="flex items-center justify-between text-[9px]">
+                        <span class="text-[#92adc9] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[11px] text-blue-400">directions_car</span>
+                            Driver arrives in
+                        </span>
+                        <span class="text-blue-300 font-bold">${pickupStr}</span>
+                    </div>` : ''}
+                    ${tripStr ? `
+                    <div class="flex items-center justify-between text-[9px]">
+                        <span class="text-[#92adc9] flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[11px] text-blue-400">schedule</span>
+                            Trip takes
+                        </span>
+                        <span class="text-blue-300 font-bold">${tripStr}</span>
+                    </div>` : ''}
+                    <div class="text-[8px] text-[#92adc9]/60 text-right">estimate</div>
+                </div>`;
+        }
+
+        /**
+         * Update the ETA block in an already-rendered accepted-ride card.
+         * Called when an eta-update socket event arrives so the rider sees
+         * ETA without reloading the page.
+         * @param {string} tripId
+         * @param {number|null} pickupSeconds
+         * @param {number|null} tripSeconds
+         */
+        function updateRiderEtaDisplay(tripId, pickupSeconds, tripSeconds) {
+            const block = document.getElementById('eta-block-' + tripId);
+            if (!block) return; // card not visible, nothing to update
+
+            const pickupStr = formatEtaMinutes(pickupSeconds);
+            const tripStr   = formatEtaMinutes(tripSeconds);
+
+            if (!pickupStr && !tripStr) {
+                block.style.display = 'none';
+                return;
+            }
+
+            block.style.display = '';
+            block.innerHTML = `
+                ${pickupStr ? `
+                <div class="flex items-center justify-between text-[9px]">
+                    <span class="text-[#92adc9] flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[11px] text-blue-400">directions_car</span>
+                        Driver arrives in
+                    </span>
+                    <span class="text-blue-300 font-bold">${pickupStr}</span>
+                </div>` : ''}
+                ${tripStr ? `
+                <div class="flex items-center justify-between text-[9px]">
+                    <span class="text-[#92adc9] flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[11px] text-blue-400">schedule</span>
+                        Trip takes
+                    </span>
+                    <span class="text-blue-300 font-bold">${tripStr}</span>
+                </div>` : ''}
+                <div class="text-[8px] text-[#92adc9]/60 text-right">estimate</div>`;
+        }
+
+        // ── Socket.io setup for real-time updates ──────────────────────────────
         function setupSocketListeners() {
             // Connect to Socket.io server
             const token = apiClient.getToken();
@@ -2481,6 +2578,16 @@
 
                 // Update pickup distances for displayed rides
                 updatePickupDistances(window.driverLocations);
+            });
+
+            // Listen for ETA updates sent after driver accepts a rider
+            socket.on('eta-update', (data) => {
+                console.log('[ETA] Received eta-update:', data);
+                // data: { tripId, riderId, pickupSeconds, tripSeconds, pickupSource, tripSource, computedAt }
+                if (data && data.tripId) {
+                    // Update the card if it is currently visible on screen
+                    updateRiderEtaDisplay(data.tripId, data.pickupSeconds, data.tripSeconds);
+                }
             });
 
             socket.on('connect', () => {

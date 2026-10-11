@@ -119,6 +119,28 @@ const tripSchema = new mongoose.Schema(
           enum: ['completed', 'cancelled_after_accept', null],
           default: null,
         },
+
+        // ── ETA sub-document (populated at driver-accept time) ──────────
+        // pickupSeconds / tripSeconds are what we show the user.
+        // osrm* fields are the raw OSRM values used as model input.
+        // source tells you whether the model or OSRM fallback was used.
+        eta: {
+          pickupSeconds    : Number,  // model or OSRM pickup leg duration (s)
+          tripSeconds      : Number,  // model or OSRM trip leg duration (s)
+          osrmPickupSeconds: Number,  // raw OSRM pickup leg duration (s)
+          osrmTripSeconds  : Number,  // raw OSRM trip leg duration (s)
+          osrmPickupMeters : Number,  // raw OSRM pickup leg distance (m)
+          osrmTripMeters   : Number,  // raw OSRM trip leg distance (m)
+          pickupSource     : String,  // 'model' or 'osrm_fallback'
+          tripSource       : String,  // 'model' or 'osrm_fallback'
+          reason           : String,  // human-readable explanation
+          modelVersion     : String,  // which model version was used
+          computedAt       : Date,    // when the ETA was computed
+        },
+
+        // ── completedAt — set when the trip is completed ────────────────
+        // Lets us compare predicted ETA vs real duration on Indian roads.
+        completedAt: Date,
       },
     ],
 
