@@ -1077,83 +1077,7 @@
                         }, 300);
                     }
                 });
-                // Listen for ETA updates
-                socket.on('eta-update', (data) => {
-                    console.log('[ETA] Driver received eta-update:', data);
-                    if (data && data.tripId && data.riderId) {
-                        updateDriverEtaDisplay(data.riderId, data.tripId, data.pickupSeconds, data.tripSeconds);
-                    }
-                });
-
             }, 100);
-        }
-
-        // ── ETA helpers for the driver screen ────────────────────────────────────
-
-        function formatPickupEta(seconds) {
-            if (seconds === null || seconds === undefined || isNaN(seconds)) return null;
-            if (seconds < 60) return 'arriving now';
-            const mins = Math.max(1, Math.round(seconds / 60));
-            return `about ${mins} min`;
-        }
-
-        function formatTripEta(seconds) {
-            if (seconds === null || seconds === undefined || isNaN(seconds)) return null;
-            if (seconds < 60) return 'less than 1 min';
-            const mins = Math.max(1, Math.round(seconds / 60));
-            return `about ${mins} min`;
-        }
-
-        function buildDriverEtaHtml(rider, tripId) {
-            const eta = rider && rider.eta;
-            if (!eta || rider.status !== 'confirmed') return '';
-
-            const pickupStr = formatPickupEta(eta.pickupSeconds);
-            const tripStr   = formatTripEta(eta.tripSeconds);
-            if (!pickupStr && !tripStr) return '';
-
-            const riderId = typeof rider.riderId === 'string' ? rider.riderId
-                          : (rider.riderId?._id || rider.riderId);
-
-            return `
-            <div id="driver-eta-${riderId}-${tripId}"
-                 class="mt-1 mb-1 text-xs bg-blue-50 border border-blue-200 rounded px-2 py-1 space-y-0.5">
-                ${pickupStr ? `
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Rider pickup</span>
-                    <span class="font-semibold text-blue-700">${pickupStr}</span>
-                </div>` : ''}
-                ${tripStr ? `
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Trip takes</span>
-                    <span class="font-semibold text-blue-700">${tripStr}</span>
-                </div>` : ''}
-                <div class="text-[10px] text-gray-400 text-right">estimate</div>
-            </div>`;
-        }
-
-        function updateDriverEtaDisplay(riderId, tripId, pickupSeconds, tripSeconds) {
-            const block = document.getElementById('driver-eta-' + riderId + '-' + tripId);
-            if (!block) return;
-
-            const pickupStr = formatPickupEta(pickupSeconds);
-            const tripStr   = formatTripEta(tripSeconds);
-
-            if (!pickupStr && !tripStr) { block.style.display = 'none'; return; }
-
-            block.style.display = '';
-            block.innerHTML = `
-                ${pickupStr ? `
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Rider pickup</span>
-                    <span class="font-semibold text-blue-700">${pickupStr}</span>
-                </div>` : ''}
-                ${tripStr ? `
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Trip takes</span>
-                    <span class="font-semibold text-blue-700">${tripStr}</span>
-                </div>` : ''}
-                <div class="text-[10px] text-gray-400 text-right">estimate</div>`;
         }
 
 
@@ -1891,7 +1815,6 @@
                             ${timeAgo ? `<span class="text-xs text-gray-400">${timeAgo}</span>` : ''}
                         </div>
                         <p class="text-xs text-gray-500 mt-0.5">Fare: &#x20B9;${rider.fare || 'TBD'} ${rider.seatsRequested ? `&middot; ${rider.seatsRequested} seat${rider.seatsRequested > 1 ? 's' : ''}` : ''}</p>
-                        ${buildDriverEtaHtml(rider, tripId)}
                         <div class="mt-2">${actionsHTML}</div>
                     </div>
                 </div>`;
