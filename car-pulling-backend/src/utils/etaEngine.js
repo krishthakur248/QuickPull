@@ -426,10 +426,13 @@ async function computeRideEta(trip, rider, io) {
 
       // Send to the rider's personal room (always joined)
       io.to(`user_${riderId}`).emit('eta-update', payload);
-      // Send to the driver's personal room (always joined)
+      // Send to trip room so any socket tracking the trip receives it
+      io.to(`trip_${tripId}`).emit('eta-update', payload);
+      io.to(`trip_${tripId}_user_${riderId}`).emit('eta-update', payload);
+      // Send to the driver's personal room
       io.to(`user_${driverId}`).emit('eta-update', payload);
 
-      console.log(`${TAG} Emitted eta-update to rider user_${riderId} and driver user_${driverId}`);
+      console.log(`${TAG} Emitted eta-update to rider user_${riderId}, trip_${tripId}, and driver user_${driverId}`);
     }
 
   } catch (err) {

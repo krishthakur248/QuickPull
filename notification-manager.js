@@ -63,6 +63,14 @@ class NotificationManager {
             console.log('[LOCATION] Stored in window.driverLocations:', window.driverLocations[data.tripId]);
         });
 
+        // Listen for ETA updates (rider arrival times)
+        this.socket.on('eta-update', (data) => {
+            console.log('[ETA] NotificationManager received eta-update:', data);
+            if (typeof updateRiderEtaDisplay === 'function' && data && data.tripId) {
+                updateRiderEtaDisplay(data.tripId, data.pickupSeconds, data.tripSeconds);
+            }
+        });
+
         // Handle connection events
         this.socket.on('connect', () => {
             console.log('✓ Connected to notification server');
@@ -104,6 +112,15 @@ class NotificationManager {
         };
         this.showNotification(notification);
         this.addToHistory(notification);
+
+        if (data.status === 'accepted') {
+            if (typeof loadAcceptedRides === 'function') {
+                loadAcceptedRides();
+            }
+            if (typeof switchTab === 'function') {
+                switchTab('mytrips');
+            }
+        }
     }
 
     // Handle new rider request (driver side)

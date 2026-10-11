@@ -1476,6 +1476,15 @@
                         <div class="text-secondary font-bold text-lg">₹${fare}</div>
                     </div>
 
+                    ${riderData?.eta?.pickupSeconds ? `
+                    <div class="bg-gradient-to-r from-blue-950/60 to-emerald-950/40 p-3 rounded-lg border border-emerald-500/30">
+                        <div class="text-[#92adc9] text-xs mb-1 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs text-emerald-400">directions_car</span> Driver Arrival ETA
+                        </div>
+                        <div class="text-emerald-400 font-bold text-base">${formatEtaMinutes(riderData.eta.pickupSeconds)}</div>
+                        ${riderData.eta.tripSeconds ? `<div class="text-xs text-blue-300 mt-1">Trip duration: ${formatEtaMinutes(riderData.eta.tripSeconds)}</div>` : ''}
+                    </div>` : ''}
+
                     <div class="bg-[#151f2a] p-3 rounded-lg">
                         <div class="text-[#92adc9] text-sm mb-1">Status</div>
                         <div class="flex items-center gap-2">
@@ -2417,39 +2426,60 @@
          * If ETA data is missing, returns an empty string (nothing shown).
          * @param {object} riderData  — the rider sub-document from the trip
          * @param {string} tripId
+        /**
+         * Build the ETA HTML block for one rider card.
+         * For confirmed rides, always renders a container (#eta-block-${tripId}) so that
+         * real-time socket updates can immediately populate it.
+         * @param {object} riderData  — the rider sub-document from the trip
+         * @param {string} tripId
          * @returns {string} HTML
          */
         function buildRiderEtaHtml(riderData, tripId) {
-            const eta = riderData && riderData.eta;
             // Only show ETA on confirmed rides (driver already accepted)
-            if (!eta || riderData.status !== 'confirmed') return '';
+            if (!riderData || riderData.status !== 'confirmed') return '';
 
-            const pickupStr = formatEtaMinutes(eta.pickupSeconds);
-            const tripStr   = formatEtaMinutes(eta.tripSeconds);
+            const eta = riderData.eta;
+            const pickupStr = eta ? formatEtaMinutes(eta.pickupSeconds) : null;
+            const tripStr   = eta ? formatEtaMinutes(eta.tripSeconds) : null;
 
-            // If both are missing, hide the block entirely
-            if (!pickupStr && !tripStr) return '';
-
-            return `
-                <div id="eta-block-${tripId}" class="mt-1 mb-1 bg-blue-900/20 border border-blue-700/30 rounded px-2 py-1 space-y-0.5">
-                    ${pickupStr ? `
-                    <div class="flex items-center justify-between text-[9px]">
-                        <span class="text-[#92adc9] flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[11px] text-blue-400">directions_car</span>
-                            Driver arrives in
+            if (pickupStr || tripStr) {
+                return `
+                <div id="eta-block-${tripId}" class="mt-1.5 mb-1.5 p-2 rounded-lg bg-blue-950/40 border border-emerald-500/30 space-y-1">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-[#92adc9] flex items-center gap-1 font-medium text-[11px]">
+                            <span class="material-symbols-outlined text-sm text-emerald-400">directions_car</span>
+                            Driver reaches you in
                         </span>
-                        <span class="text-blue-300 font-bold">${pickupStr}</span>
-                    </div>` : ''}
+                        <span class="text-emerald-400 font-bold text-xs">${pickupStr || 'Arriving soon'}</span>
+                    </div>
                     ${tripStr ? `
-                    <div class="flex items-center justify-between text-[9px]">
+                    <div class="flex items-center justify-between text-[11px]">
                         <span class="text-[#92adc9] flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[11px] text-blue-400">schedule</span>
-                            Trip takes
+                            <span class="material-symbols-outlined text-sm text-blue-400">schedule</span>
+                            Trip duration
                         </span>
-                        <span class="text-blue-300 font-bold">${tripStr}</span>
+                        <span class="text-blue-300 font-semibold">${tripStr}</span>
                     </div>` : ''}
-                    <div class="text-[8px] text-[#92adc9]/60 text-right">estimate</div>
+                    <div class="flex items-center justify-between text-[9px] text-[#92adc9]/60 pt-0.5 border-t border-blue-500/10">
+                        <span class="flex items-center gap-1 text-emerald-400/90">
+                            <span class="size-1.5 rounded-full bg-emerald-400 animate-ping inline-block"></span> Live ETA
+                        </span>
+                        <span>AI estimated</span>
+                    </div>
                 </div>`;
+            }
+
+            // If ETA is still being computed right after driver accepts
+            return `
+            <div id="eta-block-${tripId}" class="mt-1.5 mb-1.5 p-2 rounded-lg bg-blue-950/30 border border-blue-500/20 space-y-0.5">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-[#92adc9] flex items-center gap-1 text-[11px]">
+                        <span class="material-symbols-outlined text-sm text-blue-400 animate-spin">sync</span>
+                        Driver accepted! Calculating arrival time...
+                    </span>
+                    <span class="text-blue-400 text-[10px] font-semibold animate-pulse">Live</span>
+                </div>
+            </div>`;
         }
 
         /**
@@ -2461,36 +2491,58 @@
          * @param {number|null} tripSeconds
          */
         function updateRiderEtaDisplay(tripId, pickupSeconds, tripSeconds) {
-            const block = document.getElementById('eta-block-' + tripId);
-            if (!block) return; // card not visible, nothing to update
-
+            console.log('[ETA] updateRiderEtaDisplay called for trip:', tripId, { pickupSeconds, tripSeconds });
             const pickupStr = formatEtaMinutes(pickupSeconds);
             const tripStr   = formatEtaMinutes(tripSeconds);
 
-            if (!pickupStr && !tripStr) {
-                block.style.display = 'none';
+            // Update in-memory acceptedRides cache
+            if (Array.isArray(acceptedRides)) {
+                const currentUserId = AuthService.getCurrentUser()?._id;
+                const trip = acceptedRides.find(t => t._id === tripId);
+                if (trip && trip.riders) {
+                    const rider = trip.riders.find(r => {
+                        const rId = r.riderId && r.riderId._id ? r.riderId._id : r.riderId;
+                        return rId === currentUserId || (typeof rId === 'object' && rId.toString() === currentUserId);
+                    });
+                    if (rider) {
+                        rider.eta = { pickupSeconds, tripSeconds, computedAt: new Date() };
+                    }
+                }
+            }
+
+            const block = document.getElementById('eta-block-' + tripId);
+            if (!block) {
+                // If block wasn't in DOM yet, reload accepted rides to render it
+                if (typeof loadAcceptedRides === 'function') {
+                    loadAcceptedRides();
+                }
                 return;
             }
 
             block.style.display = '';
+            block.className = 'mt-1.5 mb-1.5 p-2 rounded-lg bg-blue-950/40 border border-emerald-500/30 space-y-1';
             block.innerHTML = `
-                ${pickupStr ? `
-                <div class="flex items-center justify-between text-[9px]">
-                    <span class="text-[#92adc9] flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[11px] text-blue-400">directions_car</span>
-                        Driver arrives in
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-[#92adc9] flex items-center gap-1 font-medium text-[11px]">
+                        <span class="material-symbols-outlined text-sm text-emerald-400">directions_car</span>
+                        Driver reaches you in
                     </span>
-                    <span class="text-blue-300 font-bold">${pickupStr}</span>
-                </div>` : ''}
+                    <span class="text-emerald-400 font-bold text-xs">${pickupStr || 'Arriving soon'}</span>
+                </div>
                 ${tripStr ? `
-                <div class="flex items-center justify-between text-[9px]">
+                <div class="flex items-center justify-between text-[11px]">
                     <span class="text-[#92adc9] flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[11px] text-blue-400">schedule</span>
-                        Trip takes
+                        <span class="material-symbols-outlined text-sm text-blue-400">schedule</span>
+                        Trip duration
                     </span>
-                    <span class="text-blue-300 font-bold">${tripStr}</span>
+                    <span class="text-blue-300 font-semibold">${tripStr}</span>
                 </div>` : ''}
-                <div class="text-[8px] text-[#92adc9]/60 text-right">estimate</div>`;
+                <div class="flex items-center justify-between text-[9px] text-[#92adc9]/60 pt-0.5 border-t border-blue-500/10">
+                    <span class="flex items-center gap-1 text-emerald-400/90">
+                        <span class="size-1.5 rounded-full bg-emerald-400 animate-ping inline-block"></span> Live ETA
+                    </span>
+                    <span>AI estimated</span>
+                </div>`;
         }
 
         // ── Socket.io setup for real-time updates ──────────────────────────────
@@ -2520,6 +2572,10 @@
                     showNotification('✓ ' + data.message, 'success');
                     // Reload accepted rides
                     await loadAcceptedRides();
+                    // Switch to My Trips tab so passenger immediately sees the accepted card
+                    if (typeof switchTab === 'function') {
+                        switchTab('mytrips');
+                    }
                     // Remove from available rides if showing
                     const rideCard = document.querySelector(`[data-ride-id="${data.tripId}"]`);
                     if (rideCard) {

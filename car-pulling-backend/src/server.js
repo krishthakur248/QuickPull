@@ -158,9 +158,10 @@ io.on('connection', (socket) => {
 
   // User joins personal notification room
   socket.on('join-user-room', (data) => {
-    if (userId) {
-      socket.join(`user_${userId}`);
-      console.log(`User ${userId} joined personal notification room`);
+    const targetUserId = userId || data?.userId;
+    if (targetUserId) {
+      socket.join(`user_${targetUserId}`);
+      console.log(`User ${targetUserId} joined personal notification room`);
     }
   });
 
