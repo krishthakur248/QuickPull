@@ -118,12 +118,25 @@ async function moderateMessage({ message, io }) {
 
   // ── Optional: emit a gentle warning to the sender via Socket.io ──────────
   if (WARN_SENDER && io) {
-    // We send to the sender's personal room so only they see it
-    io.to(`user_${message.senderId}`).emit('moderation-warning', {
+    const warningPayload = {
+      type: 'moderation-warning',
+      tripId: message.tripId ? message.tripId.toString() : null,
       messageId: message._id.toString(),
-      // Friendly, non-accusatory message
+      message: '⚠️ Warning: Please keep chat respectful. Your message was flagged by AI.',
       warning: 'Please keep the chat respectful and considerate for a better ride experience.',
-    });
+      score: result.score,
+      reasons: result.reasons,
+      timestamp: new Date()
+    };
+
+    // Emit to personal user room
+    io.to(`user_${message.senderId}`).emit('moderation-warning', warningPayload);
+    // Emit to trip room if available
+    if (message.tripId) {
+      io.to(`trip_${message.tripId}_user_${message.senderId}`).emit('moderation-warning', warningPayload);
+    }
+    // Also emit standard notification so existing toast listeners catch it
+    io.to(`user_${message.senderId}`).emit('notification', warningPayload);
   }
 }
 

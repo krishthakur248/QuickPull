@@ -48,8 +48,8 @@ else:
 # Hard limit: reject text longer than this before even touching the model
 MAX_TEXT_CHARS = 2000
 
-# API key from environment – never stored in code
-EXPECTED_API_KEY: str = os.environ.get("MODERATION_API_KEY", "")
+# API key from environment – never stored in code (strip to avoid Windows batch trailing spaces)
+EXPECTED_API_KEY: str = os.environ.get("MODERATION_API_KEY", "").strip()
 
 # ── Shared state (loaded once at startup) ─────────────────────────────────────
 state: dict = {
@@ -121,7 +121,7 @@ def check_api_key(x_api_key: str = Header(..., alias="X-API-Key")):
         # If the env var is not set, warn loudly but allow (dev-only fallback)
         log.warning("MODERATION_API_KEY env var is not set – endpoint is unprotected!")
         return
-    if x_api_key != EXPECTED_API_KEY:
+    if (x_api_key or "").strip() != EXPECTED_API_KEY:
         raise HTTPException(status_code=403, detail="Invalid or missing API key")
 
 

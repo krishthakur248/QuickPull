@@ -29,6 +29,12 @@ class NotificationManager {
             this.handleNotification(notification);
         });
 
+        // Listen for moderation warnings (AI safety check)
+        this.socket.on('moderation-warning', (data) => {
+            console.log('[MODERATION] Warning received:', data);
+            this.handleModerationWarning(data);
+        });
+
         // Listen for new messages
         this.socket.on('new-message', (data) => {
             console.log('New message received:', data);
@@ -83,8 +89,38 @@ class NotificationManager {
 
     // Handle incoming notification
     static handleNotification(notification) {
+        if (notification.type === 'moderation-warning') {
+            this.handleModerationWarning(notification);
+            return;
+        }
         this.showNotification(notification);
         this.addToHistory(notification);
+    }
+
+    // Handle moderation warning (AI safety check)
+    static handleModerationWarning(data) {
+        const warningMsg = data.warning || data.message || 'Please keep the chat respectful and considerate.';
+        const notification = {
+            type: 'moderation-warning',
+            tripId: data.tripId,
+            message: `⚠️ Safety Warning: ${warningMsg}`,
+            timestamp: new Date()
+        };
+        this.showNotification(notification);
+        this.addToHistory(notification);
+
+        // Also inject in-chat alert banner into the active chat window
+        const chatBoxes = ['chatMessages', 'messagesContainer'];
+        chatBoxes.forEach(boxId => {
+            const box = document.getElementById(boxId);
+            if (box) {
+                const banner = document.createElement('div');
+                banner.className = 'my-2 p-3 bg-red-500/10 border-2 border-red-500/40 rounded-xl text-red-600 dark:text-red-400 text-xs flex items-center gap-2 shadow-sm animate-bounce';
+                banner.innerHTML = `<i class="fas fa-exclamation-triangle text-red-500 text-base"></i> <span><strong>AI Safety Warning:</strong> Your message was flagged for potentially violating community guidelines.</span>`;
+                box.appendChild(banner);
+                box.scrollTop = box.scrollHeight;
+            }
+        });
     }
 
     // Handle new message notification
@@ -174,6 +210,10 @@ class NotificationManager {
             case 'new-rider-request':
                 bgColor = 'bg-orange-500';
                 icon = 'fas fa-user-plus';
+                break;
+            case 'moderation-warning':
+                bgColor = 'bg-red-600';
+                icon = 'fas fa-shield-alt';
                 break;
         }
 
