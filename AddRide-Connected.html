@@ -988,10 +988,6 @@
                 // Also listen for notification events (backup)
                 socket.on('notification', async (data) => {
                     console.log('[DEBUG] Driver received notification:', data);
-                    if (data.type === 'moderation-warning') {
-                        showModerationWarning(data);
-                        return;
-                    }
                     if (data.type === 'new-message' && currentChatTripId && data.tripId === currentChatTripId) {
                         console.log('[DEBUG] Notification is for current chat, refreshing...');
                         await loadChatMessages();
@@ -1002,6 +998,14 @@
                 socket.on('moderation-warning', (data) => {
                     console.log('[MODERATION] Warning received on driver socket:', data);
                     showModerationWarning(data);
+                });
+
+                // Listen for message-flagged event to display small red flag badge
+                socket.on('message-flagged', (data) => {
+                    console.log('[MODERATION] Message flagged event received on driver socket:', data);
+                    if (data && data.messageId) {
+                        applyFlagToBubble(data.messageId);
+                    }
                 });
 
 
@@ -2488,17 +2492,23 @@
             }
 
             chatContainer.innerHTML = messages.map(msg => {
-                const isOwn = msg.senderId._id === currentUserId;
+                const isOwn = (msg.senderId._id || msg.senderId) === currentUserId;
                 const alignClass = isOwn ? 'justify-end' : 'justify-start';
                 const bgClass = isOwn ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-900';
-                const senderName = `${msg.senderId.firstName} ${msg.senderId.lastName}`;
+                const senderName = msg.senderId && msg.senderId.firstName ? `${msg.senderId.firstName} ${msg.senderId.lastName}` : 'User';
+                const isFlagged = msg.isFlagged || (window._flaggedMessageIds && window._flaggedMessageIds.has(msg._id));
 
                 return `
-                    <div class="flex ${alignClass}">
+                    <div class="flex ${alignClass} mb-3" data-msg-id="${msg._id}">
                         <div class="max-w-xs">
                             ${!isOwn ? `<p class="text-xs font-semibold text-gray-600 mb-1">${senderName}</p>` : ''}
                             <div class="px-4 py-2 rounded-lg ${bgClass} break-words">
                                 <p>${msg.messageText}</p>
+                                ${isFlagged ? `
+                                <div class="ai-flag-badge mt-1 flex items-center gap-1 text-[11px] ${isOwn ? 'text-red-200' : 'text-red-600'} font-medium">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#ef4444" style="flex-shrink:0;"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
+                                    <span>Flagged</span>
+                                </div>` : ''}
                                 <p class="text-xs ${isOwn ? 'text-blue-100' : 'text-gray-500'} mt-1">
                                     ${new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </p>
@@ -2507,6 +2517,11 @@
                     </div>
                 `;
             }).join('');
+
+            // Re-apply red flags on any already-flagged messages
+            if (window._flaggedMessageIds) {
+                window._flaggedMessageIds.forEach(id => applyFlagToBubble(id));
+            }
 
             // Scroll to bottom
             const chatMessages = document.getElementById('chatMessages');
@@ -2556,11 +2571,51 @@
             }
         }
 
-        // Show AI moderation warning to the sender
-        function showModerationWarning(data) {
-            console.log('[MODERATION] Showing warning to sender:', data);
+        // Add a red flag badge to a specific message bubble by message ID
+        function applyFlagToBubble(msgId) {
+            if (!msgId) return;
+            if (!window._flaggedMessageIds) window._flaggedMessageIds = new Set();
+            window._flaggedMessageIds.add(msgId);
 
-            // 1) Toast notification (top-right corner)
+            const bubble = document.querySelector(`[data-msg-id="${msgId}"]`);
+            if (bubble && !bubble.querySelector('.ai-flag-badge')) {
+                const innerBox = bubble.querySelector('.rounded-lg') || bubble.querySelector('.max-w-xs');
+                if (innerBox) {
+                    const badge = document.createElement('div');
+                    badge.className = 'ai-flag-badge mt-1 flex items-center gap-1 text-[11px] text-red-400 font-medium';
+                    badge.title = 'Flagged by AI moderation';
+                    badge.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="#ef4444" style="flex-shrink:0;"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg> <span style="color:#ef4444;">Flagged</span>`;
+                    innerBox.appendChild(badge);
+                }
+            }
+        }
+
+        // Show AI moderation warning to the sender (single non-spammy toast + red flag on bubble)
+        function showModerationWarning(data) {
+            // Guard: only show once per message ID
+            if (!window._flaggedMessageIds) window._flaggedMessageIds = new Set();
+            if (data && data.messageId) {
+                if (window._flaggedMessageIds.has(data.messageId)) {
+                    applyFlagToBubble(data.messageId);
+                    return;
+                }
+                window._flaggedMessageIds.add(data.messageId);
+                applyFlagToBubble(data.messageId);
+            }
+
+            console.log('[MODERATION] Showing warning for message:', data ? data.messageId : 'unknown');
+
+            // If a moderation toast is already active on screen, don't create multiple popups
+            const existingToast = document.getElementById('aiModerationToast');
+            if (existingToast) {
+                if (window._modToastTimer) clearTimeout(window._modToastTimer);
+                window._modToastTimer = setTimeout(() => {
+                    if (existingToast.parentElement) existingToast.remove();
+                }, 4000);
+                return;
+            }
+
+            // One clean toast (top-right corner)
             const container = document.getElementById('notificationContainer') || (() => {
                 const el = document.createElement('div');
                 el.id = 'notificationContainer';
@@ -2570,27 +2625,19 @@
             })();
 
             const toast = document.createElement('div');
+            toast.id = 'aiModerationToast';
+            toast.style.cssText = 'background:#dc2626;color:white;padding:12px 16px;border-radius:12px;box-shadow:0 4px 20px rgba(220,38,38,0.4);display:flex;align-items:center;gap:10px;max-width:320px;z-index:9999;transition:all 0.3s ease;margin-bottom:8px;';
             toast.innerHTML = `
-                <div style="background:#dc2626;color:white;padding:14px 18px;border-radius:12px;box-shadow:0 4px 20px rgba(220,38,38,0.4);display:flex;align-items:flex-start;gap:12px;max-width:340px;animation:slideIn 0.3s ease-out;margin-bottom:8px;">
-                    <i class="fas fa-shield-alt" style="font-size:18px;margin-top:2px;flex-shrink:0;"></i>
-                    <div>
-                        <p style="font-weight:700;font-size:14px;margin:0 0 4px;">⚠️ AI Safety Warning</p>
-                        <p style="font-size:12px;opacity:0.92;margin:0;">Please keep chat respectful. Your message was flagged for potentially violating community guidelines.</p>
-                    </div>
-                    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;font-size:16px;padding:0;margin-left:4px;">✕</button>
-                </div>`;
-            container.appendChild(toast.firstElementChild);
-            setTimeout(() => { if (container.firstElementChild) container.firstElementChild.remove(); }, 6000);
+                <span style="font-size:16px;line-height:1;flex-shrink:0;">⚠️</span>
+                <span style="font-size:12px;line-height:1.4;"><strong>AI Safety Warning:</strong> Your message was flagged for potentially violating guidelines.</span>
+                <button type="button" onclick="document.getElementById('aiModerationToast')?.remove()" style="background:none;border:none;color:white;cursor:pointer;font-size:14px;margin-left:auto;padding:2px 6px;opacity:0.8;">✕</button>
+            `;
+            container.appendChild(toast);
 
-            // 2) In-chat banner inside open chat window
-            const chatBox = document.getElementById('chatMessages');
-            if (chatBox) {
-                const banner = document.createElement('div');
-                banner.style.cssText = 'margin:8px 0;padding:10px 14px;background:rgba(220,38,38,0.08);border:1.5px solid rgba(220,38,38,0.35);border-radius:10px;color:#dc2626;font-size:12px;display:flex;align-items:center;gap:8px;';
-                banner.innerHTML = `<i class="fas fa-exclamation-triangle" style="font-size:14px;flex-shrink:0;"></i><span><strong>AI Safety Warning:</strong> Your message was flagged for potentially violating community guidelines.</span>`;
-                chatBox.appendChild(banner);
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
+            if (window._modToastTimer) clearTimeout(window._modToastTimer);
+            window._modToastTimer = setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 4000);
         }
 
         // Shared spinner helper for action buttons

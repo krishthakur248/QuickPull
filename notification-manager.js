@@ -35,6 +35,14 @@ class NotificationManager {
             this.handleModerationWarning(data);
         });
 
+        // Listen for message flagged event
+        this.socket.on('message-flagged', (data) => {
+            console.log('[MODERATION] message-flagged received:', data);
+            if (data && data.messageId && typeof window.applyFlagToBubble === 'function') {
+                window.applyFlagToBubble(data.messageId);
+            }
+        });
+
         // Listen for new messages
         this.socket.on('new-message', (data) => {
             console.log('New message received:', data);
@@ -93,12 +101,32 @@ class NotificationManager {
             this.handleModerationWarning(notification);
             return;
         }
+        if (notification.type === 'new-message') {
+            this.handleNewMessage(notification);
+            return;
+        }
         this.showNotification(notification);
         this.addToHistory(notification);
     }
 
     // Handle moderation warning (AI safety check)
     static handleModerationWarning(data) {
+        // If the page already has its own dedicated showModerationWarning, delegate to it to prevent duplicate popups
+        if (typeof window.showModerationWarning === 'function') {
+            window.showModerationWarning(data);
+            return;
+        }
+
+        // Apply flag badge to bubble if function exists
+        if (typeof window.applyFlagToBubble === 'function' && data && data.messageId) {
+            window.applyFlagToBubble(data.messageId);
+        }
+
+        // Check if a warning toast is already showing
+        if (document.getElementById('aiModerationToast')) {
+            return;
+        }
+
         const warningMsg = data.warning || data.message || 'Please keep the chat respectful and considerate.';
         const notification = {
             type: 'moderation-warning',
@@ -108,29 +136,24 @@ class NotificationManager {
         };
         this.showNotification(notification);
         this.addToHistory(notification);
-
-        // Also inject in-chat alert banner into the active chat window
-        const chatBoxes = ['chatMessages', 'messagesContainer'];
-        chatBoxes.forEach(boxId => {
-            const box = document.getElementById(boxId);
-            if (box) {
-                const banner = document.createElement('div');
-                banner.className = 'my-2 p-3 bg-red-500/10 border-2 border-red-500/40 rounded-xl text-red-600 dark:text-red-400 text-xs flex items-center gap-2 shadow-sm animate-bounce';
-                banner.innerHTML = `<i class="fas fa-exclamation-triangle text-red-500 text-base"></i> <span><strong>AI Safety Warning:</strong> Your message was flagged for potentially violating community guidelines.</span>`;
-                box.appendChild(banner);
-                box.scrollTop = box.scrollHeight;
-            }
-        });
     }
 
     // Handle new message notification
     static handleNewMessage(data) {
+        // Suppress popup if the conversation is currently active on screen
+        const isChatOpen = (window.currentMessagingTrip && window.currentMessagingTrip === data.tripId) ||
+                           (window.currentChatTripId && window.currentChatTripId === data.tripId);
+        if (isChatOpen) {
+            return;
+        }
+
+        const senderName = data.senderName || `${data.sender?.firstName || ''} ${data.sender?.lastName || ''}`.trim() || 'User';
         const notification = {
             type: 'new-message',
             tripId: data.tripId,
-            senderId: data.sender?.id,
-            senderName: `${data.sender?.firstName} ${data.sender?.lastName}`,
-            message: `New message from ${data.sender?.firstName}`,
+            senderId: data.sender?.id || data.senderId,
+            senderName: senderName,
+            message: `New message from ${senderName}`,
             timestamp: new Date()
         };
         this.showNotification(notification);

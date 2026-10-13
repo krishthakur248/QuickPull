@@ -39,6 +39,10 @@ const messageSchema = new mongoose.Schema(
       default: false,
     },
     readAt: Date,
+    isFlagged: {
+      type: Boolean,
+      default: false,
+    },
 
     // Timestamps
     createdAt: {

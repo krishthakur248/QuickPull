@@ -21,6 +21,7 @@
 
 const axios = require('axios');
 const ModerationFlag = require('../models/ModerationFlag');
+const Message = require('../models/Message');
 
 // Read all settings from environment variables.
 // We read them once here so every call sees the same values.
@@ -113,35 +114,41 @@ async function moderateMessage({ message, rawSenderId, io }) {
       reasons:   result.reasons,
       status:    'pending_review',
     });
-    console.log(`[MODERATION] Flag saved for message ${message._id}`);
+    // Mark message in database as flagged
+    await Message.findByIdAndUpdate(message._id, { isFlagged: true });
+    console.log(`[MODERATION] Flag saved and message marked flagged for ${message._id}`);
   } catch (dbErr) {
     // Never let a DB error affect the user experience
     console.error(`[MODERATION] Failed to save flag: ${dbErr.message}`);
   }
 
-  // ── Optional: emit a gentle warning to the sender via Socket.io ──────────
-  if (WARN_SENDER && io) {
-    const warningPayload = {
-      type: 'moderation-warning',
-      tripId: message.tripId ? message.tripId.toString() : null,
-      messageId: message._id.toString(),
-      message: '⚠️ Warning: Please keep chat respectful. Your message was flagged by AI.',
-      warning: 'Please keep the chat respectful and considerate for a better ride experience.',
-      score: result.score,
-      reasons: result.reasons,
-      timestamp: new Date()
-    };
+  // ── Emit warning to sender + notify chat participants of the flag ───────
+  if (io) {
+    const msgIdStr = message._id.toString();
+    const tripIdStr = message.tripId ? message.tripId.toString() : null;
 
-    console.log(`[MODERATION] Emitting warning to user_${senderIdStr}`);
-
-    // Emit to personal user room (using the raw string ID)
-    io.to(`user_${senderIdStr}`).emit('moderation-warning', warningPayload);
-    // Emit to trip room if available
-    if (message.tripId) {
-      io.to(`trip_${message.tripId}_user_${senderIdStr}`).emit('moderation-warning', warningPayload);
+    if (WARN_SENDER) {
+      const warningPayload = {
+        type: 'moderation-warning',
+        tripId: tripIdStr,
+        messageId: msgIdStr,
+        score: result.score,
+        reasons: result.reasons,
+      };
+      console.log(`[MODERATION] Emitting warning to user_${senderIdStr}`);
+      io.to(`user_${senderIdStr}`).emit('moderation-warning', warningPayload);
     }
-    // Also emit standard notification so existing toast listeners catch it
-    io.to(`user_${senderIdStr}`).emit('notification', warningPayload);
+
+    // Broadcast flag event so both sides can display the small red flag badge on the bubble
+    const flagPayload = {
+      messageId: msgIdStr,
+      tripId: tripIdStr,
+    };
+    io.to(`user_${senderIdStr}`).emit('message-flagged', flagPayload);
+    const recipientIdStr = message.recipientId ? (message.recipientId._id || message.recipientId).toString() : null;
+    if (recipientIdStr && recipientIdStr !== senderIdStr) {
+      io.to(`user_${recipientIdStr}`).emit('message-flagged', flagPayload);
+    }
   }
 }
 
