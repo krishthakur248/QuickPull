@@ -17,5 +17,8 @@ fastapi==0.115.12
 uvicorn[standard]==0.34.3
 pydantic==2.11.4
 
+# --- Smart Replies (sentence-transformers / all-MiniLM-L6-v2) ---
+sentence-transformers>=2.7.0   # kept unpinned – compatible with torch 2.6 + transformers 4.51
+
 # --- Utilities ---
 python-multipart==0.0.20   # needed by FastAPI for form data (good to have)

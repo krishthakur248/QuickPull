@@ -1,0 +1,89 @@
+id,text,role
+1,I'm on my way,any
+2,I'll be there in 5 minutes,any
+3,I'll be there in 10 minutes,any
+4,Running a bit late, sorry,any
+5,I've arrived at the pickup point,driver
+6,Please come to the main gate,driver
+7,I'm waiting near the entrance,driver
+8,I can see you now,any
+9,On my way to pick you up,driver
+10,Traffic is a bit slow,any
+11,Just a few more minutes,any
+12,I'm stuck in traffic,any
+13,Almost there,any
+14,Where exactly are you?,any
+15,Can you share your location?,any
+16,I'm at the wrong gate, coming now,any
+17,Please wait, I'm parking,driver
+18,I'll call you when I arrive,any
+19,OK, got it,any
+20,Sure, no problem,any
+21,Thanks for waiting,any
+22,Sorry for the delay,any
+23,No worries, take your time,rider
+24,I'll wait for you,rider
+25,Take your time, I'm not in a rush,rider
+26,I'm on the way now,any
+27,Be there shortly,any
+28,I'm at the pickup spot,any
+29,Waiting for you,any
+30,Can you come a little faster please?,rider
+31,Which entrance are you at?,any
+32,I'm near the main building,any
+33,See you in a minute,any
+34,Great, thank you!,any
+35,Appreciate it!,any
+36,You're welcome,any
+37,Have a safe trip,any
+38,Enjoy your ride,driver
+39,Let me know when you're close,any
+40,I'm heading to you now,any
+41,Almost at the pickup,driver
+42,I can see your car,rider
+43,I'm outside,any
+44,Coming down now,rider
+45,Give me 2 minutes,any
+46,Be right there,any
+47,Running 5 minutes late,any
+48,Sorry, slight delay,any
+49,On the highway now,driver
+50,Exiting the highway,driver
+51,Taking the next turn,driver
+52,Follow the map route,driver
+53,Turn left at the signal,driver
+54,I'll meet you at the corner,any
+55,Which floor are you on?,driver
+56,I'm downstairs,rider
+57,At the front door,any
+58,Arrived safe and sound,any
+59,Good to go?,any
+60,Ready when you are,any
+61,All set,any
+62,See you soon,any
+63,Drive safe!,rider
+64,Thank you for the ride,rider
+65,It was a pleasure,driver
+66,Have a great day,any
+67,Glad I could help,driver
+68,Hope you have a nice trip,driver
+69,Let me know if you need anything,driver
+70,Just dropped off,driver
+71,Thanks, had a great ride,rider
+72,The route looks good,any
+73,ETA is accurate,driver
+74,Should reach on time,any
+75,Slight traffic ahead,driver
+76,Clear roads now,driver
+77,Taking alternate route,driver
+78,Back on track,any
+79,Is the destination correct?,driver
+80,Yes, that's my stop,rider
+81,Can we make a quick stop?,rider
+82,No stops please, running late,driver
+83,Of course, no problem,any
+84,I understand,any
+85,Got your message,any
+86,Noted,any
+87,Will do,any
+88,Acknowledge,any

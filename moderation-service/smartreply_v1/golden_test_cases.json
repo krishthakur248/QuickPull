@@ -1,0 +1,58 @@
+[
+  {
+    "message": "where are you?",
+    "recipient_role": "driver",
+    "flagged": false,
+    "expect_non_empty": true,
+    "note": "Location question - should match 'I'm on my way', 'I'll be there shortly', etc."
+  },
+  {
+    "message": "I am almost there",
+    "recipient_role": "rider",
+    "flagged": false,
+    "expect_non_empty": true,
+    "note": "Driver update - rider should get 'No worries, take your time', 'I'll wait for you'"
+  },
+  {
+    "message": "stuck in traffic",
+    "recipient_role": "rider",
+    "flagged": false,
+    "expect_non_empty": true,
+    "note": "Traffic message - should match 'No worries', 'Take your time'"
+  },
+  {
+    "message": "",
+    "recipient_role": "driver",
+    "flagged": false,
+    "expect_non_empty": false,
+    "note": "Empty message - should always return empty list"
+  },
+  {
+    "message": "any message",
+    "recipient_role": "driver",
+    "flagged": true,
+    "expect_non_empty": false,
+    "note": "Flagged message - caller discards suggestions, not SmartReplier's concern"
+  },
+  {
+    "message": "arrived at pickup",
+    "recipient_role": "rider",
+    "flagged": false,
+    "expect_non_empty": true,
+    "note": "Driver arrived - rider should get 'Coming down now', 'Be right there'"
+  },
+  {
+    "message": "please hurry up",
+    "recipient_role": "driver",
+    "flagged": false,
+    "expect_non_empty": true,
+    "note": "Urgency - driver reply options"
+  },
+  {
+    "message": "thank you for the ride",
+    "recipient_role": "driver",
+    "flagged": false,
+    "expect_non_empty": true,
+    "note": "Positive feedback - driver reply 'Glad I could help', 'Have a great day'"
+  }
+]

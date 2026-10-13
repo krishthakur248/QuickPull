@@ -156,6 +156,82 @@ The API is grouped under `/api`:
 
 The Socket.IO server supports trip and user rooms, location updates, and messaging for connected clients.
 
+---
+
+## 🤖 Demo mode — AI moderation + smart replies
+
+Both ML features run on a local Python FastAPI service. The Node.js backend and MongoDB stay on Render; the ML service only needs to be running during a demo.
+
+### Steps
+
+1. **Install Python dependencies** (one-time setup):
+
+   ```bat
+   cd QuickPull
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -r moderation-service\requirements.txt
+   ```
+
+2. **Download the all-MiniLM-L6-v2 model** into `moderation-service/smartreply_v1/model/`:
+
+   ```python
+   # run once
+   from sentence_transformers import SentenceTransformer
+   SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2').save('moderation-service/smartreply_v1/model')
+   ```
+
+3. **Configure secrets** — copy `moderation-service/.env.example` to `moderation-service/.env` and fill in `MODERATION_API_KEY` (any long random string) and optionally `NGROK_DOMAIN`.
+
+4. **Double-click `run_demo_moderation.bat`** at the repo root. It will:
+   - Check that Python and ngrok are available.
+   - Activate the virtual environment if one exists.
+   - Start the FastAPI server (`uvicorn … --workers 1`) in a new window.
+   - Wait until `http://localhost:8000/health` responds (up to 90 s).
+   - Open an ngrok tunnel in a second window.
+   - Print the exact `MODERATION_URL` value to paste into Render.
+
+5. **Set these env vars on Render** (Environment tab):
+
+   | Variable | Value |
+   |:---|:---|
+   | `MODERATION_ENABLED` | `true` |
+   | `MODERATION_URL` | `https://<your-subdomain>.ngrok-free.app` |
+   | `MODERATION_API_KEY` | same secret as in `moderation-service/.env` |
+   | `MODERATION_TIMEOUT_MS` | `2000` |
+
+6. **Stop everything** — close the two windows (`QuickPull ML Service` and `ngrok Tunnel`). Chat will keep working normally (fail-open).
+
+### Environment variables reference
+
+**Render (Node.js backend):**
+
+| Variable | Default | Purpose |
+|:---|:---|:---|
+| `MODERATION_ENABLED` | `true` | Set `false` to skip all ML calls |
+| `MODERATION_URL` | _(required)_ | ngrok tunnel base URL, no trailing slash |
+| `MODERATION_API_KEY` | _(required)_ | Shared secret with the Python service |
+| `MODERATION_TIMEOUT_MS` | `2000` | Per-call HTTP timeout in ms |
+| `MODERATION_WARN_SENDER` | `true` | Show warning toast to sender when flagged |
+
+**Local `moderation-service/.env`:**
+
+| Variable | Purpose |
+|:---|:---|
+| `MODERATION_API_KEY` | Same secret set on Render |
+| `NGROK_DOMAIN` | Static ngrok domain (optional) |
+| `NGROK_PATH` | Path to `ngrok.exe` if not on PATH |
+| `ML_TORCH_THREADS` | Torch thread count (default: half CPU cores) |
+| `SR_DISABLE` | Set `1` to skip smart-reply model load (testing) |
+
+### Troubleshooting
+
+- **Tunnel URL changed** — ngrok free tier generates a new URL on each restart unless you set `NGROK_DOMAIN`. Update `MODERATION_URL` on Render after every restart.
+- **API key mismatch** — if `/moderate` returns 403, ensure `MODERATION_API_KEY` in `moderation-service/.env` exactly matches the `MODERATION_API_KEY` on Render (no trailing spaces).
+- **Firewall blocking port 8000** — allow inbound on 8000 in Windows Defender Firewall, or run the service on a different port and update the bat script.
+
+---
+
 ## 📄 License
 
 The backend package declares the **MIT** license. See [`car-pulling-backend/package.json`](car-pulling-backend/package.json).

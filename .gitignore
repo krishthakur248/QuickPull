@@ -8,6 +8,9 @@ Model/DistilBERT/model/*.bin
 Model/DistilBERT/train.csv
 Model/DistilBERT/__pycache__/
 moderation-service/model_files/
+# SmartReply model (download with sentence-transformers or copy manually)
+moderation-service/smartreply_v1/model/
+moderation-service/smartreply_v1/bank_embeddings.npy
 *.safetensors
 
 # Environment secrets

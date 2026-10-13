@@ -43,9 +43,22 @@ class NotificationManager {
             }
         });
 
+        // Listen for smart reply suggestions (delivered only to the recipient)
+        this.socket.on('smartReplies', (data) => {
+            if (data && data.messageId && Array.isArray(data.suggestions)) {
+                if (typeof window.showSmartReplyChips === 'function') {
+                    window.showSmartReplyChips(data.messageId, data.suggestions);
+                }
+            }
+        });
+
         // Listen for new messages
         this.socket.on('new-message', (data) => {
             console.log('New message received:', data);
+            // Clear any pending smart-reply chips when a newer message arrives
+            if (typeof window.clearSmartReplyChips === 'function') {
+                window.clearSmartReplyChips();
+            }
             this.handleNewMessage(data);
         });
 

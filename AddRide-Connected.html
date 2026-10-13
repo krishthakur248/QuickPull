@@ -866,6 +866,9 @@
                 </div>
             </div>
 
+            <!-- Smart Reply Chips (shown above input when suggestions arrive) -->
+            <div id="smartReplyChips" class="hidden border-t border-blue-50 bg-blue-50/60 px-4 pt-2 pb-1 flex gap-2 flex-wrap"></div>
+
             <!-- Message Input -->
             <div class="border-t border-gray-200 bg-white p-4 flex gap-2">
                 <input type="text" id="chatMessageInput" placeholder="Type your message..."
@@ -2459,6 +2462,7 @@
             currentChatRiderName = null;
             document.getElementById('chatMessages').innerHTML = '';
             document.getElementById('chatMessageInput').value = '';
+            clearSmartReplyChips();
         }
 
         // Load messages from API
@@ -2542,6 +2546,9 @@
                 return;
             }
 
+            // Clear smart reply chips when user sends anything
+            clearSmartReplyChips();
+
             try {
                 const response = await MessageService.sendMessage(
                     currentChatTripId,
@@ -2563,6 +2570,49 @@
                 showNotification('Error sending message', 'error');
             }
         }
+
+        // ── Smart Reply Chip helpers ──────────────────────────────────────────
+
+        // Currently displayed message ID (used to ignore stale events)
+        let _srCurrentMsgId = null;
+
+        function showSmartReplyChips(messageId, suggestions) {
+            _srCurrentMsgId = messageId;
+            const container = document.getElementById('smartReplyChips');
+            if (!container) return;
+            if (!Array.isArray(suggestions) || suggestions.length === 0) {
+                clearSmartReplyChips();
+                return;
+            }
+            container.innerHTML = suggestions.map(s =>
+                `<button type="button"
+                    onclick="tapSmartChip(${JSON.stringify(s.text).replace(/</g,'\\u003c')})"
+                    style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:9999px;padding:4px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:background 0.15s;"
+                    onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">${s.text}</button>`
+            ).join('');
+            container.classList.remove('hidden');
+        }
+
+        function clearSmartReplyChips() {
+            _srCurrentMsgId = null;
+            const container = document.getElementById('smartReplyChips');
+            if (container) {
+                container.innerHTML = '';
+                container.classList.add('hidden');
+            }
+        }
+
+        function tapSmartChip(text) {
+            // Fill the input with the chip text and send it through the normal flow
+            const input = document.getElementById('chatMessageInput');
+            if (input) input.value = text;
+            clearSmartReplyChips();
+            sendChatMessage();
+        }
+
+        // Make functions global so notification-manager socket handler can call them
+        window.showSmartReplyChips = showSmartReplyChips;
+        window.clearSmartReplyChips = clearSmartReplyChips;
 
         function handleChatKeyPress(event) {
             if (event.key === 'Enter') {

@@ -1,0 +1,7 @@
+# Requirements for the smartreply_v1 sub-package
+# These are ADDITIVE to moderation-service/requirements.txt
+# sentence-transformers and numpy are already in the parent requirements file;
+# they are listed here only for standalone use of this package.
+
+sentence-transformers>=2.7.0
+numpy>=1.24.0

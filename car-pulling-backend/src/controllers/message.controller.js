@@ -3,6 +3,8 @@ const Trip = require('../models/Trip');
 const User = require('../models/User');
 // Async moderation helper – called AFTER the message is delivered
 const { moderateMessage } = require('../utils/moderation');
+// Async smart-replies helper – called in parallel with moderation
+const { runSmartReplies }  = require('../utils/smartReplies');
 
 // Send a message
 exports.sendMessage = async (req, res) => {
@@ -49,6 +51,10 @@ exports.sendMessage = async (req, res) => {
             });
         }
 
+        // Determine the RECIPIENT's role (used by the smart-reply model)
+        // recipientRole = who receives this message and would type a reply
+        const recipientRole = recipientIsDriver ? 'driver' : 'rider';
+
         // Create message
         const message = new Message({
             tripId,
@@ -61,8 +67,9 @@ exports.sendMessage = async (req, res) => {
 
         await message.save();
 
-        // Capture the raw senderId string BEFORE populate overwrites it with the User object
-        const rawSenderId = message.senderId.toString();
+        // Capture the raw senderId / recipientId strings BEFORE populate overwrites them
+        const rawSenderId    = message.senderId.toString();
+        const rawRecipientId = message.recipientId.toString();
 
         // Populate sender info
         await message.populate('senderId', 'firstName lastName profileImage');
@@ -95,13 +102,36 @@ exports.sendMessage = async (req, res) => {
             data: message
         });
 
-        // ── Async moderation (fire-and-forget) ────────────────────────────────
-        // We do NOT await this – it must never delay the HTTP response.
-        // If the moderation service is down, moderateMessage() fails open
-        // (just logs a warning) and chat continues normally.
-        moderateMessage({ message, rawSenderId, io }).catch(err => {
-            console.error('[MODERATION] Unexpected error in moderateMessage:', err.message);
+        // ── Background ML task (fire-and-forget) ──────────────────────────────
+        // Both moderation and smart replies run IN PARALLEL via Promise.allSettled.
+        // The HTTP response above is ALREADY sent. Neither call can delay the ack.
+        // runSmartReplies returns suggestions; the controller decides whether to
+        // emit them (discards if flagged by moderation).
+        const msgText = message.messageText;
+        const msgId   = message._id.toString();
+
+        Promise.allSettled([
+            moderateMessage({ message, rawSenderId, io }),
+            runSmartReplies(msgText, recipientRole),
+        ]).then(([modResult, srResult]) => {
+            // Only emit smart-reply suggestions when moderation did NOT flag it
+            const wasFlagged = modResult.status === 'fulfilled' &&
+                               modResult.value &&
+                               modResult.value.flagged;
+
+            if (!wasFlagged && io) {
+                const suggestions = srResult.status === 'fulfilled' ? srResult.value : [];
+                if (Array.isArray(suggestions) && suggestions.length > 0) {
+                    io.to(`user_${rawRecipientId}`).emit('smartReplies', {
+                        messageId:   msgId,
+                        suggestions: suggestions,
+                    });
+                }
+            }
+        }).catch(err => {
+            console.error('[ML-BG] Unexpected error in background ML task:', err.message);
         });
+
     } catch (error) {
         console.error('Send message error:', error);
         res.status(500).json({
@@ -111,6 +141,7 @@ exports.sendMessage = async (req, res) => {
         });
     }
 };
+
 
 // Get all messages for a trip
 exports.getMessages = async (req, res) => {

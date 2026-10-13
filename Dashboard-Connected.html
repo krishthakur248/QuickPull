@@ -577,6 +577,8 @@
             <div id="messagesContainer" class="bg-[#151f2a] rounded-lg p-3 h-64 overflow-y-auto mb-3 space-y-2 border border-[#233648]">
                 <!-- Messages populated here -->
             </div>
+            <!-- Smart Reply Chips -->
+            <div id="smartReplyChipsDash" class="hidden mb-2 flex gap-2 flex-wrap"></div>
             <div class="flex gap-2">
                 <input type="text" id="messageInput" placeholder="Type message..." class="flex-1 bg-[#151f2a] text-white placeholder-[#5a6b7c] px-3 py-2 rounded-lg border border-[#233648] focus:border-primary focus:outline-none" onkeypress="if(event.key==='Enter')sendMessage()">
                 <button onclick="sendMessage()" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold transition-colors">
@@ -1539,6 +1541,7 @@
             document.getElementById('messageInput').value = '';
             window.currentMessagingTrip = null;
             window.currentMessagingDriver = null;
+            clearSmartReplyChipsDash();
         }
 
         async function loadMessageHistory(tripId) {
@@ -1608,6 +1611,9 @@
                 return;
             }
 
+            // Clear smart reply chips when user sends anything
+            clearSmartReplyChipsDash();
+
             try {
                 // Use MessageService to send (uses config base URL)
                 const response = await MessageService.sendMessage(
@@ -1624,6 +1630,42 @@
                 showNotification('Error sending message', 'error');
             }
         }
+
+        // ── Smart Reply Chip helpers (Dashboard / rider side) ─────────────────
+        function showSmartReplyChipsDash(messageId, suggestions) {
+            const container = document.getElementById('smartReplyChipsDash');
+            if (!container) return;
+            if (!Array.isArray(suggestions) || suggestions.length === 0) {
+                clearSmartReplyChipsDash();
+                return;
+            }
+            container.innerHTML = suggestions.map(s =>
+                `<button type="button"
+                    onclick="tapSmartChipDash(${JSON.stringify(s.text).replace(/</g,'\\u003c')})"
+                    style="background:#1e293b;color:#93c5fd;border:1px solid #334155;border-radius:9999px;padding:4px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:background 0.15s;"
+                    onmouseover="this.style.background='#1e3a5f'" onmouseout="this.style.background='#1e293b'">${s.text}</button>`
+            ).join('');
+            container.classList.remove('hidden');
+        }
+
+        function clearSmartReplyChipsDash() {
+            const container = document.getElementById('smartReplyChipsDash');
+            if (container) {
+                container.innerHTML = '';
+                container.classList.add('hidden');
+            }
+        }
+
+        function tapSmartChipDash(text) {
+            const input = document.getElementById('messageInput');
+            if (input) input.value = text;
+            clearSmartReplyChipsDash();
+            sendMessage();
+        }
+
+        // Expose as window globals so notification-manager.js can call them
+        window.showSmartReplyChips  = showSmartReplyChipsDash;
+        window.clearSmartReplyChips = clearSmartReplyChipsDash;
 
         // Add a red flag badge to a specific message bubble by message ID
         function applyFlagToBubble(msgId) {
