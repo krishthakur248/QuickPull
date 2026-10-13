@@ -1,0 +1,64 @@
+{
+  "final_test": {
+    "MiniLM": {
+      "top1": 0.48,
+      "top3": 0.66,
+      "none_ok": 0.7
+    },
+    "TF-IDF": {
+      "top1": 0.42,
+      "top3": 0.48,
+      "none_ok": 0.4
+    }
+  },
+  "by_style": {
+    "MiniLM": {
+      "clean": {
+        "n": 18,
+        "top1": 0.778,
+        "top3": 0.889
+      },
+      "hinglish": {
+        "n": 10,
+        "top1": 0.1,
+        "top3": 0.2
+      },
+      "informal": {
+        "n": 22,
+        "top1": 0.409,
+        "top3": 0.682
+      }
+    },
+    "TF-IDF": {
+      "clean": {
+        "n": 18,
+        "top1": 0.556,
+        "top3": 0.667
+      },
+      "hinglish": {
+        "n": 10,
+        "top1": 0.3,
+        "top3": 0.3
+      },
+      "informal": {
+        "n": 22,
+        "top1": 0.364,
+        "top3": 0.409
+      }
+    }
+  },
+  "speed_ms_minilm_step10": {
+    "runs": 200,
+    "average": 68.0,
+    "median": 21.2,
+    "p95": 294.7
+  },
+  "model_size_mb": 87.3,
+  "mpnet_step9": {
+    "top1": 0.46,
+    "top3": 0.62,
+    "none_ok": 0.9,
+    "avg_ms": 105.7,
+    "p95_ms": 137.1
+  }
+}

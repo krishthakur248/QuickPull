@@ -1,0 +1,89 @@
+id,role,intent,text
+D01,driver,greeting,Hello!
+D02,driver,greeting,Hi there!
+D03,driver,on_my_way,I'm on my way.
+D04,driver,on_my_way,On my way to you.
+D05,driver,on_my_way,Heading to your pickup now.
+D06,driver,few_minutes_away,I'm a few minutes away.
+D07,driver,few_minutes_away,"Almost there, just a little more."
+D08,driver,arrived_pickup,I have arrived at the pickup.
+D09,driver,arrived_pickup,I'm here at the pickup point.
+D10,driver,arrived_pickup,Reached your pickup location.
+D11,driver,waiting_at_pickup,I'm waiting at the pickup point.
+D12,driver,waiting_at_pickup,Waiting for you here.
+D13,driver,stuck_in_traffic,"Stuck in traffic, sorry."
+D14,driver,stuck_in_traffic,"Heavy traffic, I'll be there soon."
+D15,driver,ask_location,Where exactly are you?
+D16,driver,ask_location,Can you share your exact location?
+D17,driver,ask_location,Please send your exact location.
+D18,driver,ask_landmark,Any landmark near you?
+D19,driver,ask_landmark,Can you tell me a nearby landmark?
+D20,driver,check_vehicle_number,Please check the vehicle number in the app.
+D21,driver,check_vehicle_number,Match the vehicle number in the app.
+D22,driver,cant_find_you,I can't find you here.
+D23,driver,cant_find_you,I can't see you at the pickup.
+D24,driver,please_wait,Please wait a moment.
+D25,driver,please_wait,Please give me a moment.
+D26,driver,acknowledge,Ok.
+D27,driver,acknowledge,Sure.
+D28,driver,acknowledge,"Okay, noted."
+D29,driver,thanks,Thank you!
+D30,driver,thanks,Thanks a lot.
+D31,driver,thanks,"Thanks, appreciate it."
+D32,driver,sorry_delay,Sorry for the delay.
+D33,driver,sorry_delay,Sorry to keep you waiting.
+D34,driver,confirm_dropoff,Is the drop-off point as per the app?
+D35,driver,confirm_dropoff,Confirming the drop-off point on the map?
+D36,driver,confirm_dropoff,"Drop at the app location, right?"
+D37,driver,cash_payment,"Yes, cash is fine."
+D38,driver,cash_payment,Cash payment is fine.
+D39,driver,goodbye,"Goodbye, take care!"
+D40,driver,goodbye,Have a nice day!
+D41,driver,greeting,Good evening!
+D42,driver,acknowledge,"Sure, no problem."
+D43,driver,acknowledge,"Okay, see you soon."
+D44,driver,acknowledge,"No problem, take your time."
+D45,driver,waiting_at_pickup,"Sure, I'll wait there."
+R01,rider,greeting,Hello!
+R02,rider,greeting,Hi there!
+R03,rider,coming_now,Coming now.
+R04,rider,coming_now,"I'm coming, one moment."
+R05,rider,coming_now,Walking to you now.
+R06,rider,please_wait,Please wait a moment.
+R07,rider,please_wait,"Please wait, I'm coming."
+R08,rider,please_wait,Give me a moment please.
+R09,rider,at_pickup_point,I'm at the pickup point on the map.
+R10,rider,at_pickup_point,I'm at the pinned location.
+R11,rider,at_pickup_point,I'm standing at the pickup point.
+R12,rider,can_see_you,I can see you.
+R13,rider,can_see_you,"Yes, I see your vehicle."
+R14,rider,cant_see_you,I can't see you. Where are you?
+R15,rider,cant_see_you,Where are you exactly?
+R16,rider,cant_see_you,I can't see your vehicle here.
+R17,rider,acknowledge,Ok.
+R18,rider,acknowledge,Sure.
+R19,rider,acknowledge,"Okay, got it."
+R20,rider,thanks,Thank you!
+R21,rider,thanks,Thanks a lot.
+R22,rider,sorry_late,Sorry I'm late.
+R23,rider,sorry_late,"Sorry, I'll be there shortly."
+R24,rider,confirm_dropoff,"Yes, drop-off is as per the app."
+R25,rider,confirm_dropoff,"Yes, the app location is correct."
+R26,rider,confirm_dropoff,Please drop me at the app location.
+R27,rider,stop_next_corner,Can we stop at the next corner?
+R28,rider,stop_next_corner,Please stop at the next corner.
+R29,rider,cash_payment,I will pay in cash.
+R30,rider,cash_payment,I'll pay cash at drop-off.
+R31,rider,goodbye,"Goodbye, thank you!"
+R32,rider,goodbye,"Bye, have a nice day!"
+R33,rider,ask_how_far,How far are you?
+R34,rider,ask_how_far,How long will you take?
+R35,rider,come_to_pickup,Please come to the pickup point.
+R36,rider,come_to_pickup,Please come to the pinned location.
+R37,rider,ask_ac,Could you turn the AC on?
+R38,rider,ask_ac,Please turn on the AC.
+R39,rider,ask_slow_down,Please drive a bit slower.
+R40,rider,ask_slow_down,Could you slow down a little?
+R41,rider,greeting,Good evening!
+R42,rider,acknowledge,"Okay, see you soon."
+R43,rider,acknowledge,"Okay, thanks for letting me know."

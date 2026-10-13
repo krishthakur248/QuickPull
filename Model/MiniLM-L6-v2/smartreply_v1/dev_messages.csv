@@ -1,0 +1,41 @@
+id,sender_role,text,acceptable_intents,style,answerable
+DV01,rider,"hey driver, where r u now",on_my_way|few_minutes_away|stuck_in_traffic,informal,True
+DV02,rider,hii,greeting,informal,True
+DV03,rider,I'm standing near the main gate,acknowledge|on_my_way,clean,True
+DV04,rider,are you coming? its been so long,on_my_way|sorry_delay|few_minutes_away,informal,True
+DV05,rider,kitna time lagega bhaiya,few_minutes_away|on_my_way|stuck_in_traffic,hinglish,True
+DV06,rider,Can I pay by cash at the end of the trip?,cash_payment,clean,True
+DV07,rider,thx for the ride,thanks|goodbye,informal,True
+DV08,rider,i cant see ur car anywhere,arrived_pickup|ask_location|waiting_at_pickup,informal,True
+DV09,rider,Please drop me at the metro station gate,confirm_dropoff|acknowledge,clean,True
+DV10,rider,bhaiya main pickup point pe hu,acknowledge|on_my_way|few_minutes_away,hinglish,True
+DV11,rider,"sorry, need a moment, coming down",acknowledge|waiting_at_pickup,informal,True
+DV12,rider,which car number are u in,check_vehicle_number,informal,True
+DV13,rider,Good evening,greeting,clean,True
+DV14,rider,ok see you soon,acknowledge|thanks,informal,True
+DV15,rider,"Thank you so much, great driving",thanks|goodbye,clean,True
+DV16,rider,driver ji aap kahan ho,on_my_way|few_minutes_away|stuck_in_traffic,hinglish,True
+DV17,rider,app shows u r 5 min away is that right,few_minutes_away|on_my_way,informal,True
+DV18,rider,Can you wait outside the mall entrance?,acknowledge|waiting_at_pickup,clean,True
+DV19,rider,hmm,none,informal,False
+DV20,rider,what is the score of the match,none,clean,False
+DV21,driver,"Good morning ma'am, driver here",greeting,clean,True
+DV22,driver,"I've reached the spot, where are you?",at_pickup_point|coming_now|please_wait,clean,True
+DV23,driver,"im outside, pls come fast",coming_now|please_wait|sorry_late,informal,True
+DV24,driver,kaha ho aap,at_pickup_point|coming_now|cant_see_you,hinglish,True
+DV25,driver,Can you see a white sedan near the signal?,can_see_you|cant_see_you,clean,True
+DV26,driver,how many more mins sir,coming_now|please_wait|ask_how_far,informal,True
+DV27,driver,Would you like the AC on?,ask_ac|acknowledge,clean,True
+DV28,driver,is this the corect drop point,confirm_dropoff,informal,True
+DV29,driver,we r reaching in 5 min,acknowledge|thanks,informal,True
+DV30,driver,Payment will be cash or online?,cash_payment,clean,True
+DV31,driver,"Thank you for choosing us, stay safe",thanks|goodbye,clean,True
+DV32,driver,sir kaha rukna hai,stop_next_corner|confirm_dropoff,hinglish,True
+DV33,driver,"stuck in jam, will be late",acknowledge|ask_how_far|please_wait,informal,True
+DV34,driver,"Ride completed, take care",goodbye|thanks,clean,True
+DV35,driver,"pls dont be late, wait limit is almost over",sorry_late|coming_now,informal,True
+DV36,driver,aap pickup point pe ho?,at_pickup_point|coming_now,hinglish,True
+DV37,driver,Are you standing at the spot shown on the map?,at_pickup_point|coming_now,clean,True
+DV38,driver,"cant locate u, send ur location",at_pickup_point|cant_see_you|please_wait,informal,True
+DV39,driver,lol what,none,informal,False
+DV40,driver,the match was crazy yesterday,none,clean,False

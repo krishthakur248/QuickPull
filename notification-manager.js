@@ -26,6 +26,14 @@ class NotificationManager {
         // Listen for notifications
         this.socket.on('notification', (notification) => {
             console.log('Notification received:', notification);
+            if (notification && notification.type === 'new-message') {
+                if (typeof window.loadChatMessages === 'function') {
+                    window.loadChatMessages();
+                }
+                if (typeof window.loadMessageHistory === 'function' && window.currentMessagingTrip) {
+                    window.loadMessageHistory(window.currentMessagingTrip);
+                }
+            }
             this.handleNotification(notification);
         });
 
@@ -50,6 +58,13 @@ class NotificationManager {
                     window.showSmartReplyChips(data.messageId, data.suggestions);
                 }
             }
+            // Also refresh active chat so message and suggestions are guaranteed to be in sync
+            if (typeof window.loadChatMessages === 'function') {
+                window.loadChatMessages();
+            }
+            if (typeof window.loadMessageHistory === 'function' && window.currentMessagingTrip) {
+                window.loadMessageHistory(window.currentMessagingTrip);
+            }
         });
 
         // Listen for new messages
@@ -58,6 +73,13 @@ class NotificationManager {
             // Clear any pending smart-reply chips when a newer message arrives
             if (typeof window.clearSmartReplyChips === 'function') {
                 window.clearSmartReplyChips();
+            }
+            // Immediately refresh open chat
+            if (typeof window.loadChatMessages === 'function') {
+                window.loadChatMessages();
+            }
+            if (typeof window.loadMessageHistory === 'function' && window.currentMessagingTrip) {
+                window.loadMessageHistory(window.currentMessagingTrip);
             }
             this.handleNewMessage(data);
         });
@@ -154,9 +176,19 @@ class NotificationManager {
     // Handle new message notification
     static handleNewMessage(data) {
         // Suppress popup if the conversation is currently active on screen
-        const isChatOpen = (window.currentMessagingTrip && window.currentMessagingTrip === data.tripId) ||
-                           (window.currentChatTripId && window.currentChatTripId === data.tripId);
+        const chatModal = document.getElementById('chatModal') || document.getElementById('messageModal');
+        const isModalVisible = chatModal && !chatModal.classList.contains('hidden');
+        const activeTrip = window.currentMessagingTrip || window.currentChatTripId || window._chatTripId;
+        const isChatOpen = isModalVisible && (!data.tripId || !activeTrip || String(activeTrip) === String(data.tripId));
+
         if (isChatOpen) {
+            // Actively reload messages in real-time
+            if (typeof window.loadChatMessages === 'function') {
+                window.loadChatMessages();
+            }
+            if (typeof window.loadMessageHistory === 'function' && window.currentMessagingTrip) {
+                window.loadMessageHistory(window.currentMessagingTrip);
+            }
             return;
         }
 
@@ -318,12 +350,14 @@ class NotificationManager {
         }
     }
 
-    // Join trip room for trip-specific notifications
+    // Join trip room for real-time messages & updates
     static joinTripRoom(tripId) {
-        if (this.socket) {
+        if (this.socket && tripId) {
             this.socket.emit('join-trip-room', { tripId });
+            console.log('[NOTIFICATIONS] NotificationManager socket joined trip room:', tripId);
         }
     }
+
 
     // Leave user room
     static leaveUserRoom(userId) {

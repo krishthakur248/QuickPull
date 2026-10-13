@@ -1,0 +1,114 @@
+[
+  {
+    "message": "hii",
+    "recipient_role": "driver",
+    "expected_ids": [
+      "D02"
+    ],
+    "expected_scores": [
+      0.631
+    ]
+  },
+  {
+    "message": "Can I pay by cash at the end of the trip?",
+    "recipient_role": "driver",
+    "expected_ids": [
+      "D37"
+    ],
+    "expected_scores": [
+      0.564
+    ]
+  },
+  {
+    "message": "which car number are u in",
+    "recipient_role": "driver",
+    "expected_ids": [
+      "D21"
+    ],
+    "expected_scores": [
+      0.614
+    ]
+  },
+  {
+    "message": "Good evening",
+    "recipient_role": "driver",
+    "expected_ids": [
+      "D41",
+      "D40",
+      "D05"
+    ],
+    "expected_scores": [
+      0.897,
+      0.478,
+      0.385
+    ]
+  },
+  {
+    "message": "what is the score of the match",
+    "recipient_role": "driver",
+    "expected_ids": [],
+    "expected_scores": []
+  },
+  {
+    "message": "Good morning ma'am, driver here",
+    "recipient_role": "rider",
+    "expected_ids": [
+      "R41",
+      "R11",
+      "R16"
+    ],
+    "expected_scores": [
+      0.447,
+      0.369,
+      0.361
+    ]
+  },
+  {
+    "message": "is this the corect drop point",
+    "recipient_role": "rider",
+    "expected_ids": [
+      "R24",
+      "R09",
+      "R30"
+    ],
+    "expected_scores": [
+      0.414,
+      0.329,
+      0.315
+    ]
+  },
+  {
+    "message": "Payment will be cash or online?",
+    "recipient_role": "rider",
+    "expected_ids": [
+      "R29"
+    ],
+    "expected_scores": [
+      0.572
+    ]
+  },
+  {
+    "message": "Are you standing at the spot shown on the map?",
+    "recipient_role": "rider",
+    "expected_ids": [
+      "R09",
+      "R13",
+      "R14"
+    ],
+    "expected_scores": [
+      0.609,
+      0.419,
+      0.407
+    ]
+  },
+  {
+    "message": "I only have cash, is that ok?",
+    "recipient_role": "driver",
+    "expected_ids": [
+      "D37"
+    ],
+    "expected_scores": [
+      0.783
+    ]
+  }
+]

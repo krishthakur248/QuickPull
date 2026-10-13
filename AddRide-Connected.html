@@ -979,20 +979,29 @@
                 });
 
                 // Listen for new messages in real-time
-                socket.on('new-message', async (data) => {
-                    console.log('[DEBUG] Driver received new message:', data);
-                    // If the message is for the current open conversation, refresh messages
-                    if (currentChatTripId && data.tripId === currentChatTripId) {
-                        console.log('[DEBUG] Message is for current chat, refreshing...');
+                // HTTP-path: 'new-message' to user room — has tripId in payload
+                // Socket-path: 'receive-message' to trip_user room — NO tripId in payload
+                socket.on('receive-message', async (data) => {
+                    console.log('[DEBUG] Driver receive-message:', data);
+                    // receive-message payload has no tripId — refresh if ANY chat is open
+                    if (window._chatTripId &&
+                        (!data.tripId || String(data.tripId) === String(window._chatTripId))) {
                         await loadChatMessages();
                     }
                 });
 
-                // Also listen for notification events (backup)
+                socket.on('new-message', async (data) => {
+                    console.log('[DEBUG] Driver new-message:', data);
+                    if (window._chatTripId &&
+                        (!data.tripId || String(data.tripId) === String(window._chatTripId))) {
+                        await loadChatMessages();
+                    }
+                });
+
+                // Backup: notification event also carries new-message info
                 socket.on('notification', async (data) => {
-                    console.log('[DEBUG] Driver received notification:', data);
-                    if (data.type === 'new-message' && currentChatTripId && data.tripId === currentChatTripId) {
-                        console.log('[DEBUG] Notification is for current chat, refreshing...');
+                    if (data.type === 'new-message' && window._chatTripId &&
+                        (!data.tripId || String(data.tripId) === String(window._chatTripId))) {
                         await loadChatMessages();
                     }
                 });
@@ -2433,6 +2442,11 @@
             currentChatTripId = tripId;
             currentChatRiderId = riderId;
             currentChatRiderName = riderName;
+            // Mirror to window so socket listener and NotificationManager can read it
+            window._chatTripId = tripId;
+            window.currentChatTripId = tripId;
+            window.currentChatRiderId = riderId;
+            window.currentChatRiderName = riderName;
 
             document.getElementById('chatRiderName').textContent = riderName;
             document.getElementById('chatTripId').textContent = tripId;
@@ -2445,13 +2459,16 @@
             // Join trip room via socket to receive messages
             if (window.driverSocket) {
                 window.driverSocket.emit('join-trip-room', { tripId: tripId });
-                console.log('[DEBUG] Joined trip room:', tripId);
+                console.log('[DEBUG] Driver joined trip room via driverSocket:', tripId);
+            }
+            if (typeof NotificationManager !== 'undefined') {
+                NotificationManager.joinTripRoom(tripId);
             }
 
             // Scroll to bottom
             setTimeout(() => {
                 const chatMessages = document.getElementById('chatMessages');
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
             }, 100);
         }
 
@@ -2460,6 +2477,10 @@
             currentChatTripId = null;
             currentChatRiderId = null;
             currentChatRiderName = null;
+            window._chatTripId = null;
+            window.currentChatTripId = null;
+            window.currentChatRiderId = null;
+            window.currentChatRiderName = null;
             document.getElementById('chatMessages').innerHTML = '';
             document.getElementById('chatMessageInput').value = '';
             clearSmartReplyChips();
@@ -2468,9 +2489,10 @@
         // Load messages from API
         async function loadChatMessages() {
             try {
-                if (!currentChatTripId) return;
+                const tripId = currentChatTripId || window._chatTripId || window.currentChatTripId;
+                if (!tripId) return;
 
-                const response = await MessageService.getMessages(currentChatTripId);
+                const response = await MessageService.getMessages(tripId);
                 if (response && response.messages) {
                     displayChatMessages(response.messages);
                 }
@@ -2479,13 +2501,13 @@
                 showNotification('Failed to load messages', 'error');
             }
         }
+        window.loadChatMessages = loadChatMessages;
 
         // Display messages in chat
         function displayChatMessages(messages) {
-            const currentUserId = AuthService.getCurrentUser()?.id;
             const chatContainer = document.getElementById('chatMessages');
 
-            if (messages.length === 0) {
+            if (!messages || messages.length === 0) {
                 chatContainer.innerHTML = `
                     <div class="text-center text-gray-500 text-sm">
                         <i class="fas fa-comments text-4xl text-gray-300 mb-2"></i>
@@ -2495,31 +2517,63 @@
                 return;
             }
 
-            chatContainer.innerHTML = messages.map(msg => {
-                const isOwn = (msg.senderId._id || msg.senderId) === currentUserId;
-                const alignClass = isOwn ? 'justify-end' : 'justify-start';
-                const bgClass = isOwn ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-900';
-                const senderName = msg.senderId && msg.senderId.firstName ? `${msg.senderId.firstName} ${msg.senderId.lastName}` : 'User';
-                const isFlagged = msg.isFlagged || (window._flaggedMessageIds && window._flaggedMessageIds.has(msg._id));
+            // Determine logged-in user ID
+            let meId = '';
+            const currentUser = AuthService.getCurrentUser();
+            if (currentUser) {
+                meId = String(currentUser._id || currentUser.id || '');
+            }
+            if (!meId) {
+                try {
+                    const token = apiClient.getToken();
+                    if (token) {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        meId = String(payload.id || payload._id || payload.userId || '');
+                    }
+                } catch (e) {}
+            }
 
-                return `
-                    <div class="flex ${alignClass} mb-3" data-msg-id="${msg._id}">
-                        <div class="max-w-xs">
-                            ${!isOwn ? `<p class="text-xs font-semibold text-gray-600 mb-1">${senderName}</p>` : ''}
-                            <div class="px-4 py-2 rounded-lg ${bgClass} break-words">
-                                <p>${msg.messageText}</p>
-                                ${isFlagged ? `
-                                <div class="ai-flag-badge mt-1 flex items-center gap-1 text-[11px] ${isOwn ? 'text-red-200' : 'text-red-600'} font-medium">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#ef4444" style="flex-shrink:0;"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>
-                                    <span>Flagged</span>
-                                </div>` : ''}
-                                <p class="text-xs ${isOwn ? 'text-blue-100' : 'text-gray-500'} mt-1">
-                                    ${new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </p>
+            const activeRiderId = String(currentChatRiderId || window.currentChatRiderId || '');
+
+            chatContainer.innerHTML = messages.map(msg => {
+                const senderId = String(
+                    (msg.senderId && (msg.senderId._id || msg.senderId.id || msg.senderId)) || ''
+                );
+
+                // WhatsApp style: sent = right/blue, received = left/gray
+                // Message is sent by ME if senderId matches meId, or if senderId is NOT the rider
+                const isOwn = (meId && senderId && meId === senderId) ||
+                              (activeRiderId && senderId && senderId !== activeRiderId);
+
+                const senderName = msg.senderId && msg.senderId.firstName
+                    ? `${msg.senderId.firstName} ${msg.senderId.lastName}` : (currentChatRiderName || window.currentChatRiderName || 'Rider');
+                const isFlagged = msg.isFlagged || (window._flaggedMessageIds && window._flaggedMessageIds.has(msg._id));
+                const timeStr = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+                if (isOwn) {
+                    return `
+                    <div style="display:flex;justify-content:flex-end;width:100%;margin-bottom:8px;" data-msg-id="${msg._id}">
+                        <div style="max-width:75%;">
+                            <div style="background:#2563eb;color:#ffffff;border-radius:18px 18px 4px 18px;padding:10px 14px;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,0.15);">
+                                <span style="font-size:14px;line-height:1.4;">${msg.messageText}</span>
+                                ${isFlagged ? '<div class="ai-flag-badge" style="margin-top:4px;display:flex;align-items:center;gap:4px;font-size:11px;color:#fca5a5;"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fca5a5"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg><span>Flagged</span></div>' : ''}
                             </div>
+                            <div style="text-align:right;font-size:11px;color:#9ca3af;margin-top:3px;padding-right:4px;">${timeStr}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
+                } else {
+                    return `
+                    <div style="display:flex;justify-content:flex-start;width:100%;margin-bottom:8px;" data-msg-id="${msg._id}">
+                        <div style="max-width:75%;">
+                            <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:3px;padding-left:4px;">${senderName}</div>
+                            <div style="background:#f3f4f6;color:#111827;border-radius:18px 18px 18px 4px;padding:10px 14px;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,0.10);">
+                                <span style="font-size:14px;line-height:1.4;">${msg.messageText}</span>
+                                ${isFlagged ? '<div class="ai-flag-badge" style="margin-top:4px;display:flex;align-items:center;gap:4px;font-size:11px;color:#ef4444;"><svg width="10" height="10" viewBox="0 0 24 24" fill="#ef4444"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg><span>Flagged</span></div>' : ''}
+                            </div>
+                            <div style="text-align:left;font-size:11px;color:#9ca3af;margin-top:3px;padding-left:4px;">${timeStr}</div>
+                        </div>
+                    </div>`;
+                }
             }).join('');
 
             // Re-apply red flags on any already-flagged messages
@@ -2529,7 +2583,9 @@
 
             // Scroll to bottom
             const chatMessages = document.getElementById('chatMessages');
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
         }
 
         // Send message
@@ -2584,12 +2640,22 @@
                 clearSmartReplyChips();
                 return;
             }
-            container.innerHTML = suggestions.map(s =>
-                `<button type="button"
-                    onclick="tapSmartChip(${JSON.stringify(s.text).replace(/</g,'\\u003c')})"
-                    style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:9999px;padding:4px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:background 0.15s;"
-                    onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">${s.text}</button>`
+            // Use data-reply attribute to avoid double-quote clash with onclick
+            container.innerHTML = suggestions.map((s, i) =>
+                `<button type="button" data-reply-idx="${i}"
+                    style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:9999px;padding:6px 14px;font-size:13px;cursor:pointer;white-space:nowrap;transition:all 0.15s;font-weight:500;"
+                    onmouseover="this.style.background='#dbeafe';this.style.transform='scale(1.03)'"
+                    onmouseout="this.style.background='#eff6ff';this.style.transform='scale(1)'">${s.text}</button>`
             ).join('');
+            // Store texts separately — avoids ALL quoting issues
+            container._srTexts = suggestions.map(s => s.text);
+            // Delegate click on the container
+            container.onclick = function(e) {
+                const btn = e.target.closest('[data-reply-idx]');
+                if (!btn) return;
+                const text = container._srTexts[parseInt(btn.dataset.replyIdx)];
+                if (text) _sendSmartReply(text);
+            };
             container.classList.remove('hidden');
         }
 
@@ -2597,17 +2663,33 @@
             _srCurrentMsgId = null;
             const container = document.getElementById('smartReplyChips');
             if (container) {
+                container._srTexts = [];
+                container.onclick = null;
                 container.innerHTML = '';
                 container.classList.add('hidden');
             }
         }
 
-        function tapSmartChip(text) {
-            // Fill the input with the chip text and send it through the normal flow
-            const input = document.getElementById('chatMessageInput');
-            if (input) input.value = text;
+        // Immediately sends the chip text without putting it in the input first
+        async function _sendSmartReply(text) {
             clearSmartReplyChips();
-            sendChatMessage();
+            const tripId = currentChatTripId || window._chatTripId || window.currentChatTripId;
+            const riderId = currentChatRiderId || window.currentChatRiderId;
+            if (!tripId || !riderId) {
+                console.error('[SMART REPLY] Missing tripId or riderId:', { tripId, riderId });
+                return;
+            }
+            try {
+                const response = await MessageService.sendMessage(tripId, riderId, text);
+                if (response && response.success) {
+                    await loadChatMessages();
+                } else {
+                    showNotification('Failed to send reply', 'error');
+                }
+            } catch(e) {
+                console.error('[SMART REPLY] Error sending reply:', e);
+                showNotification('Error sending reply', 'error');
+            }
         }
 
         // Make functions global so notification-manager socket handler can call them

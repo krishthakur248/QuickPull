@@ -1,0 +1,61 @@
+id,sender_role,text,acceptable_intents,style,answerable
+T01,rider,hello sir,greeting,informal,True
+T02,rider,are u close by?,on_my_way|few_minutes_away|stuck_in_traffic,informal,True
+T03,rider,I'm waiting near the petrol pump,acknowledge|on_my_way|few_minutes_away,clean,True
+T04,rider,"Please be quick, I have a train to catch",on_my_way|few_minutes_away|sorry_delay,clean,True
+T05,rider,bhaiya kitni door ho,few_minutes_away|on_my_way|stuck_in_traffic,hinglish,True
+T06,rider,"I only have cash, is that ok?",cash_payment,clean,True
+T07,rider,"thnks, smooth ride",thanks|goodbye,informal,True
+T08,rider,wher is the cab? i dont see it,arrived_pickup|waiting_at_pickup|ask_location,informal,True
+T09,rider,Could you drop me one block before the destination?,confirm_dropoff|acknowledge,clean,True
+T10,rider,main gate ke paas khada hu,acknowledge|on_my_way|few_minutes_away,hinglish,True
+T11,rider,"give me 2 mins, locking my door",acknowledge|waiting_at_pickup,informal,True
+T12,rider,whats ur plate number,check_vehicle_number,informal,True
+T13,rider,Good afternoon!,greeting,clean,True
+T14,rider,"alrite, will wait here",acknowledge|thanks,informal,True
+T15,rider,Really appreciate the help today,thanks|goodbye,clean,True
+T16,rider,bhai gaadi kahan hai,on_my_way|few_minutes_away|stuck_in_traffic,hinglish,True
+T17,rider,app says arriving in 2 mins but nothing yet,few_minutes_away|on_my_way|sorry_delay,informal,True
+T18,rider,"Please wait at the pharmacy, I'll walk over",acknowledge|waiting_at_pickup,clean,True
+T19,rider,"my pin is wrong, im 50m ahead",ask_location|ask_landmark|acknowledge,informal,True
+T20,rider,drop me at the bus stand pls,confirm_dropoff|acknowledge,informal,True
+T21,rider,r u still there?,waiting_at_pickup|arrived_pickup|cant_find_you,informal,True
+T22,rider,driver sahab late ho gaya kya,sorry_delay|stuck_in_traffic|on_my_way,hinglish,True
+T23,rider,"ok bye, have a good one",goodbye|thanks,informal,True
+T24,rider,The pickup spot is in the lane behind the bank,acknowledge|on_my_way,clean,True
+T25,rider,paisa cash me dunga,cash_payment,hinglish,True
+T26,rider,???,none,informal,False
+T27,rider,what is the weather like,none,clean,False
+T28,rider,asdf,none,informal,False
+T29,rider,Do you like cricket?,none,clean,False
+T30,rider,Which phone do you use?,none,clean,False
+T31,driver,"Hello sir, I'm your captain",greeting,clean,True
+T32,driver,"reached the location, pls come",coming_now|please_wait|sorry_late,informal,True
+T33,driver,wher r u standing?,at_pickup_point|coming_now|cant_see_you,informal,True
+T34,driver,kitni der me aaoge,coming_now|please_wait|sorry_late,hinglish,True
+T35,driver,Do you see my car? Blue hatchback,can_see_you|cant_see_you,clean,True
+T36,driver,need more time? i can wait 3 min,please_wait|thanks|acknowledge,informal,True
+T37,driver,Should I turn the AC off?,ask_ac|acknowledge,clean,True
+T38,driver,drop pt is near the flyover right?,confirm_dropoff,informal,True
+T39,driver,will reach in few mins,acknowledge|thanks,informal,True
+T40,driver,Are you paying cash or card?,cash_payment,clean,True
+T41,driver,Hope you had a pleasant ride,thanks|goodbye,clean,True
+T42,driver,aage kahan rokun,stop_next_corner|confirm_dropoff,hinglish,True
+T43,driver,"Traffic is heavy, a little late",acknowledge|ask_how_far|please_wait,clean,True
+T44,driver,"trip ended, thank you",thanks|goodbye,informal,True
+T45,driver,"only 5 mins free waiting, then charges apply",sorry_late|coming_now|please_wait,informal,True
+T46,driver,pickup point pe ho ya nahi,at_pickup_point|coming_now,hinglish,True
+T47,driver,Which side of the road are you on?,at_pickup_point|cant_see_you|can_see_you,clean,True
+T48,driver,plz share ur live loc,at_pickup_point|cant_see_you|please_wait,informal,True
+T49,driver,Namaste madam,greeting,hinglish,True
+T50,driver,Do you want me to go slower?,ask_slow_down|acknowledge,clean,True
+T51,driver,I can't wait much longer,sorry_late|coming_now|please_wait,clean,True
+T52,driver,"Road is closed ahead, can you walk to the corner?",acknowledge|coming_now|stop_next_corner,clean,True
+T53,driver,"arrived at ur drop, pls check",confirm_dropoff|thanks|acknowledge,informal,True
+T54,driver,"ride khatam, dhanyawad",thanks|goodbye,hinglish,True
+T55,driver,is it gate 3 where u r standing,at_pickup_point|coming_now,informal,True
+T56,driver,ok?,none,informal,False
+T57,driver,Did you watch the movie?,none,clean,False
+T58,driver,random words purple table,none,informal,False
+T59,driver,lol,none,informal,False
+T60,driver,What is the capital of France?,none,clean,False

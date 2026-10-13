@@ -1,0 +1,9 @@
+{
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "threshold": 0.3,
+  "k": 3,
+  "max_chars": 500,
+  "intent_diversity_rule": "best reply per intent, then top-k different intents; only replies of the replying role; empty list if best score < threshold; flagged=True returns empty list",
+  "sentence_transformers_version": "5.7.0",
+  "created": "2026-10-13"
+}

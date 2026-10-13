@@ -1529,6 +1529,15 @@
 
             console.log('[DEBUG] Contact Driver - Trip:', tripId, 'Driver:', window.currentMessagingDriver, 'Driver Name:', driverName);
 
+            // Join trip room via socket to receive real-time messages
+            if (window.riderSocket) {
+                window.riderSocket.emit('join-trip-room', { tripId: tripId });
+                console.log('[DEBUG] Rider joined trip room via riderSocket:', tripId);
+            }
+            if (typeof NotificationManager !== 'undefined') {
+                NotificationManager.joinTripRoom(tripId);
+            }
+
             // Load message history
             loadMessageHistory(tripId);
 
@@ -1593,6 +1602,7 @@
                 }
             }
         }
+        window.loadMessageHistory = loadMessageHistory;
 
         async function sendMessage() {
             const messageInput = document.getElementById('messageInput');
@@ -1639,28 +1649,44 @@
                 clearSmartReplyChipsDash();
                 return;
             }
-            container.innerHTML = suggestions.map(s =>
-                `<button type="button"
-                    onclick="tapSmartChipDash(${JSON.stringify(s.text).replace(/</g,'\\u003c')})"
-                    style="background:#1e293b;color:#93c5fd;border:1px solid #334155;border-radius:9999px;padding:4px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:background 0.15s;"
-                    onmouseover="this.style.background='#1e3a5f'" onmouseout="this.style.background='#1e293b'">${s.text}</button>`
+            // Use data-reply-idx to avoid double-quote clash with onclick
+            container.innerHTML = suggestions.map((s, i) =>
+                `<button type="button" data-reply-idx="${i}"
+                    style="background:#1e3a5f;color:#93c5fd;border:1px solid #334155;border-radius:9999px;padding:6px 14px;font-size:13px;cursor:pointer;white-space:nowrap;transition:all 0.15s;font-weight:500;"
+                    onmouseover="this.style.background='#1e4a7a';this.style.transform='scale(1.03)'"
+                    onmouseout="this.style.background='#1e3a5f';this.style.transform='scale(1)'">${s.text}</button>`
             ).join('');
+            // Store texts to avoid all quoting issues
+            container._srTexts = suggestions.map(s => s.text);
+            container.onclick = function(e) {
+                const btn = e.target.closest('[data-reply-idx]');
+                if (!btn) return;
+                const text = container._srTexts[parseInt(btn.dataset.replyIdx)];
+                if (text) _sendSmartReplyDash(text);
+            };
             container.classList.remove('hidden');
         }
 
         function clearSmartReplyChipsDash() {
             const container = document.getElementById('smartReplyChipsDash');
             if (container) {
+                container._srTexts = [];
+                container.onclick = null;
                 container.innerHTML = '';
                 container.classList.add('hidden');
             }
         }
 
-        function tapSmartChipDash(text) {
-            const input = document.getElementById('messageInput');
-            if (input) input.value = text;
+        // Immediately sends the chip reply without touching the input box
+        async function _sendSmartReplyDash(text) {
             clearSmartReplyChipsDash();
-            sendMessage();
+            if (!window.currentMessagingTrip || !window.currentMessagingDriver) return;
+            try {
+                await MessageService.sendMessage(window.currentMessagingTrip, window.currentMessagingDriver, text);
+                await loadMessageHistory(window.currentMessagingTrip);
+            } catch(e) {
+                showNotification('Error sending reply', 'error');
+            }
         }
 
         // Expose as window globals so notification-manager.js can call them
@@ -2742,11 +2768,11 @@
                     await loadAcceptedRides();
                 } else if (data.type === 'new-message') {
                     // Only show notification if chat with this trip is NOT currently open
-                    if (!window.currentMessagingTrip || window.currentMessagingTrip !== data.tripId) {
+                    if (!window.currentMessagingTrip || String(window.currentMessagingTrip) !== String(data.tripId)) {
                         showNotification(`📨 New message from ${data.senderName}`, 'info');
                     }
                     // If conversation is open, refresh messages silently
-                    if (window.currentMessagingTrip && data.tripId === window.currentMessagingTrip) {
+                    if (window.currentMessagingTrip && (!data.tripId || String(data.tripId) === String(window.currentMessagingTrip))) {
                         await loadMessageHistory(window.currentMessagingTrip);
                     }
                 }
@@ -2764,7 +2790,7 @@
             socket.on('new-message', async (data) => {
                 console.log('New message received:', data);
                 // If the message is for the current open conversation, refresh messages
-                if (window.currentMessagingTrip && data.tripId === window.currentMessagingTrip) {
+                if (window.currentMessagingTrip && (!data.tripId || String(data.tripId) === String(window.currentMessagingTrip))) {
                     await loadMessageHistory(window.currentMessagingTrip);
                 }
             });
