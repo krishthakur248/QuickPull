@@ -96,7 +96,6 @@ exports.sendMessage = async (req, res) => {
         // We do NOT await this – it must never delay the HTTP response.
         // If the moderation service is down, moderateMessage() fails open
         // (just logs a warning) and chat continues normally.
-        const io = req.app.get('io');
         moderateMessage({ message, io }).catch(err => {
             console.error('[MODERATION] Unexpected error in moderateMessage:', err.message);
         });
