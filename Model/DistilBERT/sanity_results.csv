@@ -1,0 +1,61 @@
+text,label,score,pred
+where are you,0,0.009,0
+I am at the gate,0,0.001,0
+please don't be late,0,0.001,0
+thanks bhai,0,0.001,0
+this traffic is killing me,0,0.853,1
+"I'm dying of heat, can you turn on the AC?",0,0.012,0
+you drive crazy good,0,0.779,1
+I will be there in 5 minutes,0,0.001,0
+which gate should I come to?,0,0.001,0
+stop near the petrol pump please,0,0.003,0
+"hurry up, I am late for my train",0,0.009,0
+what the hell is this traffic,0,0.987,1
+damn it's hot today,0,0.914,1
+I am wearing a red jacket,0,0.014,0
+can you wait two minutes?,0,0.001,0
+"sorry, my phone was dead",0,0.002,0
+turn left at the next signal,0,0.001,0
+"please drive slowly, I feel sick",0,0.416,0
+"you missed the turn, let's take the next one",0,0.002,0
+I booked this ride for two people,0,0.001,0
+ok see you soon,0,0.002,0
+bhaiya thoda jaldi aao,0,0.038,0
+kitna time lagega?,0,0.002,0
+"I'll pay by cash, is that fine?",0,0.001,0
+this road is a nightmare,0,0.831,1
+"my bag is heavy, can you help?",0,0.005,0
+"great ride, thank you!",0,0.001,0
+you are so slow today lol,0,0.937,1
+I am so angry at the traffic,0,0.034,0
+kill the music a bit please,0,0.195,0
+you are a stupid idiot,1,1.0,1
+shut up you moron,1,1.0,1
+"you are useless, get lost",1,0.992,1
+I will find you and hurt you,1,0.997,1
+I will kill you if you cancel,1,0.999,1
+I know where you live,1,0.002,0
+"you will regret this, I am coming for you",1,0.011,0
+I'll break your legs,1,0.994,1
+you filthy pig,1,1.0,1
+go to hell you jerk,1,1.0,1
+"worst driver ever, you dumb fool",1,0.999,1
+"I hate you, you piece of trash",1,0.999,1
+you better watch your back,1,0.462,0
+women like you should stay at home,1,0.326,0
+I will make sure you never drive again or else,1,0.014,0
+you ugly loser,1,1.0,1
+tujhe jaan se maar dunga,1,0.214,0
+tere haath tod dunga,1,0.364,0
+"saale kutte, kahan hai tu",1,0.081,0
+"bewakoof insaan, chup kar",1,0.021,0
+"tu pagal hai kya, gadha",1,0.036,0
+tujhe dekh lunga,1,0.028,0
+nikal yahan se kamine,1,0.012,0
+tujhe chhodunga nahi,1,0.017,0
+"kya bakwas driver hai, nalayak",1,0.02,0
+I'll beat you up when you arrive,1,0.922,1
+you disgusting creature,1,0.999,1
+"idiot, are you blind?",1,0.999,1
+I will burn your car,1,0.997,1
+you are a worthless bastard,1,1.0,1

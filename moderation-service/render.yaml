@@ -1,0 +1,37 @@
+# render.yaml  –  Render deployment config for the QuickPull moderation service
+#
+# HOW TO USE:
+# 1. Push the `moderation-service` folder to a GitHub repo.
+# 2. Go to https://render.com → New → "Blueprint" → connect the repo.
+# 3. Render will read this file and create the service automatically.
+# 4. After creation, go to the service's "Environment" tab and add:
+#      MODERATION_API_KEY  = (some long random secret string)
+#      HF_TOKEN            = (your Hugging Face read token)
+#      HF_REPO             = (e.g. yourname/quickpull-moderation)
+# 5. Trigger a manual deploy from the Render dashboard.
+#
+# Instance type: Standard (2 GB RAM) is the MINIMUM.
+# The 512 MB free/starter tier will crash when loading the model.
+
+services:
+  - type: web
+    name: quickpull-moderation
+    runtime: docker
+    dockerfilePath: ./Dockerfile   # path relative to repo root
+    plan: standard                 # 2 GB RAM – minimum for DistilBERT on CPU
+    region: oregon                 # pick the region closest to your Node backend
+    branch: main
+
+    # Health check – Render waits for this before marking the service live
+    healthCheckPath: /health
+
+    # Environment variables.
+    # We list them here as placeholders; you MUST fill in the real values
+    # in the Render dashboard (never commit secrets to this file).
+    envVars:
+      - key: MODERATION_API_KEY
+        sync: false           # tells Render "this is a secret, don't auto-fill"
+      - key: HF_TOKEN
+        sync: false
+      - key: HF_REPO
+        sync: false

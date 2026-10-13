@@ -137,6 +137,13 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
 
+    // Admin flag – only set manually via the DB shell; never via a normal API.
+    // To grant admin: db.users.updateOne({ email: "you@example.com" }, { $set: { isAdmin: true } })
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+
     // Timestamps
     createdAt: {
       type: Date,

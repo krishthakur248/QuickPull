@@ -1,0 +1,15 @@
+# Virtual environment & Dependencies
+.venv/
+node_modules/
+
+# Large Model weights (>100MB blocked by GitHub)
+Model/DistilBERT/model/*.safetensors
+Model/DistilBERT/model/*.bin
+Model/DistilBERT/train.csv
+Model/DistilBERT/__pycache__/
+moderation-service/model_files/
+*.safetensors
+
+# Environment secrets
+.env
+*.key

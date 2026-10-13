@@ -1,6 +1,8 @@
 const Message = require('../models/Message');
 const Trip = require('../models/Trip');
 const User = require('../models/User');
+// Async moderation helper – called AFTER the message is delivered
+const { moderateMessage } = require('../utils/moderation');
 
 // Send a message
 exports.sendMessage = async (req, res) => {
@@ -88,6 +90,15 @@ exports.sendMessage = async (req, res) => {
             success: true,
             message: 'Message sent',
             data: message
+        });
+
+        // ── Async moderation (fire-and-forget) ────────────────────────────────
+        // We do NOT await this – it must never delay the HTTP response.
+        // If the moderation service is down, moderateMessage() fails open
+        // (just logs a warning) and chat continues normally.
+        const io = req.app.get('io');
+        moderateMessage({ message, io }).catch(err => {
+            console.error('[MODERATION] Unexpected error in moderateMessage:', err.message);
         });
     } catch (error) {
         console.error('Send message error:', error);

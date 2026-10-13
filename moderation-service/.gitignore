@@ -1,0 +1,35 @@
+# .gitignore for moderation-service
+#
+# IMPORTANT: Never commit model weights or secrets to git.
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Model weights (these are large and should be uploaded to HuggingFace instead)
+model_files/
+*.safetensors
+*.bin
+*.pt
+*.ckpt
+
+# Secrets
+.env
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

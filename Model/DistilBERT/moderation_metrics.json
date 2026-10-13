@@ -1,0 +1,65 @@
+{
+  "threshold": 0.5,
+  "dataset": {
+    "rows_raw": 159571,
+    "rows_after_cleaning": 159374,
+    "train": 111561,
+    "validation": 23906,
+    "test": 23907,
+    "flagged_share_after_cleaning": 0.1016
+  },
+  "baseline_test": {
+    "precision": 0.734,
+    "recall": 0.81,
+    "f1": 0.77,
+    "pr_auc": 0.87,
+    "confusion": {
+      "tn": 20764,
+      "fp": 714,
+      "fn": 462,
+      "tp": 1967
+    },
+    "per_label_recall": {
+      "toxic": 0.823,
+      "severe_toxic": 0.982,
+      "obscene": 0.93,
+      "threat": 0.895,
+      "insult": 0.927,
+      "identity_hate": 0.874
+    }
+  },
+  "distilbert_test": {
+    "precision": 0.807,
+    "recall": 0.862,
+    "f1": 0.833,
+    "pr_auc": 0.921,
+    "confusion": {
+      "tn": 20977,
+      "fp": 501,
+      "fn": 336,
+      "tp": 2093
+    },
+    "per_label_recall": {
+      "toxic": 0.873,
+      "severe_toxic": 0.995,
+      "obscene": 0.966,
+      "threat": 0.934,
+      "insult": 0.969,
+      "identity_hate": 0.953
+    }
+  },
+  "sanity_check": {
+    "normal_passed": 24,
+    "normal_total": 30,
+    "abusive_flagged": 16,
+    "abusive_total": 30
+  },
+  "speed_size": {
+    "model_mb": 268.5,
+    "cpu_ms_avg": 90.3,
+    "cpu_ms_p95": 214.4,
+    "gpu_ms_avg": 9.7,
+    "gpu_ms_p95": 17.5,
+    "cpu_threads_used": 1
+  }
+}

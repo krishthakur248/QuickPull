@@ -1,0 +1,17 @@
+{
+  "threshold": 0.5,
+  "max_length": 128,
+  "model_name": "distilbert-base-uncased",
+  "label_merge_rule": "flagged = 1 if any of toxic, severe_toxic, obscene, threat, insult, identity_hate is 1, else 0",
+  "training_data": "Kaggle Jigsaw Toxic Comment Classification Challenge, train.csv only (Wikipedia comments, English). 70/15/15 stratified split, seed 42.",
+  "epochs": 2,
+  "best_epoch": 2,
+  "library_versions": {
+    "torch": "2.11.0+cu130",
+    "transformers": "5.18.0",
+    "scikit-learn": "1.6.1",
+    "numpy": "2.1.3",
+    "pandas": "2.2.3"
+  },
+  "training_date": "2026-10-13"
+}

@@ -1,0 +1,80 @@
+{
+  "tolerance": 0.001,
+  "cases": [
+    {
+      "text": "where are you",
+      "expected_score": 0.0086,
+      "expected_flagged": false
+    },
+    {
+      "text": "I am at the gate",
+      "expected_score": 0.0013,
+      "expected_flagged": false
+    },
+    {
+      "text": "thanks bhai",
+      "expected_score": 0.0014,
+      "expected_flagged": false
+    },
+    {
+      "text": "this traffic is killing me",
+      "expected_score": 0.853,
+      "expected_flagged": true
+    },
+    {
+      "text": "I will be there in 5 minutes",
+      "expected_score": 0.0012,
+      "expected_flagged": false
+    },
+    {
+      "text": "turn left at the next signal",
+      "expected_score": 0.0013,
+      "expected_flagged": false
+    },
+    {
+      "text": "bhaiya thoda jaldi aao",
+      "expected_score": 0.0379,
+      "expected_flagged": false
+    },
+    {
+      "text": "great ride, thank you!",
+      "expected_score": 0.001,
+      "expected_flagged": false
+    },
+    {
+      "text": "you are a stupid idiot",
+      "expected_score": 0.9996,
+      "expected_flagged": true
+    },
+    {
+      "text": "shut up you moron",
+      "expected_score": 0.9996,
+      "expected_flagged": true
+    },
+    {
+      "text": "I will find you and hurt you",
+      "expected_score": 0.9972,
+      "expected_flagged": true
+    },
+    {
+      "text": "I will kill you if you cancel",
+      "expected_score": 0.9987,
+      "expected_flagged": true
+    },
+    {
+      "text": "I'll break your legs",
+      "expected_score": 0.9944,
+      "expected_flagged": true
+    },
+    {
+      "text": "I hate you, you piece of trash",
+      "expected_score": 0.9994,
+      "expected_flagged": true
+    },
+    {
+      "text": "I'll beat you up when you arrive",
+      "expected_score": 0.922,
+      "expected_flagged": true
+    }
+  ]
+}

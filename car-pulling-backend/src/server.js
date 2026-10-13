@@ -107,6 +107,8 @@ app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/trips', require('./routes/trip.routes'));
 app.use('/api/messages', require('./routes/message.routes'));
 app.use('/api/reviews', require('./routes/review.routes'));
+// Admin moderation dashboard (list & review flagged messages)
+app.use('/api/moderation', require('./routes/moderation.routes'));
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
