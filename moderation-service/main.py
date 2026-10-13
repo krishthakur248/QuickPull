@@ -35,10 +35,15 @@ logging.basicConfig(
 log = logging.getLogger("moderation-service")
 
 # ── Config ────────────────────────────────────────────────────────────────────
-# The model lives in a sub-folder called "model_files" which we populate at
-# startup from Hugging Face (see README for the HF_REPO env var approach).
-BASE_DIR = Path(__file__).parent            # same folder as this file
-MODEL_DIR = BASE_DIR / "model_files"        # where model/ and moderation_config.json live
+# The model lives in "model_files" (when deployed) or "../Model/DistilBERT" (when running locally)
+BASE_DIR = Path(__file__).parent
+if (BASE_DIR / "model_files" / "model").exists():
+    MODEL_DIR = BASE_DIR / "model_files"
+elif (BASE_DIR.parent / "Model" / "DistilBERT" / "model").exists():
+    MODEL_DIR = BASE_DIR.parent / "Model" / "DistilBERT"
+else:
+    MODEL_DIR = BASE_DIR / "model_files"
+
 
 # Hard limit: reject text longer than this before even touching the model
 MAX_TEXT_CHARS = 2000
