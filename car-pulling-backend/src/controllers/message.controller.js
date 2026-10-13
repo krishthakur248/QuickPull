@@ -61,6 +61,9 @@ exports.sendMessage = async (req, res) => {
 
         await message.save();
 
+        // Capture the raw senderId string BEFORE populate overwrites it with the User object
+        const rawSenderId = message.senderId.toString();
+
         // Populate sender info
         await message.populate('senderId', 'firstName lastName profileImage');
 
@@ -96,7 +99,7 @@ exports.sendMessage = async (req, res) => {
         // We do NOT await this – it must never delay the HTTP response.
         // If the moderation service is down, moderateMessage() fails open
         // (just logs a warning) and chat continues normally.
-        moderateMessage({ message, io }).catch(err => {
+        moderateMessage({ message, rawSenderId, io }).catch(err => {
             console.error('[MODERATION] Unexpected error in moderateMessage:', err.message);
         });
     } catch (error) {

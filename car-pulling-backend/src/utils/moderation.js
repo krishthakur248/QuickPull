@@ -69,7 +69,7 @@ async function callModerationService(text) {
  * @param {import('mongoose').Document} opts.message   – the saved Message document
  * @param {import('socket.io').Server}  opts.io        – Socket.io instance (for warning)
  */
-async function moderateMessage({ message, io }) {
+async function moderateMessage({ message, rawSenderId, io }) {
   // Feature switch – if MODERATION_ENABLED=false, do nothing at all
   if (!ENABLED) {
     return;
@@ -94,6 +94,9 @@ async function moderateMessage({ message, io }) {
   }
 
   // ── Message was flagged ───────────────────────────────────────────────────
+  // Use rawSenderId (the string ID captured before populate) for correct room targeting
+  const senderIdStr = rawSenderId || message.senderId.toString();
+
   console.log(
     `[MODERATION] Message flagged: id=${message._id} ` +
     `score=${result.score} reasons=${result.reasons.join(',')}`
@@ -104,7 +107,7 @@ async function moderateMessage({ message, io }) {
     await ModerationFlag.create({
       messageId: message._id,
       tripId:    message.tripId,
-      senderId:  message.senderId,
+      senderId:  senderIdStr,
       text:      message.messageText,
       score:     result.score,
       reasons:   result.reasons,
@@ -129,14 +132,16 @@ async function moderateMessage({ message, io }) {
       timestamp: new Date()
     };
 
-    // Emit to personal user room
-    io.to(`user_${message.senderId}`).emit('moderation-warning', warningPayload);
+    console.log(`[MODERATION] Emitting warning to user_${senderIdStr}`);
+
+    // Emit to personal user room (using the raw string ID)
+    io.to(`user_${senderIdStr}`).emit('moderation-warning', warningPayload);
     // Emit to trip room if available
     if (message.tripId) {
-      io.to(`trip_${message.tripId}_user_${message.senderId}`).emit('moderation-warning', warningPayload);
+      io.to(`trip_${message.tripId}_user_${senderIdStr}`).emit('moderation-warning', warningPayload);
     }
     // Also emit standard notification so existing toast listeners catch it
-    io.to(`user_${message.senderId}`).emit('notification', warningPayload);
+    io.to(`user_${senderIdStr}`).emit('notification', warningPayload);
   }
 }
 
