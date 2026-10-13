@@ -1611,6 +1611,43 @@
             }
         }
 
+        // Show AI moderation warning to the sender
+        function showModerationWarning(data) {
+            console.log('[MODERATION] Showing warning to sender:', data);
+
+            // 1) Toast notification (top-right corner)
+            const container = document.getElementById('notificationContainer') || (() => {
+                const el = document.createElement('div');
+                el.id = 'notificationContainer';
+                el.className = 'fixed top-24 right-4 space-y-2 z-50';
+                document.body.appendChild(el);
+                return el;
+            })();
+
+            const toast = document.createElement('div');
+            toast.innerHTML = `
+                <div style="background:#dc2626;color:white;padding:14px 18px;border-radius:12px;box-shadow:0 4px 20px rgba(220,38,38,0.4);display:flex;align-items:flex-start;gap:12px;max-width:340px;animation:slideIn 0.3s ease-out;margin-bottom:8px;">
+                    <i class="fas fa-shield-alt" style="font-size:18px;margin-top:2px;flex-shrink:0;"></i>
+                    <div>
+                        <p style="font-weight:700;font-size:14px;margin:0 0 4px;">⚠️ AI Safety Warning</p>
+                        <p style="font-size:12px;opacity:0.92;margin:0;">Please keep chat respectful. Your message was flagged for potentially violating community guidelines.</p>
+                    </div>
+                    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;font-size:16px;padding:0;margin-left:4px;">✕</button>
+                </div>`;
+            container.appendChild(toast.firstElementChild);
+            setTimeout(() => { if (container.firstElementChild) container.firstElementChild.remove(); }, 6000);
+
+            // 2) In-chat banner inside open chat window (rider uses messagesContainer)
+            const chatBox = document.getElementById('messagesContainer');
+            if (chatBox) {
+                const banner = document.createElement('div');
+                banner.style.cssText = 'margin:8px 0;padding:10px 14px;background:rgba(220,38,38,0.08);border:1.5px solid rgba(220,38,38,0.35);border-radius:10px;color:#dc2626;font-size:12px;display:flex;align-items:center;gap:8px;';
+                banner.innerHTML = `<i class="fas fa-exclamation-triangle" style="font-size:14px;flex-shrink:0;"></i><span><strong>AI Safety Warning:</strong> Your message was flagged for potentially violating community guidelines.</span>`;
+                chatBox.appendChild(banner);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
         function getCurrentUserId() {
             // Get user ID from stored user data or token
             const userStr = localStorage.getItem('user');
@@ -2640,6 +2677,12 @@
                 if (window.currentMessagingTrip && data.tripId === window.currentMessagingTrip) {
                     await loadMessageHistory(window.currentMessagingTrip);
                 }
+            });
+
+            // Listen for AI moderation warning (flagged toxic message)
+            socket.on('moderation-warning', (data) => {
+                console.log('[MODERATION] Warning received on rider socket:', data);
+                showModerationWarning(data);
             });
 
             // Listen for driver location updates (real-time)
