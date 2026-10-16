@@ -16,8 +16,9 @@
  *   - We never touch fare calculations, ETA, or review logic
  */
 
-const Trip     = require('../models/Trip');
-const AdminLog = require('../models/AdminLog');
+const Trip           = require('../models/Trip');
+const AdminLog       = require('../models/AdminLog');
+const ModerationFlag = require('../models/ModerationFlag');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/admin/trips
@@ -97,14 +98,24 @@ exports.listTrips = async (req, res) => {
 exports.getTripDetail = async (req, res) => {
   try {
     const trip = await Trip.findById(req.params.id)
-      .populate('driver', 'firstName lastName phone email rating')
+      .populate('driver', 'firstName lastName phone email rating isBlocked')
       .populate('riders.riderId', 'firstName lastName phone email');
 
     if (!trip) {
       return res.status(404).json({ success: false, message: 'Trip not found.' });
     }
 
-    return res.json({ success: true, trip });
+    let driverFlagCount = 0;
+    if (trip.driver && trip.driver._id) {
+      driverFlagCount = await ModerationFlag.countDocuments({ senderId: trip.driver._id });
+    }
+
+    const tripObj = trip.toObject();
+    if (tripObj.driver) {
+      tripObj.driver.flagCount = driverFlagCount;
+    }
+
+    return res.json({ success: true, trip: tripObj, driverFlagCount });
 
   } catch (err) {
     console.error('[ADMIN TRIPS] getTripDetail error:', err.message);

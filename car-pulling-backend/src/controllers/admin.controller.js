@@ -124,7 +124,17 @@ exports.adminLogin = async (req, res) => {
 
     // ── Password comparison ───────────────────────────────────────────────
     const passwordOk = await bcrypt.compare(password, user.password);
-    if (!passwordOk) return fail('wrong_password');
+    if (!passwordOk) {
+      recordFailedAttempt(ip);
+      AdminLog.create({
+        adminId: user._id,
+        action:  'LOGIN_FAILED',
+        details: { attemptedEmail: email, reason: 'wrong_password' },
+        ip,
+      }).catch((err) => console.error('[ADMIN LOG] Could not write LOGIN_FAILED:', err.message));
+
+      return res.status(401).json({ success: false, message: 'Wrong password. Please check your password and try again.' });
+    }
 
     // ── All checks passed — issue an admin JWT ────────────────────────────
     clearFailedAttempts(ip);

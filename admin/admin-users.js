@@ -126,31 +126,35 @@ async function loadUsers(page = 1) {
 // ─── Build a single table row ─────────────────────────────────────────────────
 function buildUserRow(u) {
   const name     = `${u.firstName} ${u.lastName}`;
+  const initials = `${(u.firstName[0] || 'U')}${(u.lastName[0] || '')}`;
   const typeIcon = u.userType === 'driver' ? '🚗' : u.userType === 'rider' ? '🧍' : '🔄';
   const idBadge  = u.idVerified    ? '<span class="badge badge-success">✓ ID</span>' : '<span class="badge badge-dim">✗ ID</span>';
   const phBadge  = u.phoneVerified ? '<span class="badge badge-success">✓ Ph</span>'  : '<span class="badge badge-dim">✗ Ph</span>';
   const flagCell = u.flagCount > 0
     ? `<span class="flag-count ${u.flagCount >= 3 ? 'flag-high' : 'flag-low'}">🚩 ${u.flagCount}</span>`
-    : '<span class="text-dim">—</span>';
-  const simBadge = u.isSimulation ? '<span class="badge badge-warning">SIM</span>' : '';
+    : '<span class="text-dim">0</span>';
+  const simBadge = u.isSimulation ? '<span class="badge badge-warning" style="margin-left:.25rem;font-size:.625rem">SIM</span>' : '';
   const statusBadge = u.isBlocked
     ? '<span class="badge badge-danger">Blocked</span>'
     : '<span class="badge badge-success">Active</span>';
 
   return `
-    <tr class="user-row" data-user-id="${u._id}" title="Click to view profile">
+    <tr class="user-row trip-row-clickable log-row" data-user-id="${u._id}" title="Click to view profile">
       <td>
         <div class="user-name-cell">
-          <span class="user-name">${escHtml(name)}</span>
-          ${simBadge}
+          <div class="user-avatar-mini">${initials}</div>
+          <div style="min-width:0">
+            <span class="user-name">${escHtml(name)}</span>
+            ${simBadge}
+          </div>
         </div>
       </td>
       <td class="cell-mono text-muted">${escHtml(u.email)}</td>
-      <td>${typeIcon} ${u.userType}</td>
+      <td style="text-transform:capitalize;">${typeIcon} ${u.userType}</td>
       <td>${idBadge} ${phBadge}</td>
       <td>${flagCell}</td>
       <td>${statusBadge}</td>
-      <td class="text-dim cell-mono">${new Date(u.createdAt).toLocaleDateString('en-IN')}</td>
+      <td class="text-dim cell-mono">${new Date(u.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</td>
       <td>
         <button class="btn-sm btn-view" onclick="event.stopPropagation(); openDrawer('${u._id}')">View →</button>
       </td>
@@ -189,122 +193,174 @@ function closeDrawer() {
   currentDrawerUserId = null;
 }
 
+/** Allows direct opening of the trip detail drawer when clicking a trip in user history */
+function openTripFromUserDrawer(tripId, hintDriverId = null) {
+  if (typeof openTripDrawer === 'function') {
+    closeDrawer();
+    openTripDrawer(tripId, hintDriverId);
+  }
+}
+
 // ─── Build drawer inner HTML ──────────────────────────────────────────────────
 function buildDrawerContent(data) {
   const u = data.user;
   const name = `${u.firstName} ${u.lastName}`;
+  const initials = `${(u.firstName[0] || 'U')}${(u.lastName[0] || '')}`;
+  const typeIcon = u.userType === 'driver' ? '🚗' : u.userType === 'rider' ? '🧍' : '🔄';
 
   // Helper to format dates
   const fmt = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+  const fmtTime = (d) => d ? new Date(d).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
 
-  // Block / unblock button
+  // Block / unblock button styled like trip action buttons
   const blockBtn = u.isBlocked
-    ? `<button id="drawer-block-btn" class="btn-action btn-unblock" data-user-id="${u._id}" data-action="unblock">✓ Unblock User</button>`
-    : `<button id="drawer-block-btn" class="btn-action btn-block"   data-user-id="${u._id}" data-action="block">🚫 Block User</button>`;
+    ? `<button id="drawer-block-btn" class="btn-action btn-trip-complete" style="width:100%;justify-content:center;" data-user-id="${u._id}" data-action="unblock">✓ Unblock User Account</button>`
+    : `<button id="drawer-block-btn" class="btn-action btn-trip-cancel"   style="width:100%;justify-content:center;" data-user-id="${u._id}" data-action="block">🚫 Block User Account</button>`;
 
   // Recent trips as driver
-  const driverTrips = data.recentAsDriver.length === 0
+  const driverTrips = (!data.recentAsDriver || data.recentAsDriver.length === 0)
     ? '<div class="trip-empty">No trips as driver yet.</div>'
     : data.recentAsDriver.map((t) => `
-        <div class="trip-row">
-          <span class="trip-code">${t.tripCode || '—'}</span>
-          <span class="badge ${tripStatusBadge(t.status)}">${t.status}</span>
-          <span class="text-dim">${fmt(t.startTime)}</span>
+        <div class="rider-item" style="cursor:pointer;transition:border-color .15s,background .15s;" onclick="openTripFromUserDrawer('${t._id}', '${u._id}')" title="Click to inspect trip in drawer">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem">
+            <span class="trip-code" style="font-size:.8125rem;font-weight:700">${escHtml(t.tripCode || '—')}</span>
+            <span class="badge ${tripStatusBadge(t.status)}">${t.status}</span>
+          </div>
+          <div class="rider-meta" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+            <span class="cell-mono text-muted" style="font-size:.75rem">${fmtTime(t.startTime)}</span>
+            <span style="font-size:.75rem;color:var(--cyan);font-weight:600">Inspect Trip →</span>
+          </div>
         </div>
       `).join('');
 
   // Recent trips as rider
-  const riderTrips = data.recentAsRider.length === 0
+  const riderTrips = (!data.recentAsRider || data.recentAsRider.length === 0)
     ? '<div class="trip-empty">No trips as rider yet.</div>'
     : data.recentAsRider.map((t) => {
         const driverName = t.driver ? `${t.driver.firstName} ${t.driver.lastName}` : '—';
         return `
-          <div class="trip-row">
-            <span class="trip-code">${t.tripCode || '—'}</span>
-            <span class="badge ${tripStatusBadge(t.status)}">${t.status}</span>
-            <span class="text-dim">Driver: ${escHtml(driverName)}</span>
+          <div class="rider-item" style="cursor:pointer;transition:border-color .15s,background .15s;" onclick="openTripFromUserDrawer('${t._id}')" title="Click to inspect trip in drawer">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem">
+              <span class="trip-code" style="font-size:.8125rem;font-weight:700">${escHtml(t.tripCode || '—')}</span>
+              <span class="badge ${tripStatusBadge(t.status)}">${t.status}</span>
+            </div>
+            <div class="rider-meta" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+              <span class="cell-mono text-muted" style="font-size:.75rem">Driver: ${escHtml(driverName)}</span>
+              <span style="font-size:.75rem;color:var(--cyan);font-weight:600">Inspect Trip →</span>
+            </div>
           </div>
         `;
       }).join('');
 
-  return `
-    <!-- Header -->
-    <div class="drawer-header">
-      <div class="drawer-avatar">${u.firstName[0]}${u.lastName[0]}</div>
-      <div>
-        <div class="drawer-name">${escHtml(name)}</div>
-        <div class="drawer-email">${escHtml(u.email)}</div>
-      </div>
-    </div>
+  const flagCountDisplay = data.flagCount > 0
+    ? `<span class="flag-count ${data.flagCount >= 3 ? 'flag-high' : 'flag-low'}">🚩 ${data.flagCount} flag${data.flagCount !== 1 ? 's' : ''}</span>`
+    : '<span class="text-dim">0 flags</span>';
 
-    <!-- Status row -->
-    <div class="drawer-status-row">
-      ${u.isBlocked
-        ? `<span class="badge badge-danger">⛔ Blocked</span>`
-        : `<span class="badge badge-success">✓ Active</span>`}
-      ${u.isSimulation ? '<span class="badge badge-warning">Simulation</span>' : ''}
-      ${u.isAdmin ? '<span class="badge badge-info">Admin</span>' : ''}
-      ${data.flagCount > 0
-        ? `<span class="badge ${data.flagCount >= 3 ? 'badge-danger' : 'badge-warning'}">🚩 ${data.flagCount} flag${data.flagCount !== 1 ? 's' : ''}</span>`
-        : ''}
+  return `
+    <!-- User Drawer Header -->
+    <div class="trip-drawer-header">
+      <div style="display:flex;align-items:center;gap:.875rem;min-width:0">
+        <div class="drawer-avatar">${initials}</div>
+        <div style="min-width:0">
+          <div style="font-size:.6875rem;color:var(--text-dim);text-transform:uppercase;font-weight:600;letter-spacing:.05em">User Profile</div>
+          <div class="drawer-name" style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(name)}</div>
+          <div class="drawer-email" style="font-size:.75rem;color:var(--cyan);font-family:'JetBrains Mono',monospace;margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(u.email)}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.375rem;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:.375rem">
+          ${u.isBlocked
+            ? `<span class="badge badge-danger">Blocked</span>`
+            : `<span class="badge badge-success">Active</span>`}
+          <span class="badge" style="background:rgba(255,255,255,.05);border:1px solid var(--border-hi);color:var(--text-muted);text-transform:capitalize;">${typeIcon} ${u.userType}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.375rem">
+          ${u.isSimulation ? '<span class="badge badge-warning">Simulation</span>' : ''}
+          ${u.isAdmin ? '<span class="badge badge-info">Admin</span>' : ''}
+        </div>
+      </div>
     </div>
 
     ${u.isBlocked && u.blockReason ? `
-      <div class="block-reason-box">
-        <span class="text-dim">Block reason:</span> ${escHtml(u.blockReason)}
+      <div class="block-reason-box" style="margin-bottom:1rem">
+        <div style="font-size:.6875rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fb7185;margin-bottom:.25rem;display:flex;align-items:center;gap:.35rem">
+          <span>🚫</span> Account Suspended
+        </div>
+        <div style="font-size:.8125rem;color:var(--text);line-height:1.4">${escHtml(u.blockReason)}</div>
       </div>
     ` : ''}
 
-    <!-- Profile details -->
-    <div class="drawer-section-title">Profile</div>
+    <!-- Profile Information (6 balanced slots) -->
+    <div class="drawer-section-title">Profile Information</div>
     <div class="drawer-grid">
-      <div class="drawer-field"><span class="field-label">Phone</span><span class="field-value">${escHtml(u.phone || '—')}</span></div>
-      <div class="drawer-field"><span class="field-label">Type</span><span class="field-value">${u.userType}</span></div>
+      <div class="drawer-field"><span class="field-label">Phone</span><span class="field-value cell-mono">${escHtml(u.phone || '—')}</span></div>
+      <div class="drawer-field"><span class="field-label">User Type</span><span class="field-value" style="text-transform:capitalize">${u.userType}</span></div>
       <div class="drawer-field"><span class="field-label">Rating</span><span class="field-value">${u.rating ? u.rating.toFixed(1) + ' ⭐' : '—'}</span></div>
-      <div class="drawer-field"><span class="field-label">Total Rides</span><span class="field-value">${u.totalRides ?? '—'}</span></div>
-      <div class="drawer-field"><span class="field-label">Joined</span><span class="field-value">${fmt(u.createdAt)}</span></div>
+      <div class="drawer-field"><span class="field-label">Total Rides</span><span class="field-value">${u.totalRides ?? '0'}</span></div>
+      <div class="drawer-field"><span class="field-label">Joined</span><span class="field-value cell-mono">${fmt(u.createdAt)}</span></div>
+      <div class="drawer-field"><span class="field-label">Flags</span><span class="field-value">${flagCountDisplay}</span></div>
     </div>
 
-    <!-- Verification controls -->
-    <div class="drawer-section-title">Verification</div>
-    <div class="verify-row">
-      <div class="verify-item">
-        <span class="verify-label">ID Verification</span>
-        <span class="badge ${u.idVerified ? 'badge-success' : 'badge-dim'}">${u.idVerified ? '✓ Verified' : '✗ Not verified'}</span>
-        <button
-          id="btn-verify-id"
-          class="btn-sm ${u.idVerified ? 'btn-unverify' : 'btn-verify'}"
-          data-user-id="${u._id}"
-          data-field="id"
-          data-action="${u.idVerified ? 'unverify' : 'verify'}"
-        >${u.idVerified ? 'Revoke' : 'Verify'}</button>
+    <!-- Verification Status (Side-by-side Route Card style) -->
+    <div class="drawer-section-title">Verification Status</div>
+    <div class="route-grid">
+      <div class="route-card ${u.idVerified ? 'route-card-pickup' : 'route-card-unverified'}">
+        <div class="route-card-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="display:flex;align-items:center;gap:.35rem">🪪 ID Document</span>
+          <span class="badge ${u.idVerified ? 'badge-success' : 'badge-dim'}">${u.idVerified ? 'Verified' : 'Unverified'}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.625rem">
+          <span style="font-size:.75rem;color:var(--text-dim)">${u.idVerified ? 'Govt ID approved' : 'No document filed'}</span>
+          <button
+            id="btn-verify-id"
+            class="btn-sm ${u.idVerified ? 'btn-unverify' : 'btn-verify'}"
+            data-user-id="${u._id}"
+            data-field="id"
+            data-action="${u.idVerified ? 'unverify' : 'verify'}"
+          >${u.idVerified ? 'Revoke' : 'Verify ID'}</button>
+        </div>
       </div>
-      <div class="verify-item">
-        <span class="verify-label">Phone Verification</span>
-        <span class="badge ${u.phoneVerified ? 'badge-success' : 'badge-dim'}">${u.phoneVerified ? '✓ Verified' : '✗ Not verified'}</span>
-        <button
-          id="btn-verify-phone"
-          class="btn-sm ${u.phoneVerified ? 'btn-unverify' : 'btn-verify'}"
-          data-user-id="${u._id}"
-          data-field="phone"
-          data-action="${u.phoneVerified ? 'unverify' : 'verify'}"
-        >${u.phoneVerified ? 'Revoke' : 'Verify'}</button>
+
+      <div class="route-card ${u.phoneVerified ? 'route-card-pickup' : 'route-card-unverified'}">
+        <div class="route-card-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span style="display:flex;align-items:center;gap:.35rem">📱 Phone OTP</span>
+          <span class="badge ${u.phoneVerified ? 'badge-success' : 'badge-dim'}">${u.phoneVerified ? 'Verified' : 'Unverified'}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:.625rem">
+          <span style="font-size:.75rem;color:var(--text-dim)">${u.phoneVerified ? 'SMS OTP confirmed' : 'Unconfirmed phone'}</span>
+          <button
+            id="btn-verify-phone"
+            class="btn-sm ${u.phoneVerified ? 'btn-unverify' : 'btn-verify'}"
+            data-user-id="${u._id}"
+            data-field="phone"
+            data-action="${u.phoneVerified ? 'unverify' : 'verify'}"
+          >${u.phoneVerified ? 'Revoke' : 'Verify Phone'}</button>
+        </div>
       </div>
     </div>
 
-    <!-- Block / unblock -->
-    <div class="drawer-section-title">Account Status</div>
-    <div class="block-action-row">
-      ${blockBtn}
+    <!-- Admin Actions (Block/Unblock) -->
+    <div class="trip-actions-card" style="margin-top:1rem;margin-bottom:1.5rem;${u.isBlocked ? 'background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.25);' : ''}">
+      <div class="drawer-section-title" style="margin-top:0;padding-bottom:.25rem;color:${u.isBlocked ? 'var(--green)' : '#fb7185'}">
+        ${u.isBlocked ? '🛡️ Account Status & Reactivation' : '⚠️ Account Restriction & Moderation'}
+      </div>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.625rem">
+        ${u.isBlocked
+          ? 'This account is currently suspended. Unblocking restores login access, active trip participation, and messaging.'
+          : 'Blocking immediately revokes access to all active trips, socket chat, and login sessions.'}
+      </div>
+      <div class="trip-action-row">
+        ${blockBtn}
+      </div>
     </div>
 
     <!-- Recent trips as driver -->
-    <div class="drawer-section-title">Recent Trips as Driver</div>
-    <div class="trips-list">${driverTrips}</div>
+    <div class="drawer-section-title">Recent Trips as Driver (${data.recentAsDriver?.length ?? 0})</div>
+    <div class="riders-list" style="margin-bottom:1rem">${driverTrips}</div>
 
     <!-- Recent trips as rider -->
-    <div class="drawer-section-title">Recent Trips as Rider</div>
-    <div class="trips-list">${riderTrips}</div>
+    <div class="drawer-section-title">Recent Trips as Rider (${data.recentAsRider?.length ?? 0})</div>
+    <div class="riders-list">${riderTrips}</div>
   `;
 }
 

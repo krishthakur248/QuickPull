@@ -29,8 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
   function showError(msg) {
-    errorBox.textContent = msg;
+    errorBox.innerHTML = `<div style="display:flex;align-items:center;gap:.5rem;"><span>⚠️</span><span>${msg}</span></div>`;
     errorBox.style.display = 'block';
+    passInput.style.borderColor = 'var(--rose)';
+    passInput.focus();
     // Briefly shake the card to draw attention
     errorBox.animate([
       { transform: 'translateX(-4px)' },
@@ -42,7 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function hideError() {
     errorBox.style.display = 'none';
-    errorBox.textContent = '';
+    errorBox.innerHTML = '';
+    passInput.style.borderColor = '';
   }
 
   function setLoading(loading) {
@@ -82,15 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = './dashboard.html';
       }
     } catch (err) {
-      // Show the server's message (e.g. "Invalid credentials.", rate-limit countdown)
-      showError(err.message || 'Login failed. Please try again.');
+      // Show the server's message (e.g. "Wrong password...", rate-limit countdown)
+      showError(err.message || 'Login failed. Please check your credentials and try again.');
     } finally {
       setLoading(false);
     }
-  });
-
-  // Allow pressing Enter in the password field to submit
-  passInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') form.requestSubmit();
   });
 });

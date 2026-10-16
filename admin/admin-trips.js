@@ -51,6 +51,14 @@ function initTripsSection() {
   // Force-cancel modal cancel button
   document.getElementById('fcancel-modal-cancel')?.addEventListener('click', closeForceCancelModal);
 
+  // Close drawer and modals on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeTripDrawer();
+      closeForceCancelModal();
+    }
+  });
+
   // Load first page
   loadTrips(1);
 }
@@ -94,7 +102,7 @@ async function loadTrips(page = 1) {
 
     // Click handler for each row
     tbody.querySelectorAll('.trip-row-clickable').forEach((row) => {
-      row.addEventListener('click', () => openTripDrawer(row.dataset.tripId));
+      row.addEventListener('click', () => openTripDrawer(row.dataset.tripId, row.dataset.driverId));
     });
 
   } catch (err) {
@@ -105,6 +113,7 @@ async function loadTrips(page = 1) {
 // ─── Build a single table row ─────────────────────────────────────────────────
 function buildTripRow(t) {
   const driver    = t.driver ? `${t.driver.firstName} ${t.driver.lastName}` : '—';
+  const driverId  = t.driver?._id || (typeof t.driver === 'string' ? t.driver : '');
   const riderCnt  = t.riders?.length ?? 0;
   const vehicleIcon = { car: '🚗', bike: '🏍️', ev: '⚡' }[t.vehicle] || '🚗';
   const statusBadge = tripStatusBadgeClass(t.status);
@@ -114,7 +123,7 @@ function buildTripRow(t) {
   const fare = t.totalFare != null ? `₹${t.totalFare.toFixed(0)}` : '—';
 
   return `
-    <tr class="trip-row-clickable log-row" data-trip-id="${t._id}" title="Click to view trip detail">
+    <tr class="trip-row-clickable log-row" data-trip-id="${t._id}" data-driver-id="${driverId}" title="Click to view trip detail">
       <td class="cell-mono" style="font-weight:600">${escTripHtml(t.tripCode || '—')}</td>
       <td>${escTripHtml(driver)}</td>
       <td>${riderCnt} rider${riderCnt !== 1 ? 's' : ''}</td>
@@ -122,33 +131,268 @@ function buildTripRow(t) {
       <td><span class="badge ${statusBadge}">${t.status}</span></td>
       <td class="cell-mono text-muted">${startTime}</td>
       <td>
-        <button class="btn-sm btn-view" onclick="event.stopPropagation(); openTripDrawer('${t._id}')">View →</button>
+        <button class="btn-sm btn-view" onclick="event.stopPropagation(); openTripDrawer('${t._id}', '${driverId}')">View →</button>
       </td>
     </tr>
   `;
 }
 
+// ─── Map & Coordinates helpers ────────────────────────────────────────────────
+let currentTripMap = null;
+
+function destroyTripMap() {
+  if (currentTripMap) {
+    try {
+      currentTripMap.remove();
+    } catch (e) {
+      console.warn('Error removing trip map:', e);
+    }
+    currentTripMap = null;
+  }
+}
+
+/**
+ * Safely extracts { lat, lng } from various coordinate representations:
+ * GeoJSON Point [lng, lat], array [lng, lat], or object { lat, lng }.
+ */
+function extractCoords(loc) {
+  if (!loc) return null;
+  // GeoJSON Point: { coordinates: [lng, lat] } or { coordinates: { coordinates: [lng, lat] } }
+  if (loc.coordinates) {
+    if (Array.isArray(loc.coordinates.coordinates) && loc.coordinates.coordinates.length >= 2) {
+      const [lng, lat] = loc.coordinates.coordinates;
+      const nLat = Number(lat), nLng = Number(lng);
+      if (!isNaN(nLat) && !isNaN(nLng) && (nLat !== 0 || nLng !== 0)) return { lat: nLat, lng: nLng };
+    }
+    if (Array.isArray(loc.coordinates) && loc.coordinates.length >= 2) {
+      const [lng, lat] = loc.coordinates;
+      const nLat = Number(lat), nLng = Number(lng);
+      if (!isNaN(nLat) && !isNaN(nLng) && (nLat !== 0 || nLng !== 0)) return { lat: nLat, lng: nLng };
+    }
+    if (loc.coordinates.lat && loc.coordinates.lng) {
+      const nLat = Number(loc.coordinates.lat), nLng = Number(loc.coordinates.lng);
+      if (!isNaN(nLat) && !isNaN(nLng)) return { lat: nLat, lng: nLng };
+    }
+  }
+  // Direct lat / lng properties
+  if (loc.lat && loc.lng) {
+    const nLat = Number(loc.lat), nLng = Number(loc.lng);
+    if (!isNaN(nLat) && !isNaN(nLng)) return { lat: nLat, lng: nLng };
+  }
+  return null;
+}
+
 // ─── Detail drawer ────────────────────────────────────────────────────────────
-async function openTripDrawer(tripId) {
+async function openTripDrawer(tripId, hintDriverId = null) {
   const wrapper  = document.getElementById('trip-drawer-wrapper');
   const content  = document.getElementById('trip-drawer-content');
   if (!wrapper || !content) return;
+
+  destroyTripMap();
 
   wrapper.classList.add('drawer-open');
   content.innerHTML = '<div class="drawer-loading">Loading…</div>';
 
   try {
-    const data = await AdminAPI.get(`/trips/${tripId}`);
-    content.innerHTML = buildTripDrawerContent(data.trip);
-    wireTripDrawerButtons(data.trip);
+    // Fetch trip details and driver user profile concurrently
+    const [tripData, hintUserData] = await Promise.all([
+      AdminAPI.get(`/trips/${tripId}`),
+      hintDriverId ? AdminAPI.get(`/users/${hintDriverId}`).catch(() => null) : Promise.resolve(null),
+    ]);
+
+    const trip = tripData.trip;
+    const resolvedDriverId = hintDriverId || trip.driver?._id || (typeof trip.driver === 'string' ? trip.driver : null);
+
+    let driverFlags = (trip.driver && trip.driver.flagCount != null)
+      ? trip.driver.flagCount
+      : (tripData.driverFlagCount != null ? tripData.driverFlagCount : null);
+
+    // If driverFlags is missing or 0, check hintUserData or fetch user profile from /users/:id to guarantee accurate flag count
+    if ((driverFlags == null || driverFlags === 0) && resolvedDriverId) {
+      if (hintUserData && hintUserData.flagCount != null) {
+        driverFlags = hintUserData.flagCount;
+      } else {
+        try {
+          const userRes = await AdminAPI.get(`/users/${resolvedDriverId}`);
+          if (userRes && userRes.flagCount != null) {
+            driverFlags = userRes.flagCount;
+          }
+        } catch (uErr) {
+          console.warn('[ADMIN TRIPS] Could not fetch driver flags from /users/:id:', uErr);
+        }
+      }
+    }
+
+    if (driverFlags != null) {
+      if (trip.driver && typeof trip.driver === 'object') {
+        trip.driver.flagCount = driverFlags;
+      }
+      trip.driverFlagCount = driverFlags;
+    }
+
+    content.innerHTML = buildTripDrawerContent(trip);
+    wireTripDrawerButtons(trip);
+    initTripMap(trip);
   } catch (err) {
     content.innerHTML = `<div class="drawer-error">Error: ${err.message}</div>`;
   }
 }
 
 function closeTripDrawer() {
+  destroyTripMap();
   const wrapper = document.getElementById('trip-drawer-wrapper');
   if (wrapper) wrapper.classList.remove('drawer-open');
+}
+
+// ─── Initialize Leaflet Map ───────────────────────────────────────────────────
+async function initTripMap(trip) {
+  destroyTripMap();
+
+  const mapContainer = document.getElementById('admin-trip-map');
+  if (!mapContainer) return;
+
+  if (typeof L === 'undefined') {
+    mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-dim);font-size:.75rem;">Loading map…</div>';
+    return;
+  }
+
+  const pickupCoords  = extractCoords(trip.pickupLocation);
+  const dropoffCoords = extractCoords(trip.dropoffLocation);
+
+  if (!pickupCoords || !dropoffCoords) {
+    mapContainer.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.35rem;color:var(--text-dim);font-size:.8125rem;text-align:center;padding:1rem;">
+        <span>🗺️ Map coordinates unavailable</span>
+        <span style="font-size:.6875rem;color:var(--text-dim);">${escTripHtml(trip.pickupLocation?.address || 'Pickup')} → ${escTripHtml(trip.dropoffLocation?.address || 'Dropoff')}</span>
+      </div>`;
+    return;
+  }
+
+  mapContainer.innerHTML = '';
+
+  const centerLat = (pickupCoords.lat + dropoffCoords.lat) / 2;
+  const centerLng = (pickupCoords.lng + dropoffCoords.lng) / 2;
+
+  currentTripMap = L.map(mapContainer, {
+    zoomControl: true,
+    attributionControl: false,
+    dragging: true,
+    scrollWheelZoom: false, // Prevents interfering with drawer scrolling
+    doubleClickZoom: true,
+  }).setView([centerLat, centerLng], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    keepBuffer: 6,
+    crossOrigin: true
+  }).addTo(currentTripMap);
+
+  // Colored markers matching AddRide-Connected.html
+  const blueIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [22, 36], iconAnchor: [11, 36], popupAnchor: [1, -30], shadowSize: [36, 36]
+  });
+
+  const redIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [22, 36], iconAnchor: [11, 36], popupAnchor: [1, -30], shadowSize: [36, 36]
+  });
+
+  const greenIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [22, 36], iconAnchor: [11, 36], popupAnchor: [1, -30], shadowSize: [36, 36]
+  });
+
+  const orangeIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [18, 30], iconAnchor: [9, 30], popupAnchor: [1, -26], shadowSize: [30, 30]
+  });
+
+  // Pickup marker (blue)
+  L.marker([pickupCoords.lat, pickupCoords.lng], { icon: blueIcon })
+    .addTo(currentTripMap)
+    .bindPopup(`<strong>📍 Pickup</strong><br/>${escTripHtml(trip.pickupLocation?.address || 'Pickup Point')}`);
+
+  // Dropoff marker (red)
+  L.marker([dropoffCoords.lat, dropoffCoords.lng], { icon: redIcon })
+    .addTo(currentTripMap)
+    .bindPopup(`<strong>🏁 Dropoff</strong><br/>${escTripHtml(trip.dropoffLocation?.address || 'Destination')}`);
+
+  // Confirmed / matched riders markers (orange)
+  if (Array.isArray(trip.riders)) {
+    trip.riders.forEach((r) => {
+      const rCoords = extractCoords(r.pickupPoint);
+      if (rCoords) {
+        const rName = r.riderId ? `${r.riderId.firstName} ${r.riderId.lastName}` : 'Rider';
+        L.marker([rCoords.lat, rCoords.lng], { icon: orangeIcon })
+          .addTo(currentTripMap)
+          .bindPopup(`<strong>👤 ${escTripHtml(rName)}</strong><br/>${escTripHtml(r.pickupPoint?.address || 'Rider Pickup')}`);
+      }
+    });
+  }
+
+  // Driver live location (green) if available
+  const driverCoords = extractCoords(trip.driverLocation) || extractCoords(trip.driver?.currentLocation);
+  if (driverCoords) {
+    const driverName = trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : 'Driver';
+    L.marker([driverCoords.lat, driverCoords.lng], { icon: greenIcon })
+      .addTo(currentTripMap)
+      .bindPopup(`<strong>🚗 ${escTripHtml(driverName)}</strong><br/>Live Location`);
+  }
+
+  // Fallback straight line
+  const drawFallback = () => {
+    if (!currentTripMap) return;
+    const line = L.polyline(
+      [[pickupCoords.lat, pickupCoords.lng], [dropoffCoords.lat, dropoffCoords.lng]],
+      { color: '#06b6d4', weight: 3, dashArray: '6, 6', opacity: 0.8 }
+    ).addTo(currentTripMap);
+    currentTripMap.fitBounds(line.getBounds(), { padding: [30, 30] });
+  };
+
+  // OSRM Driving Route
+  try {
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${pickupCoords.lng},${pickupCoords.lat};${dropoffCoords.lng},${dropoffCoords.lat}?overview=full&geometries=geojson`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const resp = await fetch(osrmUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (resp.ok) {
+      const routeData = await resp.json();
+      if (routeData.code === 'Ok' && routeData.routes && routeData.routes.length > 0) {
+        const coords = routeData.routes[0].geometry.coordinates;
+        const latLngs = coords.map(c => [c[1], c[0]]);
+        const routeLine = L.polyline(latLngs, {
+          color: '#06b6d4',
+          weight: 4,
+          opacity: 0.9,
+          lineCap: 'round',
+          lineJoin: 'round',
+        }).addTo(currentTripMap);
+
+        currentTripMap.fitBounds(routeLine.getBounds(), { padding: [30, 30] });
+      } else {
+        drawFallback();
+      }
+    } else {
+      drawFallback();
+    }
+  } catch (err) {
+    drawFallback();
+  }
+
+  // Recalculate dimensions once drawer transition finishes
+  setTimeout(() => {
+    if (currentTripMap) {
+      currentTripMap.invalidateSize();
+    }
+  }, 280);
 }
 
 // ─── Build trip drawer HTML ───────────────────────────────────────────────────
@@ -156,14 +400,18 @@ function buildTripDrawerContent(t) {
   const driver    = t.driver   ? `${t.driver.firstName} ${t.driver.lastName}` : '—';
   const driverPh  = t.driver?.phone || '—';
   const driverRating = t.driver?.rating ? `${t.driver.rating.toFixed(1)} ⭐` : '—';
+  const driverFlags  = (t.driver && t.driver.flagCount != null) ? t.driver.flagCount : (t.driverFlagCount || 0);
+  const driverFlagDisplay = driverFlags > 0
+    ? `<span class="flag-count ${driverFlags >= 3 ? 'flag-high' : 'flag-low'}">🚩 ${driverFlags} flag${driverFlags !== 1 ? 's' : ''}</span>`
+    : '<span class="text-dim">0 flags</span>';
 
   const fmt = (d) => d
     ? new Date(d).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
     : '—';
 
   // Pickup / dropoff addresses
-  const pickupAddr  = t.pickupLocation?.address  || '—';
-  const dropoffAddr = t.dropoffLocation?.address || '—';
+  const pickupAddr  = t.pickupLocation?.address  || 'Pickup Location';
+  const dropoffAddr = t.dropoffLocation?.address || 'Dropoff Destination';
 
   // Fare info
   const fareRows = [
@@ -178,7 +426,7 @@ function buildTripDrawerContent(t) {
   const ridersHtml = !t.riders || t.riders.length === 0
     ? '<div class="trip-empty">No riders on this trip.</div>'
     : t.riders.map((r) => {
-        const rName  = r.riderId ? `${r.riderId.firstName} ${r.riderId.lastName}` : 'Unknown';
+        const rName  = r.riderId ? `${r.riderId.firstName} ${r.riderId.lastName}` : 'Unknown Rider';
         const rPhone = r.riderId?.phone || '—';
         const rFare  = r.fare != null ? `₹${r.fare.toFixed(0)}` : '—';
         const rBadge = riderStatusBadge(r.status);
@@ -188,7 +436,7 @@ function buildTripDrawerContent(t) {
             <div class="rider-meta">
               <span class="cell-mono text-muted" style="font-size:.75rem">${escTripHtml(rPhone)}</span>
               <span class="badge ${rBadge}">${r.status}</span>
-              <span style="font-size:.8125rem;color:var(--cyan)">${rFare}</span>
+              <span style="font-size:.8125rem;color:var(--cyan);font-weight:600">${rFare}</span>
             </div>
           </div>
         `;
@@ -196,23 +444,25 @@ function buildTripDrawerContent(t) {
 
   // Force-action buttons (only for active trips)
   const actionButtons = t.status === 'active' ? `
-    <div class="drawer-section-title">Admin Actions</div>
-    <div class="trip-action-row">
-      <button
-        id="trip-force-complete-btn"
-        class="btn-action btn-trip-complete"
-        data-trip-id="${t._id}"
-        data-trip-code="${escTripHtml(t.tripCode)}"
-      >✓ Force Complete</button>
-      <button
-        id="trip-force-cancel-btn"
-        class="btn-action btn-trip-cancel"
-        data-trip-id="${t._id}"
-        data-trip-code="${escTripHtml(t.tripCode)}"
-      >✗ Force Cancel</button>
-    </div>
-    <div style="font-size:.75rem;color:var(--text-dim);margin-top:.5rem">
-      These actions are permanent and logged. Use only when a trip is stuck.
+    <div class="trip-actions-card">
+      <div class="drawer-section-title" style="margin-top:0;padding-bottom:.25rem;color:#fb7185">⚠️ Admin Override Actions</div>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.5rem">
+        Use only when a trip is stuck or driver/riders disconnected. These actions are permanent and recorded in the audit log.
+      </div>
+      <div class="trip-action-row">
+        <button
+          id="trip-force-complete-btn"
+          class="btn-action btn-trip-complete"
+          data-trip-id="${t._id}"
+          data-trip-code="${escTripHtml(t.tripCode)}"
+        >✓ Force Complete</button>
+        <button
+          id="trip-force-cancel-btn"
+          class="btn-action btn-trip-cancel"
+          data-trip-id="${t._id}"
+          data-trip-code="${escTripHtml(t.tripCode)}"
+        >✕ Force Cancel</button>
+      </div>
     </div>
   ` : '';
 
@@ -220,23 +470,41 @@ function buildTripDrawerContent(t) {
     <!-- Trip header -->
     <div class="trip-drawer-header">
       <div>
+        <div style="font-size:.6875rem;color:var(--text-dim);text-transform:uppercase;font-weight:600;letter-spacing:.05em">Trip Code</div>
         <div class="trip-code-large">${escTripHtml(t.tripCode || '—')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem">
         <span class="badge ${tripStatusBadgeClass(t.status)}">${t.status}</span>
+        <span class="badge" style="background:rgba(255,255,255,.05);border:1px solid var(--border-hi);color:var(--text-muted)">${t.vehicle}</span>
       </div>
     </div>
 
-    <!-- Route -->
-    <div class="drawer-section-title">Route</div>
-    <div class="route-block">
-      <div class="route-point route-from">
-        <span class="route-dot dot-green"></span>
-        <span>${escTripHtml(pickupAddr)}</span>
+    <!-- Route & Interactive Map -->
+    <div class="drawer-section-title">Route & Live Map</div>
+    <div class="route-grid">
+      <div class="route-card route-card-pickup">
+        <div class="route-card-label">📍 Pickup</div>
+        <div class="route-card-addr">${escTripHtml(pickupAddr)}</div>
       </div>
-      <div class="route-line"></div>
-      <div class="route-point route-to">
-        <span class="route-dot dot-rose"></span>
-        <span>${escTripHtml(dropoffAddr)}</span>
+      <div class="route-card route-card-dropoff">
+        <div class="route-card-label">🏁 Dropoff</div>
+        <div class="route-card-addr">${escTripHtml(dropoffAddr)}</div>
       </div>
+    </div>
+
+    <!-- Leaflet Map Container -->
+    <div class="trip-map-container">
+      <div id="admin-trip-map"></div>
+    </div>
+
+    <!-- Map Legend -->
+    <div class="map-legend-bar">
+      <div class="map-legend-items">
+        <div class="map-legend-item"><span style="color:#3B8BEB;font-size:1rem">●</span> Pickup</div>
+        <div class="map-legend-item"><span style="color:#ef4444;font-size:1rem">●</span> Dropoff</div>
+        <div class="map-legend-item"><span style="color:#f59e0b;font-size:1rem">●</span> Riders</div>
+      </div>
+      ${t.distance != null ? `<span style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">${t.distance.toFixed(1)} km</span>` : ''}
     </div>
 
     <!-- Timeline -->
@@ -247,23 +515,24 @@ function buildTripDrawerContent(t) {
     </div>
 
     <!-- Driver -->
-    <div class="drawer-section-title">Driver</div>
+    <div class="drawer-section-title">Driver Information</div>
     <div class="drawer-grid">
       <div class="drawer-field"><span class="field-label">Name</span><span class="field-value">${escTripHtml(driver)}</span></div>
-      <div class="drawer-field"><span class="field-label">Phone</span><span class="field-value">${escTripHtml(driverPh)}</span></div>
+      <div class="drawer-field"><span class="field-label">Phone</span><span class="field-value cell-mono">${escTripHtml(driverPh)}</span></div>
       <div class="drawer-field"><span class="field-label">Rating</span><span class="field-value">${driverRating}</span></div>
-      <div class="drawer-field"><span class="field-label">Vehicle</span><span class="field-value">${t.vehicle}</span></div>
-      <div class="drawer-field"><span class="field-label">Seats</span><span class="field-value">${t.occupiedSeats}/${t.availableSeats + t.occupiedSeats}</span></div>
+      <div class="drawer-field"><span class="field-label">Vehicle</span><span class="field-value" style="text-transform:capitalize">${t.vehicle}</span></div>
+      <div class="drawer-field"><span class="field-label">Available Seats</span><span class="field-value">${t.occupiedSeats || 0} / ${(t.availableSeats || 0) + (t.occupiedSeats || 0)}</span></div>
+      <div class="drawer-field"><span class="field-label">Flags</span><span class="field-value">${driverFlagDisplay}</span></div>
     </div>
 
     <!-- Fare -->
-    ${fareRows ? `<div class="drawer-section-title">Fare</div><div class="drawer-grid">${fareRows}</div>` : ''}
+    ${fareRows ? `<div class="drawer-section-title">Fare Details</div><div class="drawer-grid">${fareRows}</div>` : ''}
 
     <!-- Riders -->
     <div class="drawer-section-title">Riders (${t.riders?.length ?? 0})</div>
     <div class="riders-list">${ridersHtml}</div>
 
-    <!-- Admin actions -->
+    <!-- Admin actions (Force Complete / Force Cancel) -->
     ${actionButtons}
   `;
 }
