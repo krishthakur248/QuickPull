@@ -104,10 +104,18 @@ const AdminAPI = {
 
     const data = await response.json().catch(() => ({ message: 'Invalid server response.' }));
 
-    // If the server says the session is invalid or forbidden, log out
+    // If the server says the session is invalid or forbidden:
+    //   - For the LOGIN endpoint itself (/login): just throw the error so the
+    //     login page can catch it and show the red error box. Do NOT redirect.
+    //   - For every OTHER protected endpoint: clear the token and go to login,
+    //     because it means the session has expired.
     if (response.status === 401 || response.status === 403) {
-      this.clearToken();
-      window.location.href = './index.html';
+      if (endpoint !== '/login') {
+        // Protected endpoint — session expired or token invalid
+        this.clearToken();
+        window.location.href = './index.html';
+      }
+      // For both cases: throw so the caller's catch block handles the message
       throw new Error(data.message || 'Session expired. Please log in again.');
     }
 

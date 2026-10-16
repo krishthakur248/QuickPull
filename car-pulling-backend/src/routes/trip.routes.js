@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const tripController = require('../controllers/trip.controller');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, requireActiveUser } = require('../middleware/auth');
 
-// All trip routes require authentication
-router.use(verifyToken);
+// All trip routes require: (1) a valid JWT, and (2) an active, non-blocked account.
+// requireActiveUser does a fast DB lookup — this fixes the Phase 0 finding that
+// a blocked user could keep using their 7-day token after being blocked.
+router.use(verifyToken, requireActiveUser);
 
 // TEST: Simple endpoint to verify matching is working
 router.get('/test/check-trips', tripController.getAllTrips);

@@ -51,18 +51,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Start on the audit log section (the only working section in Phase 1)
   showSection('audit-log');
+  // Mark Audit Log nav item as active on load
+  document.querySelector('[data-section="audit-log"]')?.classList.add('nav-active');
 
   // Load the first page of the audit log
   await loadAuditLog(1);
 });
 
 // ─── Section switcher ─────────────────────────────────────────────────────────
+// Section titles shown in the topbar when you switch sections
+const SECTION_TITLES = {
+  'audit-log': 'Audit Log',
+  'users':     'User Management',
+  'trips':     'Trip Management',
+  'dashboard': 'Dashboard',
+};
+
+// Track which sections have already been initialised so we don't double-init
+const initialisedSections = new Set();
+
 function showSection(sectionId) {
   document.querySelectorAll('.content-section').forEach((s) => {
     s.style.display = 'none';
   });
   const target = document.getElementById(`section-${sectionId}`);
   if (target) target.style.display = 'block';
+
+  // Update topbar title
+  const titleEl = document.getElementById('topbar-title');
+  if (titleEl) titleEl.textContent = SECTION_TITLES[sectionId] || sectionId;
+
+  // One-time initialisation for sections that need data fetched
+  if (!initialisedSections.has(sectionId)) {
+    initialisedSections.add(sectionId);
+    if (sectionId === 'users' && typeof initUsersSection === 'function') {
+      initUsersSection();
+    }
+  }
 }
 
 // ─── Audit log loader ─────────────────────────────────────────────────────────
