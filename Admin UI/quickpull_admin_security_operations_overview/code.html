@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-tertiary-container": "#563400", "on-tertiary": "#472a00", "inverse-on-surface": "#2a3043", "background": "#0c1324", "error": "#ffb4ab", "on-secondary-fixed-variant": "#005236", "on-secondary-fixed": "#002113", "on-secondary": "#003824", "error-container": "#93000a", "on-secondary-container": "#00311f", "on-tertiary-fixed": "#2a1700", "surface-container-highest": "#2e3447", "on-surface": "#dce1fb", "inverse-primary": "#00687a", "surface-dim": "#0c1324", "on-primary-fixed-variant": "#004e5c", "secondary-fixed": "#6ffbbe", "tertiary": "#ffb95f", "outline": "#869397", "surface-variant": "#2e3447", "on-primary-container": "#00424f", "on-background": "#dce1fb", "on-surface-variant": "#bcc9cd", "on-error-container": "#ffdad6", "surface-container-lowest": "#070d1f", "surface-container-high": "#23293c", "secondary-fixed-dim": "#4edea3", "on-primary": "#003640", "primary-container": "#06b6d4", "surface-container": "#191f31", "primary": "#4cd7f6", "surface-tint": "#4cd7f6", "outline-variant": "#3d494c", "on-primary-fixed": "#001f26", "on-tertiary-fixed-variant": "#653e00", "secondary": "#4edea3", "inverse-surface": "#dce1fb", "primary-fixed": "#acedff", "surface": "#0c1324", "surface-bright": "#33394c", "surface-container-low": "#151b2d", "on-error": "#690005", "tertiary-fixed-dim": "#ffb95f", "tertiary-container": "#e79400", "secondary-container": "#00a572", "primary-fixed-dim": "#4cd7f6", "tertiary-fixed": "#ffddb8" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "gutter-lg": "1rem", "space-lg": "1rem", "margin": "1rem", "gutter": "0.75rem", "space-xs": "0.25rem", "space-xl": "1.5rem", "space-md": "0.75rem", "margin-lg": "1.5rem", "space-sm": "0.375rem" }, "fontFamily": { "label-ui": [ "Inter" ], "label-code-sm": [ "JetBrains Mono" ], "body-md": [ "Inter" ], "headline-xl": [ "Inter" ], "headline-sm": [ "Inter" ], "label-code-lg": [ "JetBrains Mono" ], "body-lg": [ "Inter" ], "headline-lg": [ "Inter" ], "body-sm": [ "Inter" ] }, "fontSize": { "label-ui": [ "0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.05em", "fontWeight": "600" } ], "label-code-sm": [ "0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.02em", "fontWeight": "500" } ], "body-md": [ "0.8125rem", { "lineHeight": "1.25rem", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-xl": [ "2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.025em", "fontWeight": "700" } ], "headline-sm": [ "1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "label-code-lg": [ "0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "-0.01em", "fontWeight": "500" } ], "body-lg": [ "0.9375rem", { "lineHeight": "1.375rem", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-lg": [ "1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" } ], "body-sm": [ "0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.01em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="flex flex-col"><div class="px-space-md pt-space-md pb-space-sm bg-surface-container-lowest"><div class="flex items-center gap-space-xs"><img alt="QuickPull Admin Emblem" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeRE_92oDtCSCKN24vsWWXSrsP_Zl65TJyMT_NS-RwTaluEpbGCxDoeaTzawGLxmxvu-YZzPLSe_1rJqpXxYRL4y7lJ6jUrhd-wNmTObR3eFo2loa4_UM59teTsztESVwi6jbQL1ze5Ylc6hRETWvI9jj2_8a_VMxwz3NL6fwI9OnsS5zaveFWj9FMniHkDssNfKLdT-3w21wBnRHPWpi-R1K7tV0dwDsB63leZI8LQhV2XcsfOP19iUw"/><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate">QuickPull</span><span class="font-label-code-sm text-label-code-sm text-primary uppercase">Mission Ops</span></div></div><div class="mt-space-sm px-space-xs py-0.5 rounded bg-surface-container flex items-center justify-between"><span class="font-label-code-sm text-label-code-sm text-secondary-fixed-dim uppercase tracking-wider">PROD-OPS v1.4.2</span><span class="inline-flex items-center px-1 rounded bg-secondary-container text-on-secondary font-label-code-sm text-[9px] uppercase font-bold tracking-widest">ENFORCED</span></div></div><div class="px-space-md pt-space-md pb-space-xs"><span class="font-label-ui text-label-ui text-on-surface-variant uppercase tracking-widest">Telemetry &amp; Control</span></div><nav class="flex flex-col gap-space-xs px-space-xs" data-active-classes="bg-surface-container-high text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="overview-security-audit" href="#"><span class="material-symbols-outlined text-[18px]">security</span><span class="font-body-md text-body-md truncate">Overview &amp; Security Audit</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="user-directory-rbac" href="#"><span class="material-symbols-outlined text-[18px]">badge</span><span class="font-body-md text-body-md truncate">User Directory &amp; RBAC</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="trip-dispatch-live-tracking" href="#"><span class="material-symbols-outlined text-[18px]">near_me</span><span class="font-body-md text-body-md truncate">Trip Dispatch &amp; Tracking</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="auth-security-incident-logs" href="#"><span class="material-symbols-outlined text-[18px]">gpp_maybe</span><span class="font-body-md text-body-md truncate">Security Incident Logs</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="system-config-api-keys" href="#"><span class="material-symbols-outlined text-[18px]">settings_input_component</span><span class="font-body-md text-body-md truncate">System Config &amp; API Keys</span></a></nav></div><div class="p-space-sm bg-surface-container-low"><div class="p-space-xs rounded bg-surface-container-high flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">TLS 1.3 / mTLS Active</span></div><span class="font-label-code-sm text-label-code-sm text-primary">99.99%</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.3)]"><div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-0"><div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm truncate"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">terminal</span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">quickpull</span><span class="text-outline-variant">/</span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">ops-admin</span><span class="text-outline-variant">/</span><span class="font-label-code-sm text-label-code-sm text-primary font-medium truncate">enforcement-plane</span></div><div class="relative hidden xl:block w-80"><span class="material-symbols-outlined absolute left-space-xs top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span><input class="w-full bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm pl-7 pr-12 py-1 rounded outline-none cursor-pointer focus:bg-surface-container" placeholder="Search users, trips, IPs, token IDs..." readonly="" type="text"/><span class="absolute right-space-xs top-1/2 -translate-y-1/2 font-label-code-sm text-[10px] text-on-surface-variant px-1 rounded bg-surface-container-highest">⌘K</span></div></div><div class="flex items-center gap-space-sm shrink-0"><div class="hidden md:flex items-center gap-space-xs"><div class="flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">JWT DB:</span><span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">ACTIVE</span></div><div class="flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high"><span class="material-symbols-outlined text-[14px] text-tertiary">speed</span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">Rate:</span><span class="font-label-code-sm text-label-code-sm text-on-surface font-semibold">100/min</span></div></div><div class="flex items-center gap-space-xs pl-space-xs bg-surface-container-low rounded p-1"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-ui text-label-ui text-on-surface truncate">System Administrator</span><span class="font-label-code-sm text-[10px] text-primary truncate">superadmin@quickpull.local</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex items-center gap-0.5"><button class="px-1.5 py-1 rounded bg-error-container text-error hover:bg-error hover:text-on-error font-label-ui text-label-ui uppercase tracking-wide transition-colors flex items-center gap-0.5" title="Emergency System Freeze" type="button"><span class="material-symbols-outlined text-[14px]">gavel</span><span class="hidden lg:inline text-[10px]">Freeze</span></button><button class="p-1 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center" title="Terminate Session" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<div class="p-gutter-lg flex flex-col gap-space-lg">
+<!-- Top Remediation Alert Banner -->
+<div class="relative overflow-hidden rounded-lg bg-surface-container-high p-space-md shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pl-space-xs">
+<div class="flex items-start md:items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified_user</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-code-sm text-label-code-sm uppercase tracking-wider text-secondary font-bold">Phase 0 Security Remediation Applied</span>
+<span class="px-space-xs py-0.5 rounded-full bg-secondary-container text-secondary text-[10px] font-label-code-sm uppercase">Enforced in Prod</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+              DB-level JWT active check enabled, Password Hash masked (<code class="font-label-code-sm text-primary">select: false</code>), and Mass-Assignment payload guards engaged across fleet ingress.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 self-end md:self-auto">
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> Engine: Node/Mongoose v8.2
+          </span>
+<button class="px-space-sm py-1 rounded bg-surface-container-highest text-primary hover:bg-surface-container text-body-sm font-label-ui flex items-center gap-1 transition-colors" onclick="document.getElementById('remediation-spec-modal').classList.toggle('hidden')" type="button">
+<span class="material-symbols-outlined text-[15px]">code_blocks</span>
+<span>Audit Spec</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Operations Action Strip -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-sm bg-surface-container-low p-space-sm rounded-lg shadow-sm">
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5 px-space-xs py-1 rounded bg-surface-container">
+<span class="material-symbols-outlined text-[16px] text-primary">shield</span>
+<span class="font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">Cluster Defense:</span>
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">REINFORCED</span>
+</div>
+<div class="hidden lg:flex items-center gap-1 px-space-xs py-1 rounded bg-surface-container">
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">Blacklist Sync:</span>
+<span class="font-label-code-sm text-label-code-sm text-primary">Redis-01 [OK]</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="px-space-sm py-1.5 rounded bg-error-container text-error hover:bg-error hover:text-on-error transition-all font-label-ui text-label-ui flex items-center gap-1 shadow-sm" id="freeze-trigger-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">lock_reset</span>
+<span>Emergency User Freeze</span>
+</button>
+<button class="px-space-sm py-1.5 rounded bg-surface-container-highest text-on-surface hover:bg-surface-variant transition-all font-label-ui text-label-ui flex items-center gap-1 shadow-sm" id="flush-jwt-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">cached</span>
+<span>Flush JWT Cache</span>
+</button>
+<button class="px-space-sm py-1.5 rounded bg-primary text-on-primary hover:bg-primary-container transition-all font-label-ui text-label-ui font-semibold flex items-center gap-1 shadow-sm" id="export-csv-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Compliance Audit (.csv)</span>
+</button>
+</div>
+</div>
+<!-- 4 Key Operational Metrics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-gutter">
+<!-- Active Users -->
+<div class="rounded-lg bg-surface-container-low p-space-md flex flex-col justify-between relative overflow-hidden shadow-sm group hover:bg-surface-container transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">Active Principals</span>
+<span class="font-headline-xl text-headline-xl text-on-surface mt-1">4,281</span>
+</div>
+<div class="w-9 h-9 rounded-md bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-label-code-sm">
+<span class="text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>+12.4% this week
+            </span>
+<span class="text-on-surface-variant">Drivers: 1,420 | Riders: 2,861</span>
+</div>
+<!-- Tiny visual ratio line -->
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden flex">
+<div class="bg-primary h-full" style="width: 33.1%"></div>
+<div class="bg-secondary h-full" style="width: 66.9%"></div>
+</div>
+</div>
+</div>
+<!-- Blocked / Inactive Accounts -->
+<div class="rounded-lg bg-surface-container-low p-space-md flex flex-col justify-between relative overflow-hidden shadow-sm group hover:bg-surface-container transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">Blocked / Inactive Accounts</span>
+<span class="font-headline-xl text-headline-xl text-tertiary mt-1">38</span>
+</div>
+<div class="w-9 h-9 rounded-md bg-surface-container flex items-center justify-center text-tertiary group-hover:bg-tertiary group-hover:text-on-tertiary transition-colors">
+<span class="material-symbols-outlined text-[20px]">person_off</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-label-code-sm">
+<span class="text-tertiary flex items-center gap-0.5 font-medium">
+<span class="material-symbols-outlined text-[14px]">block</span>14 blocked this week
+            </span>
+<span class="text-on-surface-variant">Token Invalidation Active</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full" style="width: 36.8%"></div>
+</div>
+</div>
+</div>
+<!-- Blocked Login Attempts Prevented -->
+<div class="rounded-lg bg-surface-container-low p-space-md flex flex-col justify-between relative overflow-hidden shadow-sm group hover:bg-surface-container transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">Prevented Re-entry (Auth)</span>
+<span class="font-headline-xl text-headline-xl text-secondary mt-1">142</span>
+</div>
+<div class="w-9 h-9 rounded-md bg-surface-container flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-on-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">shield_lock</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-label-code-sm">
+<span class="text-secondary flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">done_all</span>Intercepted in Middleware
+            </span>
+<span class="text-on-surface-variant">isBlocked check</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 100%"></div>
+</div>
+</div>
+</div>
+<!-- API Security Health Score -->
+<div class="rounded-lg bg-surface-container-low p-space-md flex flex-col justify-between relative overflow-hidden shadow-sm group hover:bg-surface-container transition-colors">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui uppercase tracking-wider text-on-surface-variant">API Security Health</span>
+<span class="font-headline-xl text-headline-xl text-primary mt-1">98.6%</span>
+</div>
+<div class="w-9 h-9 rounded-md bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">health_and_safety</span>
+</div>
+</div>
+<div class="mt-space-md flex flex-col gap-1">
+<div class="flex items-center justify-between text-body-sm font-label-code-sm">
+<span class="text-primary flex items-center gap-0.5 font-medium">0 hash leaks detected</span>
+<span class="text-on-surface-variant">Throttle: 0.02%</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 98.6%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Phase 0 Vulnerability Matrix & Telemetry Visualizer -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Posture Matrix (7 Cols) -->
+<div class="lg:col-span-7 rounded-lg bg-surface-container-low p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">assignment_turned_in</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Phase 0 Security Posture Matrix</h2>
+</div>
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">SPEC-VER: 2025.Q1-PATCH</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md">
+            Direct operational verification across all core identity &amp; token lifecycles mandated prior to full fleet release.
+          </p>
+<div class="flex flex-col gap-space-xs">
+<!-- Risk 1 -->
+<div class="p-space-sm rounded bg-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5">verified</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-semibold">Blocked User Token Re-use</span>
+<span class="px-space-xs py-0.2 rounded-full bg-secondary-container text-secondary font-label-code-sm text-[10px] uppercase font-bold">Mitigated</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Middleware queries MongoDB <code class="text-primary font-label-code-sm">User.findById</code> validating <code class="text-secondary font-label-code-sm">!isBlocked &amp;&amp; isActive</code> on all authenticated requests.
+                  </span>
+</div>
+</div>
+<div class="shrink-0 sm:text-right">
+<span class="font-label-code-sm text-[11px] text-secondary bg-surface-container-high px-1.5 py-0.5 rounded">0ms Re-check Overhead</span>
+</div>
+</div>
+<!-- Risk 2 -->
+<div class="p-space-sm rounded bg-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5">verified</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-semibold">Role Mass Assignment on Register/Update</span>
+<span class="px-space-xs py-0.2 rounded-full bg-secondary-container text-secondary font-label-code-sm text-[10px] uppercase font-bold">Mitigated</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Payload whitelist destructured in controller; strict Schema enum <code class="text-primary font-label-code-sm">role: { enum: ['user', 'admin'] }</code> prevents arbitrary escalation.
+                  </span>
+</div>
+</div>
+<div class="shrink-0 sm:text-right">
+<span class="font-label-code-sm text-[11px] text-secondary bg-surface-container-high px-1.5 py-0.5 rounded">Joi / Zod Guard</span>
+</div>
+</div>
+<!-- Risk 3 -->
+<div class="p-space-sm rounded bg-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5">verified</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-semibold">Password Hash Exposure in JSON</span>
+<span class="px-space-xs py-0.2 rounded-full bg-secondary-container text-secondary font-label-code-sm text-[10px] uppercase font-bold">Secured</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Schema level isolation with <code class="text-primary font-label-code-sm">password: { select: false }</code> plus customized <code class="text-primary font-label-code-sm">toJSON</code> transform stripping sensitive keys.
+                  </span>
+</div>
+</div>
+<div class="shrink-0 sm:text-right">
+<span class="font-label-code-sm text-[11px] text-secondary bg-surface-container-high px-1.5 py-0.5 rounded">0 Hashes in Wire</span>
+</div>
+</div>
+<!-- Risk 4 -->
+<div class="p-space-sm rounded bg-surface-container flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">radar</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code-lg text-label-code-lg text-on-surface font-semibold">Brute Force on /api/admin/login</span>
+<span class="px-space-xs py-0.2 rounded-full bg-surface-container-highest text-primary font-label-code-sm text-[10px] uppercase font-bold">Active Guard</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                    Express rate limiter capped strictly at 5 invalid requests per 15-minute sliding window with Redis backplane synchronization.
+                  </span>
+</div>
+</div>
+<div class="shrink-0 sm:text-right">
+<span class="font-label-code-sm text-[11px] text-primary bg-surface-container-high px-1.5 py-0.5 rounded">5 Req / 15 Min</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1 font-label-code-sm">
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+            Last Security Run: 3m ago via automated worker
+          </span>
+<span class="font-label-code-sm text-primary">Status: ZERO CRITICAL ISSUES</span>
+</div>
+</div>
+<!-- Real-time Auth Pipeline Inspection (5 Cols) -->
+<div class="lg:col-span-5 rounded-lg bg-surface-container-low p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">query_stats</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Auth Middleware Funnel</h2>
+</div>
+<span class="font-label-code-sm text-label-code-sm text-secondary font-medium">LIVE PULSE</span>
+</div>
+<!-- SVG Visual Funnel Telemetry Chart -->
+<div class="bg-surface-container rounded p-space-sm mt-space-xs flex flex-col gap-space-sm">
+<div class="flex items-center justify-between font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span>Ingress Requests (15m)</span>
+<span class="text-on-surface font-bold">18,940 req</span>
+</div>
+<!-- Inline SVG chart -->
+<div class="w-full h-24">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 380 90">
+<defs>
+<lineargradient id="gradPrimary" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#4cd7f6" stop-opacity="0.35"></stop>
+<stop offset="100%" stop-color="#4cd7f6" stop-opacity="0.0"></stop>
+</lineargradient>
+<lineargradient id="gradBlocked" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#ffb4ab" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#ffb4ab" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid hairlines -->
+<line stroke="#2e3447" stroke-dasharray="3,3" stroke-width="0.75" x1="0" x2="380" y1="20" y2="20"></line>
+<line stroke="#2e3447" stroke-dasharray="3,3" stroke-width="0.75" x1="0" x2="380" y1="50" y2="50"></line>
+<line stroke="#2e3447" stroke-width="0.75" x1="0" x2="380" y1="80" y2="80"></line>
+<!-- Regular traffic path -->
+<path d="M0,65 Q30,55 60,60 T120,40 T180,45 T240,30 T300,35 T350,22 L380,25 L380,85 L0,85 Z" fill="url(#gradPrimary)"></path>
+<path d="M0,65 Q30,55 60,60 T120,40 T180,45 T240,30 T300,35 T350,22 L380,25" fill="none" stroke="#4cd7f6" stroke-width="2"></path>
+<!-- Intercepted blocked events path -->
+<path d="M0,82 Q40,80 80,82 T160,78 T240,80 T320,72 L380,75 L380,85 L0,85 Z" fill="url(#gradBlocked)"></path>
+<path d="M0,82 Q40,80 80,82 T160,78 T240,80 T320,72 L380,75" fill="none" stroke="#ffb4ab" stroke-width="1.5"></path>
+</svg>
+</div>
+<div class="grid grid-cols-3 gap-space-xs text-center pt-space-xs">
+<div class="p-1 rounded bg-surface-container-high">
+<span class="font-label-ui text-[10px] uppercase text-on-surface-variant block">JWT Verified</span>
+<span class="font-label-code-sm text-label-code-sm text-secondary font-bold">18,798</span>
+</div>
+<div class="p-1 rounded bg-surface-container-high">
+<span class="font-label-ui text-[10px] uppercase text-on-surface-variant block">Blocked Reject</span>
+<span class="font-label-code-sm text-label-code-sm text-error font-bold">142</span>
+</div>
+<div class="p-1 rounded bg-surface-container-high">
+<span class="font-label-ui text-[10px] uppercase text-on-surface-variant block">Hash Sanitized</span>
+<span class="font-label-code-sm text-label-code-sm text-primary font-bold">100%</span>
+</div>
+</div>
+</div>
+<!-- Active enforcement components -->
+<div class="flex flex-col gap-space-xs mt-space-sm">
+<div class="flex items-center justify-between p-space-xs bg-surface-container rounded font-label-code-sm text-label-code-sm">
+<span class="text-on-surface-variant">MongoDB Connection</span>
+<span class="text-secondary flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span>Replica Set Stable (3 nodes)</span>
+</div>
+<div class="flex items-center justify-between p-space-xs bg-surface-container rounded font-label-code-sm text-label-code-sm">
+<span class="text-on-surface-variant">JWT Secret Entropy</span>
+<span class="text-primary font-semibold">512-bit HS512 (Vault Kept)</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md p-space-xs rounded bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[16px]">speed</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Middleware execution overhead:</span>
+</div>
+<span class="font-label-code-sm text-label-code-sm text-on-surface font-semibold">&lt; 1.4ms</span>
+</div>
+</div>
+</div>
+<!-- Live Security & Auth Stream Table -->
+<div class="rounded-lg bg-surface-container-low p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">table_rows</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Live Security &amp; Auth Stream</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time event stream from auth verification gateways</p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm">
+            Streaming via SSE
+          </span>
+<button class="p-1 rounded bg-surface-container text-primary hover:bg-surface-container-high transition-colors" id="refresh-logs-btn" title="Force Pull Latest" type="button">
+<span class="material-symbols-outlined text-[16px]">refresh</span>
+</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant uppercase font-label-ui text-label-ui">
+<th class="py-2.5 px-space-sm">Timestamp</th>
+<th class="py-2.5 px-space-sm">Principal / Subject</th>
+<th class="py-2.5 px-space-sm">Target &amp; IP</th>
+<th class="py-2.5 px-space-sm">Security Event</th>
+<th class="py-2.5 px-space-sm">Risk Score</th>
+<th class="py-2.5 px-space-sm text-right">Intervention / Action</th>
+</tr>
+</thead>
+<tbody class="divide-y-0" id="auth-event-stream-body">
+<!-- Row 1: Blocked Rejection -->
+<tr class="bg-surface-container-lowest/60 hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant whitespace-nowrap">2025-05-18 14:42:01.104</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">usr_9921_x9f</span>
+<span class="text-[10px] text-error font-medium">driver@interfleet.net</span>
+</div>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant">
+<span>198.51.100.42</span>
+<span class="block text-[10px] text-outline">POST /api/trips/claim</span>
+</td>
+<td class="py-2.5 px-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-error-container text-error font-label-code-sm text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Blocked User Login Rejected
+                </span>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error text-[11px] font-bold">94 / 100</span>
+</td>
+<td class="py-2.5 px-space-sm text-right">
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container-highest text-error font-label-code-sm text-[11px]">
+                  HTTP 403 • Token Revoked
+                </span>
+</td>
+</tr>
+<!-- Row 2: Mass Assignment Attempt -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant whitespace-nowrap">2025-05-18 14:41:48.882</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">usr_anon_probe</span>
+<span class="text-[10px] text-tertiary">attacker@exploit-dev.cc</span>
+</div>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant">
+<span>203.0.113.88</span>
+<span class="block text-[10px] text-outline">POST /api/auth/register</span>
+</td>
+<td class="py-2.5 px-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-surface-container-highest text-tertiary font-label-code-sm text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Admin Role Change Attempt [Blocked]
+                </span>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-tertiary text-[11px] font-bold">88 / 100</span>
+</td>
+<td class="py-2.5 px-space-sm text-right">
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container-highest text-tertiary font-label-code-sm text-[11px]">
+                  Stripped via Whitelist
+                </span>
+</td>
+</tr>
+<!-- Row 3: Standard JWT Verified -->
+<tr class="bg-surface-container-lowest/60 hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant whitespace-nowrap">2025-05-18 14:41:12.310</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">usr_driver_774</span>
+<span class="text-[10px] text-secondary">m.santos@fleet-express.com</span>
+</div>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant">
+<span>172.56.21.90</span>
+<span class="block text-[10px] text-outline">GET /api/trips/active</span>
+</td>
+<td class="py-2.5 px-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-secondary-container text-secondary font-label-code-sm text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> JWT Verified
+                </span>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm">
+<span class="text-secondary text-[11px]">02 / 100</span>
+</td>
+<td class="py-2.5 px-space-sm text-right">
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-secondary font-label-code-sm text-[11px]">
+                  Authorized • 200 OK
+                </span>
+</td>
+</tr>
+<!-- Row 4: Password Reset -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant whitespace-nowrap">2025-05-18 14:40:02.012</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">usr_rider_581</span>
+<span class="text-[10px] text-on-surface-variant">sarah.c@cloudmail.org</span>
+</div>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant">
+<span>104.28.19.102</span>
+<span class="block text-[10px] text-outline">POST /api/auth/reset-password</span>
+</td>
+<td class="py-2.5 px-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-surface-container-highest text-primary font-label-code-sm text-[11px]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Password Reset
+                </span>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm">
+<span class="text-primary text-[11px]">15 / 100</span>
+</td>
+<td class="py-2.5 px-space-sm text-right">
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-[11px]">
+                  Hash Masked • Success
+                </span>
+</td>
+</tr>
+<!-- Row 5: Blocked Account Re-Attempt -->
+<tr class="bg-surface-container-lowest/60 hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant whitespace-nowrap">2025-05-18 14:38:59.981</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">usr_rogue_018</span>
+<span class="text-[10px] text-error font-medium">banned.actor@proton.me</span>
+</div>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm text-on-surface-variant">
+<span>45.33.32.156</span>
+<span class="block text-[10px] text-outline">POST /api/auth/login</span>
+</td>
+<td class="py-2.5 px-space-sm">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-error-container text-error font-label-code-sm text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> Blocked User Login Rejected
+                </span>
+</td>
+<td class="py-2.5 px-space-sm font-label-code-sm">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error text-[11px] font-bold">96 / 100</span>
+</td>
+<td class="py-2.5 px-space-sm text-right">
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container-highest text-error font-label-code-sm text-[11px]">
+                  isBlocked = True • Dropped
+                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Metadata -->
+<div class="flex flex-col sm:flex-row items-center justify-between text-body-sm text-on-surface-variant pt-space-xs">
+<span class="font-label-code-sm">Displaying latest 5 of 1,420 stream entries recorded today</span>
+<div class="flex items-center gap-space-xs mt-1 sm:mt-0">
+<span class="font-label-code-sm text-secondary flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Auto-polling (5s)
+          </span>
+<button class="px-space-xs py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary font-label-code-sm" type="button">
+            Inspect Full Syslog →
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Audit Remediation Code Inspector Modal (Hidden by Default) -->
+<div class="fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-sm hidden flex items-center justify-center p-space-md" id="remediation-spec-modal">
+<div class="bg-surface-container-low max-w-2xl w-full rounded-lg shadow-xl p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">verified</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Phase 0 Mongoose Implementation Spec</span>
+</div>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('remediation-spec-modal').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded font-label-code-sm text-body-sm text-on-surface overflow-x-auto">
+<p class="text-outline font-label-ui uppercase tracking-widest text-[10px] mb-1">// Middleware: verifyAuthToken.js</p>
+<span class="text-primary">const</span> decoded = jwt.verify(token, process.env.JWT_SECRET);<br/>
+<span class="text-primary">const</span> user = <span class="text-primary">await</span> User.findById(decoded.id).select(<span class="text-secondary">'+role +isActive +isBlocked'</span>);<br/>
+<br/>
+<span class="text-tertiary">if</span> (!user || user.isBlocked || !user.isActive) {<br/>
+          <span class="text-tertiary">return</span> res.status(403).json({ error: <span class="text-error">'Principal access revoked or blocked'</span> });<br/>
+        }<br/>
+<br/>
+<p class="text-outline font-label-ui uppercase tracking-widest text-[10px] mb-1">// Model: User.js</p>
+        password: { type: String, required: true, <span class="text-secondary">select: false</span> },<br/>
+        role: { type: String, enum: [<span class="text-primary">'user'</span>, <span class="text-primary">'admin'</span>], default: <span class="text-primary">'user'</span> }
+      </div>
+<div class="flex justify-end pt-space-xs">
+<button class="px-space-md py-1 rounded bg-primary text-on-primary font-label-ui text-label-ui font-semibold" onclick="document.getElementById('remediation-spec-modal').classList.add('hidden')" type="button">
+          Dismiss Spec
+        </button>
+</div>
+</div>
+</div>
+<!-- Simple Feedback Toast -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none" id="feedback-toast">
+<div class="px-space-md py-space-sm rounded-lg bg-surface-container-high shadow-lg flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]" id="feedback-toast-icon">check_circle</span>
+<span class="font-body-md text-body-md text-on-surface font-medium" id="feedback-toast-msg">Operation completed</span>
+</div>
+</div>
+<script>
+    (function initDashboardInteractions() {
+      const toast = document.getElementById('feedback-toast');
+      const toastMsg = document.getElementById('feedback-toast-msg');
+      const toastIcon = document.getElementById('feedback-toast-icon');
+
+      function showToast(msg, icon = 'check_circle', iconColor = 'text-secondary') {
+        toastMsg.textContent = msg;
+        toastIcon.className = `material-symbols-outlined ${iconColor} text-[18px]`;
+        toastIcon.textContent = icon;
+        toast.classList.remove('translate-y-16', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => {
+          toast.classList.add('translate-y-16', 'opacity-0');
+          toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3200);
+      }
+
+      // Emergency User Freeze Action
+      const freezeBtn = document.getElementById('freeze-trigger-btn');
+      if (freezeBtn) {
+        freezeBtn.addEventListener('click', () => {
+          const confirmed = confirm('CRITICAL: Execute fleet-wide Emergency Token Freeze? This immediately terminates unverified active sessions.');
+          if (confirmed) {
+            showToast('Emergency lockdown dispatched. 38 accounts enforced.', 'lock_reset', 'text-error');
+          }
+        });
+      }
+
+      // Flush JWT Cache Action
+      const flushBtn = document.getElementById('flush-jwt-btn');
+      if (flushBtn) {
+        flushBtn.addEventListener('click', () => {
+          flushBtn.classList.add('opacity-50');
+          setTimeout(() => {
+            flushBtn.classList.remove('opacity-50');
+            showToast('Redis JWT session invalidation registry synced across nodes.');
+          }, 450);
+        });
+      }
+
+      // Compliance Report CSV Export
+      const exportBtn = document.getElementById('export-csv-btn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+          const csvHeader = 'Timestamp,Principal_ID,Target_IP,Event,Risk_Score,Status\\n';
+          const sampleData = [
+            '2025-05-18T14:42:01Z,usr_9921_x9f,198.51.100.42,Blocked User Login Rejected,94,HTTP 403',
+            '2025-05-18T14:41:48Z,usr_anon_probe,203.0.113.88,Admin Role Change Attempt [Blocked],88,Sanitized',
+            '2025-05-18T14:41:12Z,usr_driver_774,172.56.21.90,JWT Verified,02,HTTP 200',
+            '2025-05-18T14:40:02Z,usr_rider_581,104.28.19.102,Password Reset,15,Hash Masked',
+            '2025-05-18T14:38:59Z,usr_rogue_018,45.33.32.156,Blocked User Login Rejected,96,HTTP 403'
+          ].join('\\n');
+
+          const blob = new Blob([csvHeader + sampleData], { type: 'text/csv' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.setAttribute('href', url);
+          a.setAttribute('download', `quickpull-phase0-audit-${Date.now()}.csv`);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast('Phase 0 Compliance Audit CSV exported.', 'download', 'text-primary');
+        });
+      }
+
+      // Refresh Button
+      const refreshBtn = document.getElementById('refresh-logs-btn');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          refreshBtn.classList.add('animate-spin');
+          setTimeout(() => {
+            refreshBtn.classList.remove('animate-spin');
+            showToast('Auth event stream refreshed.');
+          }, 600);
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

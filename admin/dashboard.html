@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>QuickPull · Admin Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ── Mission Control tokens ────────────────────────────────────────────── */
+    :root {
+      --bg:           #020617;
+      --surface:      #0f172a;
+      --surface-high: #1e293b;
+      --border:       #1e293b;
+      --border-hi:    #334155;
+      --text:         #f8fafc;
+      --text-muted:   #94a3b8;
+      --text-dim:     #64748b;
+      --cyan:         #06b6d4;
+      --cyan-hover:   #22d3ee;
+      --green:        #10b981;
+      --amber:        #f59e0b;
+      --rose:         #f43f5e;
+      --sidebar-w:    240px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      font-size: .875rem;
+    }
+
+    /* ════════════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    /* Brand strip */
+    .sidebar-brand {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-brand-row {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+    }
+
+    .sidebar-logo {
+      width: 32px;
+      height: 32px;
+      background: rgba(6,182,212,.15);
+      border: 1px solid rgba(6,182,212,.3);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar-title {
+      font-weight: 700;
+      font-size: .9375rem;
+      letter-spacing: -.01em;
+    }
+
+    .sidebar-subtitle {
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    /* Admin user info */
+    .sidebar-user {
+      padding: .875rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-user-label {
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: .375rem;
+    }
+
+    .sidebar-user-name {
+      font-weight: 600;
+      font-size: .8125rem;
+      color: var(--text);
+    }
+
+    .sidebar-user-email {
+      font-size: .75rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: .75rem 0;
+      overflow-y: auto;
+    }
+
+    .nav-section-label {
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: .5rem 1rem .25rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      padding: .5rem 1rem;
+      font-size: .8125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: color .15s, background .15s, border-color .15s;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+    }
+
+    .nav-item.nav-active {
+      color: var(--cyan);
+      background: rgba(6,182,212,.08);
+      border-left-color: var(--cyan);
+    }
+
+    .nav-item.nav-disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .nav-icon { font-size: 1rem; width: 1.25rem; text-align: center; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--surface-high);
+      color: var(--text-dim);
+      font-size: .625rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: .125rem .375rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-hi);
+    }
+
+    /* Sidebar footer: logout */
+    .sidebar-footer {
+      padding: .75rem 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: .8125rem;
+      font-weight: 500;
+      padding: .5rem .75rem;
+      cursor: pointer;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+
+    .btn-logout:hover {
+      color: var(--rose);
+      border-color: rgba(244,63,94,.4);
+      background: rgba(244,63,94,.06);
+    }
+
+    /* ════════════════════════════════════════
+       MAIN CONTENT AREA
+    ════════════════════════════════════════ */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-y: auto;
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .875rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-title {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+
+    .topbar-status {
+      display: flex;
+      align-items: center;
+      gap: .375rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6875rem;
+      color: var(--text-dim);
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2.5s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    /* Content sections */
+    .content {
+      padding: 1.5rem;
+      flex: 1;
+    }
+
+    .content-section { display: none; }
+
+    /* Section heading */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -.01em;
+    }
+
+    .section-subtitle {
+      font-size: .8125rem;
+      color: var(--text-muted);
+      margin-top: .25rem;
+    }
+
+    /* ── Coming-soon placeholder ─────────────────────────────────────────── */
+    .placeholder-card {
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      padding: 3rem 2rem;
+      text-align: center;
+      max-width: 480px;
+      margin: 2rem auto;
+    }
+
+    .placeholder-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+
+    .placeholder-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: .5rem;
+    }
+
+    .placeholder-text {
+      font-size: .8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .placeholder-phase {
+      display: inline-block;
+      margin-top: .875rem;
+      background: rgba(6,182,212,.1);
+      border: 1px solid rgba(6,182,212,.25);
+      color: var(--cyan);
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .25rem .75rem;
+      border-radius: 9999px;
+    }
+
+    /* ════════════════════════════════════════
+       AUDIT LOG TABLE
+    ════════════════════════════════════════ */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .table-toolbar-title {
+      font-size: .8125rem;
+      font-weight: 600;
+    }
+
+    .btn-sm {
+      background: var(--surface-high);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: .75rem;
+      font-weight: 500;
+      padding: .25rem .625rem;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+    }
+
+    .btn-sm:hover:not(:disabled) {
+      color: var(--text);
+      border-color: var(--text-dim);
+    }
+
+    .btn-sm:disabled { opacity: .4; cursor: not-allowed; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: .5rem 1rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr { border-bottom: 1px solid var(--border); }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    .log-row td {
+      padding: .625rem 1rem;
+      vertical-align: middle;
+      font-size: .8125rem;
+    }
+
+    .log-row:hover td { background: rgba(255,255,255,.02); }
+
+    .cell-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--text-muted);
+    }
+
+    .table-placeholder {
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: .8125rem;
+    }
+
+    .table-error { color: #fb7185; }
+
+    /* ── Action badges ──────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: .125rem .5rem;
+      border-radius: 9999px;
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Success / verified */
+    .badge-success {
+      background: rgba(16,185,129,.12);
+      color: #34d399;
+      border: 1px solid rgba(5,150,105,.4);
+    }
+
+    /* Failed / blocked */
+    .badge-danger {
+      background: rgba(244,63,94,.12);
+      color: #fb7185;
+      border: 1px solid rgba(225,29,72,.4);
+    }
+
+    /* Warning / simulation */
+    .badge-warning {
+      background: rgba(245,158,11,.12);
+      color: #fbbf24;
+      border: 1px solid rgba(217,119,6,.4);
+    }
+
+    /* Neutral / info */
+    .badge-info {
+      background: rgba(6,182,212,.1);
+      color: #67e8f9;
+      border: 1px solid rgba(6,182,212,.3);
+    }
+
+    /* ── Pagination row ─────────────────────────────────────────────────── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .625rem 1rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .page-info {
+      font-size: .75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
+    }
+
+    .page-btns { display: flex; gap: .5rem; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-row">
+        <div class="sidebar-logo">🛡️</div>
+        <div>
+          <div class="sidebar-title">QuickPull</div>
+          <div class="sidebar-subtitle">Admin Console</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logged-in admin info -->
+    <div class="sidebar-user">
+      <div class="sidebar-user-label">Signed in as</div>
+      <div class="sidebar-user-name" id="sidebar-admin-name">—</div>
+      <div class="sidebar-user-email" id="sidebar-admin-email">—</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="Admin navigation">
+
+      <div class="nav-section-label">Management</div>
+
+      <!-- Dashboard — Phase 4 -->
+      <a class="nav-item nav-disabled" data-section="dashboard" href="#" title="Available in Phase 4">
+        <span class="nav-icon">📊</span>
+        Dashboard
+        <span class="nav-badge">Phase 4</span>
+      </a>
+
+      <!-- Users — Phase 2 -->
+      <a class="nav-item nav-disabled" data-section="users" href="#" title="Available in Phase 2">
+        <span class="nav-icon">👥</span>
+        Users
+        <span class="nav-badge">Phase 2</span>
+      </a>
+
+      <!-- Trips — Phase 3 -->
+      <a class="nav-item nav-disabled" data-section="trips" href="#" title="Available in Phase 3">
+        <span class="nav-icon">🚗</span>
+        Trips
+        <span class="nav-badge">Phase 3</span>
+      </a>
+
+      <div class="nav-section-label" style="margin-top:.5rem">Security</div>
+
+      <!-- Audit Log — Phase 1 (working now) -->
+      <a class="nav-item nav-active" data-section="audit-log" href="#" id="nav-audit">
+        <span class="nav-icon">📋</span>
+        Audit Log
+      </a>
+
+    </nav>
+
+    <!-- Logout -->
+    <div class="sidebar-footer">
+      <button class="btn-logout" id="logout-btn" type="button">
+        <span>↩</span> Sign Out
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Audit Log</div>
+      <div class="topbar-status">
+        <span class="live-dot"></span>
+        Connected to Render
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ── Audit Log section (WORKING in Phase 1) ───────────────────── -->
+      <section class="content-section" id="section-audit-log">
+
+        <div class="section-header">
+          <div>
+            <div class="section-title">Audit Log</div>
+            <div class="section-subtitle">
+              Every admin action — logins, blocks, verifications — recorded permanently.
+            </div>
+          </div>
+          <button class="btn-sm" onclick="loadAuditLog(1)" title="Refresh">⟳ Refresh</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-toolbar">
+            <span class="table-toolbar-title">All Events</span>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Admin</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody id="audit-log-tbody">
+              <tr>
+                <td colspan="5" class="table-placeholder">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <span class="page-info" id="audit-page-info">—</span>
+            <div class="page-btns">
+              <button class="btn-sm" id="audit-prev" onclick="auditPrev()" disabled>← Prev</button>
+              <button class="btn-sm" id="audit-next" onclick="auditNext()" disabled>Next →</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── Dashboard placeholder (Phase 4) ─────────────────────────── -->
+      <section class="content-section" id="section-dashboard">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Dashboard</div>
+            <div class="section-subtitle">Overview metrics and live counters.</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-icon">📊</div>
+          <div class="placeholder-title">Dashboard — Coming in Phase 4</div>
+          <p class="placeholder-text">
+            Will show: total users, active trips, completions today, average driver rating,
+            verified users, blocked users, and riders waiting for a match.
+            Only numbers that can be computed from data already stored in the database.
+          </p>
+          <span class="placeholder-phase">Phase 4</span>
+        </div>
+      </section>
+
+      <!-- ── Users placeholder (Phase 2) ────────────────────────────── -->
+      <section class="content-section" id="section-users">
+        <div class="section-header">
+          <div>
+            <div class="section-title">User Management</div>
+            <div class="section-subtitle">Search, verify, block, and inspect users.</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-icon">👥</div>
+          <div class="placeholder-title">User Management — Coming in Phase 2</div>
+          <p class="placeholder-text">
+            Will show: searchable user list with filters (type, verified, blocked, simulation),
+            user detail view, ID/phone verification toggles, block/unblock with reason,
+            and a flag count from chat moderation for repeat offenders.
+          </p>
+          <span class="placeholder-phase">Phase 2</span>
+        </div>
+      </section>
+
+      <!-- ── Trips placeholder (Phase 3) ─────────────────────────────── -->
+      <section class="content-section" id="section-trips">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Trip Management</div>
+            <div class="section-subtitle">View, inspect, and force-complete stuck trips.</div>
+          </div>
+        </div>
+        <div class="placeholder-card">
+          <div class="placeholder-icon">🚗</div>
+          <div class="placeholder-title">Trip Management — Coming in Phase 3</div>
+          <p class="placeholder-text">
+            Will show: trip list with status/date filters, trip detail with route on a Leaflet map,
+            driver and rider breakdown, and Force Complete / Force Cancel actions with
+            audit logging and confirmation dialog.
+          </p>
+          <span class="placeholder-phase">Phase 3</span>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </main><!-- /main -->
+
+  <script src="../api-config.js"></script>
+  <script src="admin-api.js"></script>
+  <script src="admin-app.js"></script>
+</body>
+</html>

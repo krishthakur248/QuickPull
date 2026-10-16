@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-tertiary-container": "#563400", "on-tertiary": "#472a00", "inverse-on-surface": "#2a3043", "background": "#0c1324", "error": "#ffb4ab", "on-secondary-fixed-variant": "#005236", "on-secondary-fixed": "#002113", "on-secondary": "#003824", "error-container": "#93000a", "on-secondary-container": "#00311f", "on-tertiary-fixed": "#2a1700", "surface-container-highest": "#2e3447", "on-surface": "#dce1fb", "inverse-primary": "#00687a", "surface-dim": "#0c1324", "on-primary-fixed-variant": "#004e5c", "secondary-fixed": "#6ffbbe", "tertiary": "#ffb95f", "outline": "#869397", "surface-variant": "#2e3447", "on-primary-container": "#00424f", "on-background": "#dce1fb", "on-surface-variant": "#bcc9cd", "on-error-container": "#ffdad6", "surface-container-lowest": "#070d1f", "surface-container-high": "#23293c", "secondary-fixed-dim": "#4edea3", "on-primary": "#003640", "primary-container": "#06b6d4", "surface-container": "#191f31", "primary": "#4cd7f6", "surface-tint": "#4cd7f6", "outline-variant": "#3d494c", "on-primary-fixed": "#001f26", "on-tertiary-fixed-variant": "#653e00", "secondary": "#4edea3", "inverse-surface": "#dce1fb", "primary-fixed": "#acedff", "surface": "#0c1324", "surface-bright": "#33394c", "surface-container-low": "#151b2d", "on-error": "#690005", "tertiary-fixed-dim": "#ffb95f", "tertiary-container": "#e79400", "secondary-container": "#00a572", "primary-fixed-dim": "#4cd7f6", "tertiary-fixed": "#ffddb8" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "gutter-lg": "1rem", "space-lg": "1rem", "margin": "1rem", "gutter": "0.75rem", "space-xs": "0.25rem", "space-xl": "1.5rem", "space-md": "0.75rem", "margin-lg": "1.5rem", "space-sm": "0.375rem" }, "fontFamily": { "label-ui": [ "Inter" ], "label-code-sm": [ "JetBrains Mono" ], "body-md": [ "Inter" ], "headline-xl": [ "Inter" ], "headline-sm": [ "Inter" ], "label-code-lg": [ "JetBrains Mono" ], "body-lg": [ "Inter" ], "headline-lg": [ "Inter" ], "body-sm": [ "Inter" ] }, "fontSize": { "label-ui": [ "0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.05em", "fontWeight": "600" } ], "label-code-sm": [ "0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.02em", "fontWeight": "500" } ], "body-md": [ "0.8125rem", { "lineHeight": "1.25rem", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-xl": [ "2rem", { "lineHeight": "2.5rem", "letterSpacing": "-0.025em", "fontWeight": "700" } ], "headline-sm": [ "1.125rem", { "lineHeight": "1.5rem", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "label-code-lg": [ "0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "-0.01em", "fontWeight": "500" } ], "body-lg": [ "0.9375rem", { "lineHeight": "1.375rem", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-lg": [ "1.5rem", { "lineHeight": "2rem", "letterSpacing": "-0.02em", "fontWeight": "600" } ], "body-sm": [ "0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.01em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.4)]"><div class="flex flex-col"><div class="px-space-md pt-space-md pb-space-sm bg-surface-container-lowest"><div class="flex items-center gap-space-xs"><img alt="QuickPull Admin Emblem" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XeRE_92oDtCSCKN24vsWWXSrsP_Zl65TJyMT_NS-RwTaluEpbGCxDoeaTzawGLxmxvu-YZzPLSe_1rJqpXxYRL4y7lJ6jUrhd-wNmTObR3eFo2loa4_UM59teTsztESVwi6jbQL1ze5Ylc6hRETWvI9jj2_8a_VMxwz3NL6fwI9OnsS5zaveFWj9FMniHkDssNfKLdT-3w21wBnRHPWpi-R1K7tV0dwDsB63leZI8LQhV2XcsfOP19iUw"/><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate">QuickPull</span><span class="font-label-code-sm text-label-code-sm text-primary uppercase">Mission Ops</span></div></div><div class="mt-space-sm px-space-xs py-0.5 rounded bg-surface-container flex items-center justify-between"><span class="font-label-code-sm text-label-code-sm text-secondary-fixed-dim uppercase tracking-wider">PROD-OPS v1.4.2</span><span class="inline-flex items-center px-1 rounded bg-secondary-container text-on-secondary font-label-code-sm text-[9px] uppercase font-bold tracking-widest">ENFORCED</span></div></div><div class="px-space-md pt-space-md pb-space-xs"><span class="font-label-ui text-label-ui text-on-surface-variant uppercase tracking-widest">Telemetry &amp; Control</span></div><nav class="flex flex-col gap-space-xs px-space-xs" data-active-classes="bg-surface-container-high text-primary font-bold shadow-[inset_2px_0_0_0_#4cd7f6]"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="overview-security-audit" href="#"><span class="material-symbols-outlined text-[18px]">security</span><span class="font-body-md text-body-md truncate">Overview &amp; Security Audit</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="user-directory-rbac" href="#"><span class="material-symbols-outlined text-[18px]">badge</span><span class="font-body-md text-body-md truncate">User Directory &amp; RBAC</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="trip-dispatch-live-tracking" href="#"><span class="material-symbols-outlined text-[18px]">near_me</span><span class="font-body-md text-body-md truncate">Trip Dispatch &amp; Tracking</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="auth-security-incident-logs" href="#"><span class="material-symbols-outlined text-[18px]">gpp_maybe</span><span class="font-body-md text-body-md truncate">Security Incident Logs</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="system-config-api-keys" href="#"><span class="material-symbols-outlined text-[18px]">settings_input_component</span><span class="font-body-md text-body-md truncate">System Config &amp; API Keys</span></a></nav></div><div class="p-space-sm bg-surface-container-low"><div class="p-space-xs rounded bg-surface-container-high flex items-center justify-between"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">TLS 1.3 / mTLS Active</span></div><span class="font-label-code-sm text-label-code-sm text-primary">99.99%</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.3)]"><div class="h-16 w-full px-gutter flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-0"><div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm truncate"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">terminal</span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">quickpull</span><span class="text-outline-variant">/</span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">ops-admin</span><span class="text-outline-variant">/</span><span class="font-label-code-sm text-label-code-sm text-primary font-medium truncate">enforcement-plane</span></div><div class="relative hidden xl:block w-80"><span class="material-symbols-outlined absolute left-space-xs top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span><input class="w-full bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/50 font-body-sm text-body-sm pl-7 pr-12 py-1 rounded outline-none cursor-pointer focus:bg-surface-container" placeholder="Search users, trips, IPs, token IDs..." readonly="" type="text"/><span class="absolute right-space-xs top-1/2 -translate-y-1/2 font-label-code-sm text-[10px] text-on-surface-variant px-1 rounded bg-surface-container-highest">⌘K</span></div></div><div class="flex items-center gap-space-sm shrink-0"><div class="hidden md:flex items-center gap-space-xs"><div class="flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">JWT DB:</span><span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">ACTIVE</span></div><div class="flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-high"><span class="material-symbols-outlined text-[14px] text-tertiary">speed</span><span class="font-label-code-sm text-label-code-sm text-on-surface-variant">Rate:</span><span class="font-label-code-sm text-label-code-sm text-on-surface font-semibold">100/min</span></div></div><div class="flex items-center gap-space-xs pl-space-xs bg-surface-container-low rounded p-1"><div class="flex flex-col text-right hidden sm:flex"><span class="font-label-ui text-label-ui text-on-surface truncate">System Administrator</span><span class="font-label-code-sm text-[10px] text-primary truncate">superadmin@quickpull.local</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex items-center gap-0.5"><button class="px-1.5 py-1 rounded bg-error-container text-error hover:bg-error hover:text-on-error font-label-ui text-label-ui uppercase tracking-wide transition-colors flex items-center gap-0.5" title="Emergency System Freeze" type="button"><span class="material-symbols-outlined text-[14px]">gavel</span><span class="hidden lg:inline text-[10px]">Freeze</span></button><button class="p-1 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center" title="Terminate Session" type="button"><span class="material-symbols-outlined text-[18px]">logout</span></button></div></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Command & Status Ribbon -->
+<div class="px-gutter-lg pt-space-lg pb-space-md flex flex-col xl:flex-row xl:items-end justify-between gap-space-md">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-xs text-on-surface-variant mb-1">
+<span class="font-label-code-sm text-label-code-sm uppercase tracking-widest text-primary">SEC-OPS // INTRUSION DETECTION SYSTEM</span>
+<span class="text-outline-variant font-label-code-sm">::</span>
+<span class="font-label-code-sm text-label-code-sm text-secondary-fixed">NODE-ORBIT-US-EAST</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-md">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Security Incident &amp; Auth Audit Logs</h1>
+<div class="inline-flex items-center gap-2 px-space-xs py-1 rounded bg-surface-container-high shadow-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface">Live Websocket Feed:</span>
+<span class="font-label-code-sm text-label-code-sm text-secondary font-bold tracking-wide">CONNECTED</span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant ml-1">4.1 kb/s</span>
+</div>
+</div>
+</div>
+<!-- Right Quick Controls -->
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="px-space-sm py-1.5 rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-label-ui text-label-ui flex items-center gap-1 shadow-sm" id="pause-stream-btn">
+<span class="material-symbols-outlined text-[16px] text-tertiary">pause_circle</span>
+<span>Pause Stream</span>
+</button>
+<button class="px-space-sm py-1.5 rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-label-ui text-label-ui flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Export NDJSON</span>
+</button>
+<button class="px-space-sm py-1.5 rounded bg-error-container text-error hover:bg-error hover:text-on-error transition-colors font-label-ui text-label-ui flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">shield_lock</span>
+<span>Purge Token Cache</span>
+</button>
+</div>
+</div>
+<!-- Metric Telemetry Ribbon (3 Asymmetrical Cards) -->
+<div class="px-gutter-lg pb-space-lg grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Metric 1: Critical Interceptions -->
+<div class="relative overflow-hidden rounded bg-surface-container-low p-space-md shadow-md flex flex-col justify-between">
+<div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-error-container/20 blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui text-on-surface-variant uppercase tracking-wider">Critical Interceptions (24h)</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl text-error font-bold tracking-tight">18</span>
+<span class="font-label-code-sm text-label-code-sm text-secondary font-semibold">0 bypasses verified</span>
+</div>
+</div>
+<div class="p-1.5 rounded bg-surface-container-high text-error">
+<span class="material-symbols-outlined text-[20px]">crisis_alert</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs bg-surface-container/60 rounded px-space-xs py-1 flex items-center justify-between">
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">Active Revocations Enforced</span>
+<span class="font-label-code-sm text-label-code-sm text-error font-mono font-bold">100.0%</span>
+</div>
+</div>
+<!-- Metric 2: Rate-Limited Endpoints -->
+<div class="relative overflow-hidden rounded bg-surface-container-low p-space-md shadow-md flex flex-col justify-between">
+<div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-tertiary-container/20 blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui text-on-surface-variant uppercase tracking-wider">Rate-Limited Endpoints</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-label-code-lg text-label-code-lg text-tertiary font-bold tracking-tight truncate max-w-[200px]">/api/admin/login</span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">window: 60s</span>
+</div>
+</div>
+<div class="p-1.5 rounded bg-surface-container-high text-tertiary">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs bg-surface-container/60 rounded px-space-xs py-1 flex items-center justify-between">
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">Temporarily Throttled</span>
+<span class="font-label-code-sm text-label-code-sm text-tertiary font-mono font-bold">42 Client IPs</span>
+</div>
+</div>
+<!-- Metric 3: Protected Field Injections -->
+<div class="relative overflow-hidden rounded bg-surface-container-low p-space-md shadow-md flex flex-col justify-between">
+<div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-primary-container/20 blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-ui text-label-ui text-on-surface-variant uppercase tracking-wider">Protected Field Injection Attempts</span>
+<div class="flex items-baseline gap-space-xs mt-1">
+<span class="font-headline-xl text-headline-xl text-primary font-bold tracking-tight">7</span>
+<span class="font-label-code-sm text-label-code-sm text-secondary">Destructuring Guard OK</span>
+</div>
+</div>
+<div class="p-1.5 rounded bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[20px]">rule</span>
+</div>
+</div>
+<div class="mt-space-sm pt-space-xs bg-surface-container/60 rounded px-space-xs py-1 flex items-center justify-between">
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">Defended Vector:</span>
+<span class="font-label-code-sm text-label-code-sm text-primary font-mono truncate">role: "admin" injection</span>
+</div>
+</div>
+</div>
+<!-- Operational Filter Toolbar -->
+<div class="px-gutter-lg pb-space-sm">
+<div class="p-space-sm rounded bg-surface-container-low shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-sm">
+<div class="flex flex-wrap items-center gap-space-xs">
+<!-- Severity Selector -->
+<div class="flex items-center rounded bg-surface-container-high p-0.5">
+<button class="px-space-xs py-1 rounded bg-primary text-on-primary font-label-ui text-label-ui">All (149)</button>
+<button class="px-space-xs py-1 rounded text-on-surface-variant hover:text-on-surface font-label-ui text-label-ui flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+            Critical (18)
+          </button>
+<button class="px-space-xs py-1 rounded text-on-surface-variant hover:text-on-surface font-label-ui text-label-ui flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+            Warning (32)
+          </button>
+<button class="px-space-xs py-1 rounded text-on-surface-variant hover:text-on-surface font-label-ui text-label-ui flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            Info (99)
+          </button>
+</div>
+<!-- Event Type Dropdown -->
+<div class="relative">
+<select class="appearance-none bg-surface-container-high text-on-surface font-body-sm text-body-sm pl-space-sm pr-7 py-1 rounded cursor-pointer outline-none focus:bg-surface-container-highest">
+<option>All Event Types</option>
+<option>BLOCKED_USER_TOKEN_REJECTED</option>
+<option>MASS_ASSIGNMENT_ROLE_INJECTION</option>
+<option>ADMIN_BRUTE_FORCE_RATE_LIMIT</option>
+<option>ADMIN_LOGIN_SUCCESS</option>
+<option>TOKEN_REVOCATION_BROADCAST</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[14px]">expand_more</span>
+</div>
+<!-- Date Range -->
+<div class="flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container-high text-on-surface font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">calendar_today</span>
+<span class="font-label-code-sm text-label-code-sm">Past 24 Hours</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">arrow_drop_down</span>
+</div>
+</div>
+<!-- IP Search Filter -->
+<div class="flex items-center gap-space-xs">
+<div class="relative w-full lg:w-64">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">network_check</span>
+<input class="w-full bg-surface-container-high text-on-surface placeholder:text-on-surface-variant font-label-code-sm text-label-code-sm pl-7 pr-3 py-1 rounded outline-none focus:bg-surface-container-highest" placeholder="Lookup IP, User ID, CIDR..." type="text"/>
+</div>
+<button class="p-1 rounded bg-surface-container-high text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest" title="Reset Filters">
+<span class="material-symbols-outlined text-[18px]">filter_alt_off</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Main Incident Workspace (Split Grid: High Density Log Table + Real-time Inspector) -->
+<div class="px-gutter-lg pb-space-xl grid grid-cols-1 xl:grid-cols-12 gap-space-md items-start">
+<!-- Log Stream Table Column (8 cols desktop) -->
+<div class="xl:col-span-8 flex flex-col rounded bg-surface-container-low shadow-lg overflow-hidden">
+<!-- Table Header Status Strip -->
+<div class="px-space-md py-space-xs bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-ui text-label-ui text-on-surface uppercase tracking-wider">Live Ingestion Buffer</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-label-code-sm text-[10px] text-primary">BUFFER_LEN: 1,024</span>
+</div>
+<div class="flex items-center gap-space-sm font-label-code-sm text-[11px] text-on-surface-variant">
+<span>Sort: <strong class="text-on-surface">Time (Desc)</strong></span>
+<span>•</span>
+<span>Auto-Scroll: <strong class="text-secondary">ENABLED</strong></span>
+</div>
+</div>
+<!-- High Density Table -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left font-body-sm text-body-sm border-collapse">
+<thead>
+<tr class="bg-surface-container-high text-on-surface-variant font-label-ui text-label-ui uppercase tracking-wider text-[10px]">
+<th class="py-2.5 px-3">Timestamp (UTC)</th>
+<th class="py-2.5 px-2">Severity</th>
+<th class="py-2.5 px-3">Incident Type</th>
+<th class="py-2.5 px-3">Actor / Subject</th>
+<th class="py-2.5 px-3">Client IP &amp; Route</th>
+<th class="py-2.5 px-3">Target Endpoint</th>
+<th class="py-2.5 px-3">Security Action</th>
+<th class="py-2.5 px-3 text-right">Inspect</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-sm">
+<!-- Row 1: Critical -->
+<tr class="cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors group" id="row-log-row-1" onclick="inspectLog('log-row-1')">
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant group-hover:text-primary">
+                2025-05-18 14:32:01
+              </td>
+<td class="py-2.5 px-2 whitespace-nowrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-error-container text-error font-label-code-sm text-[10px] font-bold">
+                  CRITICAL
+                </span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm font-medium text-error">
+                BLOCKED_USER_TOKEN_REJECTED
+              </td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-on-surface truncate">tariq.haul@fastmail.com</span>
+<span class="font-label-code-sm text-[10px] text-on-surface-variant font-mono">ID: 664c129e00fa71</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap">
+<div class="flex items-center gap-1">
+<span class="font-label-code-sm text-label-code-sm font-bold text-on-surface">185.220.101.4</span>
+<span class="px-1 py-0.2 rounded bg-surface-container-highest text-error font-label-code-sm text-[9px]">Tor Exit</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span class="text-secondary font-bold">POST</span> /api/trips/accept
+              </td>
+<td class="py-2.5 px-3">
+<div class="flex items-center gap-1 text-error font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[14px]">block</span>
+<span class="truncate">403 Forbidden (Suspended)</span>
+</div>
+</td>
+<td class="py-2.5 px-3 text-right whitespace-nowrap">
+<span class="px-2 py-1 rounded bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-label-ui text-label-ui transition-colors">
+                  View Trace
+                </span>
+</td>
+</tr>
+<!-- Row 2: Warning - Mass Assignment -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors group" id="row-log-row-2" onclick="inspectLog('log-row-2')">
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant group-hover:text-primary">
+                2025-05-18 14:28:19
+              </td>
+<td class="py-2.5 px-2 whitespace-nowrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-tertiary-container text-on-tertiary font-label-code-sm text-[10px] font-bold">
+                  WARNING
+                </span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm font-medium text-tertiary">
+                MASS_ASSIGNMENT_ROLE_INJECTION
+              </td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-on-surface truncate">anonymous_register</span>
+<span class="font-label-code-sm text-[10px] text-tertiary font-mono">payload.role = "admin"</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap">
+<span class="font-label-code-sm text-label-code-sm text-on-surface">92.40.18.112</span>
+<span class="block font-label-code-sm text-[10px] text-on-surface-variant">AS2856 / GB</span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span class="text-secondary font-bold">POST</span> /api/auth/register
+              </td>
+<td class="py-2.5 px-3">
+<span class="text-tertiary font-body-sm text-body-sm truncate block">Role stripped; forced role: user</span>
+</td>
+<td class="py-2.5 px-3 text-right whitespace-nowrap">
+<span class="px-2 py-1 rounded bg-surface-container-high text-primary hover:bg-primary hover:text-on-primary font-label-ui text-label-ui transition-colors">
+                  View Payload
+                </span>
+</td>
+</tr>
+<!-- Row 3: Warning - Rate Limit -->
+<tr class="cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors group" id="row-log-row-3" onclick="inspectLog('log-row-3')">
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant group-hover:text-primary">
+                2025-05-18 14:15:44
+              </td>
+<td class="py-2.5 px-2 whitespace-nowrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-tertiary-container text-on-tertiary font-label-code-sm text-[10px] font-bold">
+                  WARNING
+                </span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm font-medium text-tertiary">
+                ADMIN_BRUTE_FORCE_RATE_LIMIT
+              </td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-on-surface truncate">actor: unknown</span>
+<span class="font-label-code-sm text-[10px] text-error font-mono">14 attempts / 30s</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap">
+<span class="font-label-code-sm text-label-code-sm text-on-surface">45.154.255.89</span>
+<span class="block font-label-code-sm text-[10px] text-on-surface-variant">RU / Bulletproof ISP</span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span class="text-secondary font-bold">POST</span> /api/admin/login
+              </td>
+<td class="py-2.5 px-3">
+<span class="text-on-surface-variant font-body-sm text-body-sm truncate block">HTTP 429; IP throttled 15m</span>
+</td>
+<td class="py-2.5 px-3 text-right whitespace-nowrap">
+<button class="px-2 py-1 rounded bg-error-container text-error hover:bg-error hover:text-on-error font-label-ui text-label-ui transition-colors" onclick="event.stopPropagation(); blacklistAlert('45.154.255.89')">
+                  Blacklist IP
+                </button>
+</td>
+</tr>
+<!-- Row 4: Info - Success Login -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors group" id="row-log-row-4" onclick="inspectLog('log-row-4')">
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant group-hover:text-primary">
+                2025-05-18 14:02:10
+              </td>
+<td class="py-2.5 px-2 whitespace-nowrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary font-label-code-sm text-[10px] font-bold">
+                  INFO
+                </span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm font-medium text-secondary">
+                ADMIN_LOGIN_SUCCESS
+              </td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-on-surface truncate">admin@quickpull.local</span>
+<span class="font-label-code-sm text-[10px] text-secondary font-mono">FIDO2 WebAuthn Verified</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap">
+<div class="flex items-center gap-1">
+<span class="font-label-code-sm text-label-code-sm text-on-surface">192.168.1.44</span>
+<span class="px-1 py-0.2 rounded bg-surface-container-highest text-secondary font-label-code-sm text-[9px]">Internal VPN</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span class="text-secondary font-bold">POST</span> /api/admin/login
+              </td>
+<td class="py-2.5 px-3">
+<span class="text-on-surface font-body-sm text-body-sm truncate block">MFA Passed, JWT Issued (24h)</span>
+</td>
+<td class="py-2.5 px-3 text-right whitespace-nowrap">
+<span class="px-2 py-1 rounded bg-surface-container-high text-secondary hover:bg-secondary hover:text-on-secondary font-label-ui text-label-ui transition-colors">
+                  Session OK
+                </span>
+</td>
+</tr>
+<!-- Row 5: Info - Token Invalidation -->
+<tr class="cursor-pointer bg-surface-container-low hover:bg-surface-container transition-colors group" id="row-log-row-5" onclick="inspectLog('log-row-5')">
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant group-hover:text-primary">
+                2025-05-18 13:58:02
+              </td>
+<td class="py-2.5 px-2 whitespace-nowrap">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-code-sm text-[10px] font-bold">
+                  INFO
+                </span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm font-medium text-on-surface">
+                TOKEN_REVOCATION_BROADCAST
+              </td>
+<td class="py-2.5 px-3">
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-on-surface truncate">system.worker.cron</span>
+<span class="font-label-code-sm text-[10px] text-on-surface-variant font-mono">TtlPurge: 11 expired IDs</span>
+</div>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap">
+<span class="font-label-code-sm text-label-code-sm text-on-surface-variant">127.0.0.1 (Loopback)</span>
+</td>
+<td class="py-2.5 px-3 whitespace-nowrap font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span class="text-primary font-bold">INTERNAL</span> /redis/sync
+              </td>
+<td class="py-2.5 px-3">
+<span class="text-on-surface-variant font-body-sm text-body-sm truncate block">Redis Bloom Filter Synced</span>
+</td>
+<td class="py-2.5 px-3 text-right whitespace-nowrap">
+<span class="px-2 py-1 rounded bg-surface-container-high text-on-surface-variant font-label-ui text-label-ui">
+                  Details
+                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Real-Time Activity Sparkline & Footer Metadata -->
+<div class="p-space-sm bg-surface-container flex flex-col md:flex-row items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1 font-label-code-sm text-label-code-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>Packet drop rate: <strong class="text-on-surface">0.00%</strong></span>
+</div>
+<span class="text-outline-variant font-label-code-sm">|</span>
+<div class="font-label-code-sm text-label-code-sm text-on-surface-variant">
+            Avg DB Guard Resolution: <strong class="text-primary">1.2ms</strong>
+</div>
+</div>
+<div class="flex items-center gap-space-xs font-label-code-sm text-[11px] text-on-surface-variant">
+<span>Showing 5 of 149 records</span>
+<button class="p-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest"><span class="material-symbols-outlined text-[14px]">chevron_left</span></button>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-primary">1</span>
+<button class="p-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest"><span class="material-symbols-outlined text-[14px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+<!-- Raw Log Inspector Drawer / Sticky Rail (4 cols desktop) -->
+<div class="xl:col-span-4 flex flex-col rounded bg-surface-container-low shadow-xl overflow-hidden sticky top-20">
+<!-- Drawer Control Header -->
+<div class="p-space-sm bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">terminal</span>
+<span class="font-label-ui text-label-ui text-on-surface uppercase tracking-wider">Raw Payload Inspector</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error font-label-code-sm text-[9px] uppercase font-bold tracking-wider" id="active-event-tag">CRITICAL</span>
+<button class="p-1 rounded bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors" onclick="copyInspectorData()" title="Copy JSON">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Selected Context Badge -->
+<div class="p-space-sm bg-surface-container-high/60 flex items-center justify-between">
+<div class="flex flex-col min-w-0">
+<span class="font-label-code-sm text-label-code-sm font-semibold text-primary truncate" id="inspector-event-name">BLOCKED_USER_TOKEN_REJECTED</span>
+<span class="font-label-code-sm text-[10px] text-on-surface-variant font-mono" id="inspector-uuid">Trace ID: req-889f02b1-12c8</span>
+</div>
+<span class="font-label-code-sm text-[10px] text-secondary bg-surface-container px-1 py-0.5 rounded">Timing: 1.2ms</span>
+</div>
+<!-- JSON Viewer Shell -->
+<div class="p-space-sm bg-surface-container-lowest overflow-y-auto max-h-[560px]">
+<pre class="font-label-code-sm text-label-code-sm leading-relaxed text-on-surface font-mono overflow-x-auto whitespace-pre" id="json-viewer"><span class="text-on-surface-variant">// Guard enforcement pipeline telemetry</span>
+{
+  <span class="text-primary">"timestamp"</span>: <span class="text-secondary">"2025-05-18T14:32:01.042Z"</span>,
+  <span class="text-primary">"incident_id"</span>: <span class="text-secondary">"INC-88942-SEC"</span>,
+  <span class="text-primary">"threat_level"</span>: <span class="text-error font-bold">"CRITICAL"</span>,
+  <span class="text-primary">"client_network"</span>: {
+    <span class="text-primary">"ip"</span>: <span class="text-on-surface">"185.220.101.4"</span>,
+    <span class="text-primary">"is_tor_exit"</span>: <span class="text-error">true</span>,
+    <span class="text-primary">"country"</span>: <span class="text-on-surface">"DE"</span>,
+    <span class="text-primary">"user_agent"</span>: <span class="text-on-surface-variant">"Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0"</span>
+  },
+  <span class="text-primary">"actor"</span>: {
+    <span class="text-primary">"email"</span>: <span class="text-on-surface">"tariq.haul@fastmail.com"</span>,
+    <span class="text-primary">"user_id"</span>: <span class="text-secondary">"664c129e00fa71b1"</span>,
+    <span class="text-primary">"account_status"</span>: <span class="text-error font-bold">"BLOCKED_BY_ADMIN"</span>,
+    <span class="text-primary">"token_iat"</span>: <span class="text-on-surface">1716039120</span>
+  },
+  <span class="text-primary">"interception_context"</span>: {
+    <span class="text-primary">"target_endpoint"</span>: <span class="text-on-surface">"POST /api/trips/accept"</span>,
+    <span class="text-primary">"destructuring_guard"</span>: <span class="text-secondary">"ACTIVE"</span>,
+    <span class="text-primary">"forbidden_keys_detected"</span>: [
+      <span class="text-error">"role"</span>,
+      <span class="text-error">"isBlocked"</span>
+    ],
+    <span class="text-primary">"db_lookup_duration_ms"</span>: <span class="text-primary">1.2</span>,
+    <span class="text-primary">"enforced_response_code"</span>: <span class="text-error font-bold">403</span>,
+    <span class="text-primary">"enforced_reason"</span>: <span class="text-on-surface">"Account suspended by admin"</span>
+  }
+}</pre>
+</div>
+<!-- Quick Action Drawer Actions -->
+<div class="p-space-sm bg-surface-container flex items-center justify-between gap-space-xs">
+<button class="w-full py-1.5 px-space-xs rounded bg-error-container text-error hover:bg-error hover:text-on-error font-label-ui text-label-ui uppercase tracking-wider transition-colors flex items-center justify-center gap-1 shadow-sm" onclick="emergencyRevokeSelected()">
+<span class="material-symbols-outlined text-[16px]">lock_reset</span>
+<span>Invalidate Token</span>
+</button>
+<button class="w-full py-1.5 px-space-xs rounded bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-label-ui text-label-ui uppercase tracking-wider transition-colors flex items-center justify-center gap-1 shadow-sm" onclick="addIpToFirewall()">
+<span class="material-symbols-outlined text-[16px]">security</span>
+<span>Ban CIDR</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Notification Toast Container (Dynamic Micro-interaction) -->
+<div class="fixed bottom-6 right-6 hidden z-50 p-space-sm rounded bg-surface-container-highest text-on-surface shadow-2xl flex items-center gap-space-sm transition-all transform duration-300" id="toast-notification">
+<span class="material-symbols-outlined text-secondary text-[20px]" id="toast-icon">check_circle</span>
+<span class="font-body-sm text-body-sm font-medium" id="toast-message">Action successfully dispatched</span>
+</div>
+</div>
+<script>
+  // Log telemetry store for interactive drawer switching
+  const logTelemetryData = {
+    'log-row-1': {
+      severity: 'CRITICAL',
+      badgeClass: 'bg-error-container text-error',
+      name: 'BLOCKED_USER_TOKEN_REJECTED',
+      trace: 'Trace ID: req-889f02b1-12c8',
+      payload: {
+        timestamp: "2025-05-18T14:32:01.042Z",
+        incident_id: "INC-88942-SEC",
+        threat_level: "CRITICAL",
+        client_network: {
+          ip: "185.220.101.4",
+          is_tor_exit: true,
+          country: "DE",
+          user_agent: "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0"
+        },
+        actor: {
+          email: "tariq.haul@fastmail.com",
+          user_id: "664c129e00fa71b1",
+          account_status: "BLOCKED_BY_ADMIN",
+          token_iat: 1716039120
+        },
+        interception_context: {
+          target_endpoint: "POST /api/trips/accept",
+          destructuring_guard: "ACTIVE",
+          forbidden_keys_detected: ["role", "isBlocked"],
+          db_lookup_duration_ms: 1.2,
+          enforced_response_code: 403,
+          enforced_reason: "Account suspended by admin"
+        }
+      }
+    },
+    'log-row-2': {
+      severity: 'WARNING',
+      badgeClass: 'bg-tertiary-container text-on-tertiary',
+      name: 'MASS_ASSIGNMENT_ROLE_INJECTION',
+      trace: 'Trace ID: req-2290fbb7-817a',
+      payload: {
+        timestamp: "2025-05-18T14:28:19.882Z",
+        incident_id: "INC-88939-SEC",
+        threat_level: "WARNING",
+        client_network: {
+          ip: "92.40.18.112",
+          is_tor_exit: false,
+          asn: "AS2856 BT Group",
+          country: "GB"
+        },
+        actor: {
+          account_type: "anonymous_registration",
+          submitted_email: "sec_tester_09@proton.me"
+        },
+        interception_context: {
+          target_endpoint: "POST /api/auth/register",
+          injected_parameters: {
+            role: "admin",
+            permissions: ["ALL_FLEET", "SUPERADMIN_ROOT"]
+          },
+          guard_action: "STRIPPED_MUTATION_KEYS",
+          final_persisted_role: "user",
+          db_lookup_duration_ms: 1.8,
+          enforced_response_code: 201
+        }
+      }
+    },
+    'log-row-3': {
+      severity: 'WARNING',
+      badgeClass: 'bg-tertiary-container text-on-tertiary',
+      name: 'ADMIN_BRUTE_FORCE_RATE_LIMIT',
+      trace: 'Trace ID: req-717ae340-990f',
+      payload: {
+        timestamp: "2025-05-18T14:15:44.201Z",
+        incident_id: "INC-88931-SEC",
+        threat_level: "WARNING",
+        client_network: {
+          ip: "45.154.255.89",
+          is_tor_exit: false,
+          country: "RU",
+          asn: "Bulletproof Datacenter ASN"
+        },
+        actor: {
+          target_account: "admin@quickpull.local",
+          credential_stuffing_signature: true,
+          failed_attempts_in_window: 14
+        },
+        interception_context: {
+          target_endpoint: "POST /api/admin/login",
+          rate_limit_policy: "MAX_10_PER_MINUTE",
+          enforced_action: "TEMPORARY_IP_THROTTLE_15M",
+          enforced_response_code: 429,
+          retry_after_seconds: 900
+        }
+      }
+    },
+    'log-row-4': {
+      severity: 'INFO',
+      badgeClass: 'bg-secondary-container text-on-secondary',
+      name: 'ADMIN_LOGIN_SUCCESS',
+      trace: 'Trace ID: req-100ca412-fef1',
+      payload: {
+        timestamp: "2025-05-18T14:02:10.518Z",
+        incident_id: "AUD-88920-AUTH",
+        threat_level: "INFO",
+        client_network: {
+          ip: "192.168.1.44",
+          interface: "Internal VPN / Wireguard",
+          device: "QuickPull Admin Workstation #04"
+        },
+        actor: {
+          email: "admin@quickpull.local",
+          role: "superadmin",
+          mfa_method: "FIDO2_HARDWARE_KEY_YUBIKEY"
+        },
+        interception_context: {
+          target_endpoint: "POST /api/admin/login",
+          jwt_claims: {
+            aud: "quickpull-control-plane",
+            exp_duration: "86400s",
+            scope: ["ops", "telemetry", "dispatch", "rbac"]
+          },
+          response_code: 200,
+          db_lookup_duration_ms: 0.9
+        }
+      }
+    },
+    'log-row-5': {
+      severity: 'INFO',
+      badgeClass: 'bg-surface-container-highest text-on-surface-variant',
+      name: 'TOKEN_REVOCATION_BROADCAST',
+      trace: 'Trace ID: req-003ff5a9-cc21',
+      payload: {
+        timestamp: "2025-05-18T13:58:02.110Z",
+        incident_id: "SYS-88914-CRON",
+        threat_level: "INFO",
+        client_network: {
+          ip: "127.0.0.1",
+          caller: "system.worker.cron"
+        },
+        interception_context: {
+          target_endpoint: "INTERNAL /redis/sync",
+          action: "PURGE_EXPIRED_JWT_BLACKLIST",
+          records_purged: 11,
+          bloom_filter_recalculated: true,
+          execution_duration_ms: 0.4
+        }
+      }
+    }
+  };
+
+  function inspectLog(rowId) {
+    const data = logTelemetryData[rowId];
+    if (!data) return;
+
+    // Update active highlight style on rows
+    document.querySelectorAll('tbody tr').forEach(row => {
+      row.classList.remove('ring-1', 'ring-primary');
+    });
+    const selectedRow = document.getElementById('row-' + rowId);
+    if (selectedRow) {
+      selectedRow.classList.add('ring-1', 'ring-primary');
+    }
+
+    // Update Inspector drawer elements
+    const tag = document.getElementById('active-event-tag');
+    tag.textContent = data.severity;
+    tag.className = `px-1.5 py-0.5 rounded font-label-code-sm text-[9px] uppercase font-bold tracking-wider ${data.badgeClass}`;
+
+    document.getElementById('inspector-event-name').textContent = data.name;
+    document.getElementById('inspector-uuid').textContent = data.trace;
+
+    // Format & Syntax highlight JSON
+    const pre = document.getElementById('json-viewer');
+    pre.textContent = JSON.stringify(data.payload, null, 2);
+  }
+
+  function showToast(msg, isError = false) {
+    const toast = document.getElementById('toast-notification');
+    const toastMsg = document.getElementById('toast-message');
+    const toastIcon = document.getElementById('toast-icon');
+
+    toastMsg.textContent = msg;
+    if (isError) {
+      toastIcon.textContent = 'warning';
+      toastIcon.className = 'material-symbols-outlined text-error text-[20px]';
+    } else {
+      toastIcon.textContent = 'check_circle';
+      toastIcon.className = 'material-symbols-outlined text-secondary text-[20px]';
+    }
+
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3200);
+  }
+
+  function blacklistAlert(ip) {
+    showToast(`IP ${ip} dispatched to Edge Cloudflare WAF blocklist`);
+  }
+
+  function emergencyRevokeSelected() {
+    showToast(`Session token revoked and broadcasted to all fleet nodes`);
+  }
+
+  function addIpToFirewall() {
+    showToast(`CIDR rule applied: Drop all ingress requests immediately`);
+  }
+
+  function copyInspectorData() {
+    const jsonText = document.getElementById('json-viewer').textContent;
+    navigator.clipboard?.writeText(jsonText).then(() => {
+      showToast('Payload JSON copied to clipboard');
+    });
+  }
+
+  // Stream Pause toggle
+  const pauseBtn = document.getElementById('pause-stream-btn');
+  let streaming = true;
+  pauseBtn.addEventListener('click', () => {
+    streaming = !streaming;
+    if (streaming) {
+      pauseBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary">pause_circle</span><span>Pause Stream</span>';
+      showToast('Live telemetry feed resumed');
+    } else {
+      pauseBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-secondary">play_circle</span><span>Resume Stream</span>';
+      showToast('Live ingestion paused (buffered locally)');
+    }
+  });
+</script></main></div></body></html>

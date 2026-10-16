@@ -109,6 +109,9 @@ app.use('/api/messages', require('./routes/message.routes'));
 app.use('/api/reviews', require('./routes/review.routes'));
 // Admin moderation dashboard (list & review flagged messages)
 app.use('/api/moderation', require('./routes/moderation.routes'));
+// Admin panel — all admin API endpoints (login, audit log, user/trip management in later phases)
+app.use('/api/admin', require('./routes/admin.routes'));
+
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

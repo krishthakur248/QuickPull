@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Prevent search engines from indexing this page -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <title>QuickPull · Admin Console</title>
+
+  <!-- Inter + JetBrains Mono (matching the Mission Control design reference) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ── Mission Control colour palette ─────────────────────────────────── */
+    :root {
+      --bg:           #020617;   /* Deep Obsidian Slate   */
+      --surface:      #0f172a;   /* Slate 900 card        */
+      --surface-high: #1e293b;   /* Slate 800 hover/focus */
+      --border:       #1e293b;   /* Hairline borders      */
+      --border-hi:    #334155;   /* Prominent borders     */
+      --text:         #f8fafc;   /* Primary text          */
+      --text-muted:   #94a3b8;   /* Secondary / labels    */
+      --text-dim:     #64748b;   /* Placeholders / dim    */
+      --cyan:         #06b6d4;   /* Primary action colour */
+      --cyan-hover:   #22d3ee;
+      --green:        #10b981;   /* Success              */
+      --rose:         #f43f5e;   /* Error / danger        */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      /* Subtle technical grid pattern */
+      background-image:
+        linear-gradient(rgba(6,182,212,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6,182,212,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* ── Login card ──────────────────────────────────────────────────────── */
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      padding: 2.5rem 2rem;
+      /* Subtle cyan glow to draw attention */
+      box-shadow:
+        0 0 40px rgba(6,182,212,.08),
+        0 4px 24px rgba(0,0,0,.6);
+    }
+
+    /* ── Brand section ───────────────────────────────────────────────────── */
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .brand-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(6,182,212,.1);
+      border: 1px solid rgba(6,182,212,.3);
+      border-radius: 4px;
+      font-size: 1.5rem;
+      margin-bottom: .875rem;
+    }
+
+    .brand-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .brand-sub {
+      display: block;
+      margin-top: .25rem;
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    /* ── Divider ─────────────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Form elements ───────────────────────────────────────────────────── */
+    .form-group { margin-bottom: 1rem; }
+
+    .form-label {
+      display: block;
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .375rem;
+    }
+
+    .form-input {
+      width: 100%;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: .875rem;
+      padding: .625rem .75rem;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .form-input::placeholder { color: var(--text-dim); }
+
+    .form-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(6,182,212,.25);
+    }
+
+    /* ── Error box ───────────────────────────────────────────────────────── */
+    .error-box {
+      display: none;
+      background: rgba(244,63,94,.1);
+      border: 1px solid rgba(244,63,94,.3);
+      border-radius: 4px;
+      color: #fb7185;
+      font-size: .8125rem;
+      padding: .75rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    /* ── Submit button ───────────────────────────────────────────────────── */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .375rem;
+      width: 100%;
+      height: 40px;
+      margin-top: .5rem;
+      background: var(--cyan);
+      color: #020617;
+      font-family: 'Inter', sans-serif;
+      font-size: .875rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background .15s, box-shadow .15s;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--cyan-hover);
+      box-shadow: 0 0 12px rgba(6,182,212,.45);
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* ── Loading spinner (inside the button) ─────────────────────────────── */
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(2,6,23,.3);
+      border-top-color: #020617;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer text ─────────────────────────────────────────────────────── */
+    .footer {
+      margin-top: 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6875rem;
+      color: var(--text-dim);
+    }
+
+    /* Pulsing live-dot indicator */
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .25; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+
+    <!-- Brand header -->
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">🛡️</div>
+      <div class="brand-name">QuickPull</div>
+      <span class="brand-sub">Admin Console</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Error message (shown on failed login) -->
+    <div class="error-box" id="error-box" role="alert"></div>
+
+    <!-- Login form — no register link, no forgot-password link -->
+    <form id="login-form" autocomplete="off" novalidate>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input
+          id="email"
+          class="form-input"
+          type="email"
+          name="email"
+          placeholder="admin@example.com"
+          autocomplete="off"
+          spellcheck="false"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input
+          id="password"
+          class="form-input"
+          type="password"
+          name="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <button id="submit-btn" class="btn-primary" type="submit">
+        Sign In
+      </button>
+
+    </form>
+
+    <!-- Status footer — no register / forgot-password links -->
+    <div class="footer">
+      <span class="live-dot"></span>
+      Authorized personnel only &nbsp;·&nbsp; Session expires in 2h
+    </div>
+
+  </div>
+
+  <!--
+    Load api-config.js from the parent folder so admin-api.js gets
+    the correct backend URL without duplicating it.
+  -->
+  <script src="../api-config.js"></script>
+  <script src="admin-api.js"></script>
+  <script src="admin-login.js"></script>
+</body>
+</html>
