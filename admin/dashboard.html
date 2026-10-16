@@ -785,6 +785,66 @@
     .toast-success { background: #064e3b; border: 1px solid #065f46; color: #34d399; }
     .toast-error   { background: #4c0519; border: 1px solid #881337; color: #fb7185; }
     .toast-info    { background: var(--surface); border: 1px solid var(--border-hi); color: var(--text-muted); }
+
+    /* ════════════════════════════════════════
+       TRIP MANAGEMENT — extra styles
+    ════════════════════════════════════════ */
+
+    /* Trip code in drawer header */
+    .trip-drawer-header {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      margin-bottom: 1rem;
+    }
+    .trip-code-large {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: .375rem;
+    }
+
+    /* Route display */
+    .route-block { margin-bottom: .25rem; }
+    .route-point {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+      font-size: .8125rem;
+      padding: .25rem 0;
+    }
+    .route-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .dot-green { background: var(--green); }
+    .dot-rose  { background: var(--rose); }
+    .route-line {
+      margin-left: 4px;
+      width: 2px;
+      height: 14px;
+      background: var(--border-hi);
+    }
+
+    /* Riders list in drawer */
+    .riders-list { display: flex; flex-direction: column; gap: .5rem; }
+    .rider-item {
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: .5rem .75rem;
+    }
+    .rider-name { font-weight: 500; font-size: .8125rem; margin-bottom: .25rem; }
+    .rider-meta { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+
+    /* Force action buttons */
+    .trip-action-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .25rem; }
+    .btn-trip-complete { background: rgba(16,185,129,.12); color: #34d399; border: 1px solid rgba(5,150,105,.3); }
+    .btn-trip-cancel   { background: rgba(244,63,94,.12);  color: #fb7185; border: 1px solid rgba(225,29,72,.3); }
   </style>
 </head>
 
@@ -831,11 +891,10 @@
         Users
       </a>
 
-      <!-- Trips — Phase 3 -->
-      <a class="nav-item nav-disabled" data-section="trips" href="#" title="Available in Phase 3">
+      <!-- Trips — Phase 3 (now live) -->
+      <a class="nav-item" data-section="trips" href="#">
         <span class="nav-icon">🚗</span>
         Trips
-        <span class="nav-badge">Phase 3</span>
       </a>
 
       <div class="nav-section-label" style="margin-top:.5rem">Security</div>
@@ -1020,25 +1079,70 @@
       <!-- ── Detail drawer (shared, hidden by default) ─────────────────── -->
       <!-- Sits outside the section so it overlays the full page -->
 
-      <!-- ── Trips placeholder (Phase 3) ─────────────────────────────── -->
+      <!-- ── Trip Management section (LIVE in Phase 3) ──────────────────── -->
       <section class="content-section" id="section-trips">
+
         <div class="section-header">
           <div>
             <div class="section-title">Trip Management</div>
-            <div class="section-subtitle">View, inspect, and force-complete stuck trips.</div>
+            <div class="section-subtitle">View, inspect, and force-complete or cancel stuck trips.</div>
+          </div>
+          <span id="trips-count" class="text-dim" style="font-size:.8125rem">—</span>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+          <input
+            id="trip-search"
+            class="filter-search"
+            type="text"
+            placeholder="Search by trip code…"
+            style="max-width:240px"
+          />
+          <select id="trip-filter-status" class="filter-select" data-filter="status">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <select id="trip-filter-date" class="filter-select" data-filter="dateRange">
+            <option value="">All time</option>
+            <option value="today">Today</option>
+            <option value="week">Last 7 days</option>
+            <option value="month">Last 30 days</option>
+          </select>
+        </div>
+
+        <!-- Trips table -->
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Trip Code</th>
+                <th>Driver</th>
+                <th>Riders</th>
+                <th>Vehicle</th>
+                <th>Status</th>
+                <th>Start Time</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="trips-tbody">
+              <tr><td colspan="7" class="table-placeholder">Loading…</td></tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <span class="page-info" id="trips-page-info">—</span>
+            <div class="page-btns">
+              <button class="btn-sm" id="trips-prev" onclick="tripsPrev()" disabled>← Prev</button>
+              <button class="btn-sm" id="trips-next" onclick="tripsNext()" disabled>Next →</button>
+            </div>
           </div>
         </div>
-        <div class="placeholder-card">
-          <div class="placeholder-icon">🚗</div>
-          <div class="placeholder-title">Trip Management — Coming in Phase 3</div>
-          <p class="placeholder-text">
-            Will show: trip list with status/date filters, trip detail with route on a Leaflet map,
-            driver and rider breakdown, and Force Complete / Force Cancel actions with
-            audit logging and confirmation dialog.
-          </p>
-          <span class="placeholder-phase">Phase 3</span>
-        </div>
+
       </section>
+
 
     </div><!-- /content -->
   </main><!-- /main -->
@@ -1075,9 +1179,40 @@
     </div>
   </div>
 
+  <!-- Trip detail drawer -->
+  <div id="trip-drawer-wrapper" style="position:relative">
+    <div class="drawer-overlay" onclick="closeTripDrawer()"></div>
+    <div class="drawer">
+      <div class="drawer-topbar">
+        <span class="drawer-topbar-title">Trip Detail</span>
+        <button class="drawer-close" id="trip-drawer-close" type="button">✕ Close</button>
+      </div>
+      <div id="trip-drawer-content"></div>
+    </div>
+  </div>
+
+  <!-- Force-cancel reason modal -->
+  <div class="modal-overlay" id="fcancel-modal">
+    <div class="modal-card">
+      <div class="modal-title">✖ Force Cancel Trip</div>
+      <div class="modal-sub">Trip <strong id="fcancel-trip-code"></strong> will be marked as cancelled and all active riders removed. Enter a reason:</div>
+      <textarea
+        id="fcancel-reason-input"
+        class="modal-textarea"
+        placeholder="e.g. Trip stuck due to driver going offline…"
+        maxlength="500"
+      ></textarea>
+      <div class="modal-btns">
+        <button class="btn-modal-cancel" id="fcancel-modal-cancel" type="button">Cancel</button>
+        <button class="btn-modal-confirm" id="fcancel-modal-confirm" type="button">Force Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../api-config.js"></script>
   <script src="admin-api.js"></script>
   <script src="admin-users.js"></script>
+  <script src="admin-trips.js"></script>
   <script src="admin-app.js"></script>
 </body>
 </html>

@@ -87,6 +87,9 @@ function showSection(sectionId) {
     if (sectionId === 'users' && typeof initUsersSection === 'function') {
       initUsersSection();
     }
+    if (sectionId === 'trips' && typeof initTripsSection === 'function') {
+      initTripsSection();
+    }
   }
 }
 

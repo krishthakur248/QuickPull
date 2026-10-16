@@ -16,6 +16,7 @@ const express          = require('express');
 const router           = express.Router();
 const adminController      = require('../controllers/admin.controller');
 const adminUsersController = require('../controllers/admin.users.controller');
+const adminTripsController = require('../controllers/admin.trips.controller');
 const { verifyAdminToken } = require('../middleware/adminAuth');
 
 // ── Public route ─────────────────────────────────────────────────────────────
@@ -39,5 +40,15 @@ router.get('/users/:id', adminUsersController.getUserDetail);
 router.put('/users/:id/verify', adminUsersController.verifyUser);
 // Block or unblock a user
 router.put('/users/:id/block', adminUsersController.blockUser);
+
+// ── Phase 3: Trip management ──────────────────────────────────────────────────
+// List trips with status, date-range, and trip-code filters
+router.get('/trips', adminTripsController.listTrips);
+// Single trip detail (populated driver + riders)
+router.get('/trips/:id', adminTripsController.getTripDetail);
+// Force-complete an active trip
+router.put('/trips/:id/force-complete', adminTripsController.forceComplete);
+// Force-cancel an active trip (reason required)
+router.put('/trips/:id/force-cancel', adminTripsController.forceCancel);
 
 module.exports = router;
