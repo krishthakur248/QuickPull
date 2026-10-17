@@ -450,11 +450,23 @@
         .profile-dropdown a,
         .profile-dropdown button {
             color: var(--text-secondary) !important;
+            transition: all 0.18s ease !important;
         }
 
-        .profile-dropdown a:hover {
+        .profile-dropdown a:hover,
+        .profile-dropdown button:hover {
             color: var(--text) !important;
-            background: var(--surface-subtle) !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .profile-dropdown button[onclick*="logout"] {
+            color: #f87171 !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .profile-dropdown button[onclick*="logout"]:hover {
+            color: #fca5a5 !important;
+            background: rgba(239, 68, 68, 0.16) !important;
         }
 
         /* Map UI buttons */
@@ -575,13 +587,33 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
         }
 
-        [data-theme="light"] .profile-dropdown p,
-        [data-theme="light"] .profile-dropdown a {
+        [data-theme="light"] .profile-dropdown p {
             color: #1d1d1f !important;
         }
 
-        [data-theme="light"] .profile-dropdown a:hover {
-            background: rgba(0, 0, 0, 0.04) !important;
+        [data-theme="light"] .profile-dropdown #profileEmail {
+            color: #6e6e73 !important;
+        }
+
+        [data-theme="light"] .profile-dropdown a,
+        [data-theme="light"] .profile-dropdown button {
+            color: #3a3a3c !important;
+        }
+
+        [data-theme="light"] .profile-dropdown a:hover,
+        [data-theme="light"] .profile-dropdown button:hover {
+            color: #0071e3 !important;
+            background: rgba(0, 113, 227, 0.08) !important;
+        }
+
+        [data-theme="light"] .profile-dropdown button[onclick*="logout"] {
+            color: #dc2626 !important;
+            border-top-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        [data-theme="light"] .profile-dropdown button[onclick*="logout"]:hover {
+            color: #b91c1c !important;
+            background: rgba(220, 38, 38, 0.08) !important;
         }
 
         [data-theme="light"] .size-10,
@@ -740,7 +772,7 @@
                 <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true"
                     title="Switch to Dark Appearance">
                     <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
-                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                     <span class="theme-seg-label hidden sm:inline">Dark</span>
                 </button>
@@ -754,32 +786,39 @@
             </button>
 
             <!-- Settings Button -->
-            <button class="p-2 rounded-full hover:bg-white/10 transition-colors text-white hidden sm:flex"
-                title="Settings">
+            <button id="settingsBtn" onclick="openSettingsModal()"
+                class="p-2 rounded-full hover:bg-white/10 transition-colors text-white hidden sm:flex cursor-pointer"
+                title="Settings" aria-label="Open Settings">
                 <span class="material-symbols-outlined text-[20px]">settings</span>
             </button>
 
             <!-- Profile Dropdown Button -->
             <div class="relative z-50">
                 <button id="profileBtn"
-                    class="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors z-10 relative text-white">
+                    class="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors z-10 relative text-white cursor-pointer"
+                    aria-label="User Profile Menu">
                     <span class="material-symbols-outlined text-[20px]">account_circle</span>
                     <span class="material-symbols-outlined text-[14px] hidden sm:inline">arrow_drop_down</span>
                 </button>
                 <!-- Dropdown Menu -->
                 <div id="profileDropdown"
-                    class="profile-dropdown right-0 sm:right-2 top-12 sm:top-14 w-40 sm:w-48 bg-[#192633]/95 border border-white/10 rounded-lg shadow-2xl hidden backdrop-blur-md">
+                    class="profile-dropdown right-0 sm:right-2 top-12 sm:top-14 w-44 sm:w-48 bg-[#192633]/95 border border-white/10 rounded-xl shadow-2xl hidden backdrop-blur-md overflow-hidden">
                     <div class="p-3 border-b border-white/10">
                         <p class="text-sm font-semibold text-white">Profile</p>
-                        <p class="text-xs text-gray-400" id="profileEmail">Loading...</p>
+                        <p class="text-xs text-gray-400 truncate" id="profileEmail">Loading...</p>
                     </div>
-                    <a href="#"
-                        class="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-sm">
-                        <span class="material-symbols-outlined text-[18px]">person</span>
+                    <button type="button" id="myProfileBtn" onclick="openProfileModal()"
+                        class="w-full flex items-center gap-2 px-4 py-2.5 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-sm text-left cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px] text-blue-400">person</span>
                         My Profile
-                    </a>
+                    </button>
+                    <button type="button" onclick="openSettingsModal()"
+                        class="w-full flex items-center gap-2 px-4 py-2.5 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-sm text-left cursor-pointer">
+                        <span class="material-symbols-outlined text-[18px] text-blue-400">settings</span>
+                        Settings
+                    </button>
                     <button onclick="logout()"
-                        class="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-600/20 transition-colors text-sm border-t border-white/10">
+                        class="w-full flex items-center gap-2 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-600/20 transition-colors text-sm border-t border-white/10 text-left cursor-pointer">
                         <span class="material-symbols-outlined text-[18px]">logout</span>
                         Logout
                     </button>
@@ -1140,6 +1179,7 @@
     <script src="message-service.js"></script>
     <script src="matchingService.js"></script>
     <script src="notification-manager.js"></script>
+    <script src="quickpull-modals.js"></script>
 
     <script>
         // Navbar scroll effect

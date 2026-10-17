@@ -21,6 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="./apple-design.css" />
   <script src="./quickpull-theme.js"></script>
   <style>
@@ -29,16 +30,16 @@
     body { font-family: 'DM Sans', 'Segoe UI', sans-serif; overflow-x: hidden; }
 
     ::placeholder { color: #aaa; }
-    input:focus, textarea:focus {
-      border-color: #e02020 !important;
-      background: #fff !important;
+    .landing-form input:focus, .landing-form textarea:focus {
+      border-color: #e02020;
+      background: #fff;
       outline: none;
       box-shadow: 0 0 0 3px rgba(224,32,32,0.1);
     }
     textarea { resize: vertical; }
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-thumb { background: #e02020; border-radius: 3px; }
+    body::-webkit-scrollbar, html::-webkit-scrollbar { width: 5px; }
+    body::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb { background: #e02020; border-radius: 3px; }
 
     @keyframes fadeUp {
       from { opacity:0; transform:translateY(30px); }
@@ -626,27 +627,29 @@
     ══════════════════════════════════ */
     .hamburger {
       display: none; flex-direction: column; gap: 5px;
-      cursor: pointer; padding: 10px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 10px;
-      transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
-      min-width: 44px; min-height: 44px;
+      cursor: pointer; padding: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      transition: all .25s cubic-bezier(0.16, 1, 0.3, 1);
+      min-width: 42px; min-height: 42px;
       align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
     .hamburger:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.25);
+      transform: scale(1.03);
     }
     .hamburger:active { transform: scale(0.92); }
     .hamburger span {
       display: block; width: 20px; height: 2px;
-      background: #fff; border-radius: 2px;
-      transition: all .35s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #ffffff; border-radius: 2px;
+      transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #e02020; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: #e02020 !important; }
     .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #e02020; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: #e02020 !important; }
 
     /* Hide mobile button on desktop */
     #navMobileBtn { display: none !important; }
@@ -654,17 +657,18 @@
     /* Mobile nav drawer */
     .mobile-menu {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(5,5,15,0.97);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(8, 10, 18, 0.96);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
       z-index: 9998;
-      flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 8px;
-      padding: 100px 24px 30px 24px;
+      flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 10px;
+      padding: 96px 20px 32px 20px;
       overflow-y: auto;
+      transition: background-color 0.3s ease;
     }
     .mobile-menu.open {
       display: flex;
-      animation: mobileMenuIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      animation: mobileMenuIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     @keyframes mobileMenuIn {
       from { opacity: 0; transform: translateY(-12px); }
@@ -674,39 +678,40 @@
       from { opacity: 0; transform: translateX(-16px); }
       to { opacity: 1; transform: translateX(0); }
     }
-    .mobile-menu.open .nav-pill:nth-child(1) { animation: mobileItemIn 0.4s 0.05s both; }
-    .mobile-menu.open .nav-pill:nth-child(2) { animation: mobileItemIn 0.4s 0.1s both; }
-    .mobile-menu.open .nav-pill:nth-child(3) { animation: mobileItemIn 0.4s 0.15s both; }
-    .mobile-menu.open .nav-pill:nth-child(4) { animation: mobileItemIn 0.4s 0.2s both; }
-    .mobile-menu.open .nav-cta { animation: mobileItemIn 0.4s 0.25s both; }
+    .mobile-menu.open .nav-pill:nth-child(1) { animation: mobileItemIn 0.35s 0.04s both; }
+    .mobile-menu.open .nav-pill:nth-child(2) { animation: mobileItemIn 0.35s 0.08s both; }
+    .mobile-menu.open .nav-pill:nth-child(3) { animation: mobileItemIn 0.35s 0.12s both; }
+    .mobile-menu.open .nav-pill:nth-child(4) { animation: mobileItemIn 0.35s 0.16s both; }
+    .mobile-menu.open .nav-cta { animation: mobileItemIn 0.35s 0.2s both; }
     .mobile-menu .nav-pill {
-      font-size: 1.1rem; padding: 16px 24px; border-radius: 14px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.75);
+      font-size: 1.05rem; padding: 15px 22px; border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-top: 1px solid rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.85);
       font-weight: 600;
-      transition: all .3s ease;
+      transition: all .25s ease;
       width: 100%; text-align: left;
     }
     .mobile-menu .nav-pill::after { display: none; }
     .mobile-menu .nav-pill:active {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.12);
       transform: scale(0.98);
     }
     .mobile-menu .nav-pill.active {
       background: rgba(224,32,32,0.15);
       color: #fff;
-      border-color: rgba(224,32,32,0.3);
-      border-left: 3px solid #e02020;
-      box-shadow: 0 4px 20px rgba(224,32,32,0.15);
+      border-color: rgba(224,32,32,0.35);
+      border-left: 4px solid #e02020;
+      box-shadow: 0 4px 20px rgba(224,32,32,0.18);
     }
     .mobile-menu .nav-cta {
-      margin-top: 16px; padding: 16px 24px; font-size: 1rem;
+      margin-top: 8px; padding: 16px 24px; font-size: 1rem;
       border-radius: 14px;
       background: linear-gradient(135deg, #e02020 0%, #c41414 100%);
       color: #fff; font-weight: 700; border: none;
       box-shadow: 0 8px 24px rgba(224,32,32,0.35);
-      transition: all .3s ease;
+      transition: all .25s ease;
       width: 100%; cursor: pointer;
       position: relative; overflow: hidden;
     }
@@ -720,6 +725,89 @@
     .mobile-menu .nav-cta:active {
       transform: scale(0.98);
       box-shadow: 0 4px 12px rgba(224,32,32,0.3);
+    }
+
+    /* Profile button & dropdown */
+    .nav-profile-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      flex-shrink: 0;
+    }
+    .nav-profile-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: scale(1.05);
+    }
+    .nav-profile-dropdown {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      width: 210px;
+      background: rgba(15, 20, 32, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: none;
+      flex-direction: column;
+      z-index: 9999;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .profile-dropdown-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .profile-dropdown-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .profile-dropdown-email {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.55);
+      margin-top: 2px;
+      word-break: break-all;
+    }
+    .profile-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: transparent;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      width: 100%;
+      cursor: pointer;
+      text-align: left;
+    }
+    .profile-dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .profile-dropdown-logout {
+      color: #ff6b6b !important;
+      border-bottom: none;
+    }
+    .profile-dropdown-logout:hover {
+      background: rgba(255, 107, 107, 0.12) !important;
+      color: #ff5252 !important;
     }
 
     /* ══════════════════════════════════
@@ -741,12 +829,38 @@
     ══════════════════════════════════ */
     @media (max-width: 768px) {
 
-      /* Navbar: hide links, show hamburger */
+      /* Navbar: hide links, show hamburger, make controls fit smoothly */
       .nav-links { display: none; }
-      #authNavSection { margin-left: auto; }
-      .hamburger { display: flex; }
-      #navbar { padding: 12px 18px; top: 10px; left: 10px; right: 10px; border-radius: 16px; }
-      #navbar.scrolled { padding: 10px 18px; }
+      #authNavSection { margin-left: auto; gap: 8px !important; }
+      .nav-right-actions { gap: 8px !important; }
+      .nav-left-group { gap: 8px !important; }
+      .hamburger {
+        display: flex;
+        min-width: 38px; min-height: 38px; width: 38px; height: 38px;
+        padding: 7px; gap: 4px; border-radius: 10px;
+      }
+      .hamburger span { width: 18px; height: 2px; }
+      .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+      .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+      #navbar { padding: 8px 14px; top: 8px; left: 8px; right: 8px; border-radius: 16px; }
+      #navbar.scrolled { padding: 8px 14px; }
+      #authNavSection .nav-cta,
+      #navDashboardBtn,
+      #navGetAppBtn {
+        padding: 7px 14px !important;
+        font-size: 0.8rem !important;
+        border-radius: 20px !important;
+        white-space: nowrap !important;
+      }
+      #profileBtn, .nav-profile-btn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+      }
+      #profileBtn svg, .nav-profile-btn svg {
+        width: 18px !important;
+        height: 18px !important;
+      }
 
       /* Hero: stack vertically */
       .hero-content {
@@ -805,14 +919,33 @@
        MOBILE SMALL  (≤480px)
     ══════════════════════════════════ */
     @media (max-width: 480px) {
-      #navbar { top: 8px; left: 8px; right: 8px; padding: 10px 16px; }
-      #navbar.scrolled { padding: 8px 16px; }
-      .nav-logo { font-size: 1.05rem; }
+      #navbar { top: 6px; left: 6px; right: 6px; padding: 7px 10px; border-radius: 14px; }
+      #navbar.scrolled { padding: 6px 10px; }
+      .nav-logo { font-size: 0.98rem; }
+      .nav-right-actions { gap: 6px !important; }
+      #authNavSection { gap: 6px !important; }
+      .nav-left-group { gap: 6px !important; }
+      .hamburger {
+        min-width: 36px; min-height: 36px; width: 36px; height: 36px;
+        padding: 6px; gap: 3.5px;
+      }
+      .hamburger span { width: 16px; }
+      #authNavSection .nav-cta,
+      #navDashboardBtn,
+      #navGetAppBtn {
+        padding: 6px 10px !important;
+        font-size: 0.76rem !important;
+      }
+      #profileBtn, .nav-profile-btn {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+      }
 
       /* Mobile menu adjustments for small screens */
-      .mobile-menu { padding: 90px 16px 20px 16px; gap: 8px; }
-      .mobile-menu .nav-pill { font-size: 1rem; padding: 14px 20px; border-radius: 12px; }
-      .mobile-menu .nav-cta { padding: 14px 20px; font-size: 0.95rem; margin-top: 10px; }
+      .mobile-menu { padding: 86px 16px 24px 16px; gap: 8px; }
+      .mobile-menu .nav-pill { font-size: 0.98rem; padding: 13px 18px; border-radius: 12px; }
+      .mobile-menu .nav-cta { padding: 13px 18px; font-size: 0.92rem; margin-top: 8px; }
 
       .hero-content { padding: 90px 16px 50px; }
       .hero-h1 { font-size: clamp(1.9rem, 9vw, 2.4rem); }
@@ -888,12 +1021,12 @@
       --text: #1d1d1f;
       --text-secondary: rgba(29, 29, 31, 0.72);
       --text-dim: rgba(29, 29, 31, 0.46);
-      --surface-topbar: rgba(255, 255, 255, 0.86);
+      --surface-topbar: rgba(246, 247, 250, 0.84);
       --surface-card: rgba(255, 255, 255, 0.92);
       --surface-card-hover: #ffffff;
       --border: rgba(0, 0, 0, 0.08);
       --border-hi: rgba(0, 0, 0, 0.14);
-      --border-specular: rgba(255, 255, 255, 0.95);
+      --border-specular: rgba(255, 255, 255, 0.8);
       --border-focus: #e02020;
       --surface-recessed: rgba(235, 236, 240, 0.88);
       --shadow-topbar: 0 4px 20px rgba(0, 0, 0, 0.06);
@@ -911,6 +1044,8 @@
       border: 1px solid var(--border) !important;
       border-top: 1px solid var(--border-specular) !important;
       box-shadow: var(--shadow-topbar) !important;
+      backdrop-filter: blur(24px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
     }
 
     /* Auth Card */
@@ -998,6 +1133,27 @@
       color: #f5f5f7 !important;
     }
 
+    [data-theme="dark"] .hamburger {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    }
+    [data-theme="dark"] .hamburger span {
+      background: #ffffff !important;
+    }
+    [data-theme="dark"] .mobile-menu {
+      background: rgba(8, 10, 18, 0.96) !important;
+    }
+    [data-theme="dark"] .nav-profile-btn {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      color: #f5f5f7 !important;
+    }
+    [data-theme="dark"] .nav-profile-dropdown {
+      background: rgba(14, 18, 28, 0.96) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: #f5f5f7 !important;
+    }
+
     /* Light Mode Sections Adaptation */
     [data-theme="light"] #features,
     [data-theme="light"] #about,
@@ -1063,6 +1219,91 @@
     [data-theme="light"] .faq-a {
       color: #6e6e73 !important;
     }
+
+    /* Light Mode Hamburger: three strokes dark charcoal, subtle glass button */
+    [data-theme="light"] .hamburger {
+      background: rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    [data-theme="light"] .hamburger:hover {
+      background: rgba(0, 0, 0, 0.08) !important;
+    }
+    [data-theme="light"] .hamburger span {
+      background: #1d1d1f !important;
+    }
+    [data-theme="light"] .hamburger.open span:nth-child(1),
+    [data-theme="light"] .hamburger.open span:nth-child(3) {
+      background: #e02020 !important;
+    }
+
+    /* Light Mode Mobile Menu Drawer */
+    [data-theme="light"] .mobile-menu {
+      background: rgba(246, 247, 250, 0.96) !important;
+      backdrop-filter: blur(24px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    }
+    [data-theme="light"] .mobile-menu .nav-pill {
+      background: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.95) !important;
+      color: #1d1d1f !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+    }
+    [data-theme="light"] .mobile-menu .nav-pill:active {
+      background: rgba(0, 0, 0, 0.04) !important;
+      color: #000000 !important;
+    }
+    [data-theme="light"] .mobile-menu .nav-pill.active {
+      background: rgba(224, 32, 32, 0.08) !important;
+      color: #e02020 !important;
+      border-color: rgba(224, 32, 32, 0.25) !important;
+      border-left: 4px solid #e02020 !important;
+      box-shadow: 0 4px 16px rgba(224, 32, 32, 0.1) !important;
+      font-weight: 700 !important;
+    }
+    [data-theme="light"] .mobile-menu .nav-cta {
+      background: linear-gradient(135deg, #e02020 0%, #c41414 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 6px 20px rgba(224, 32, 32, 0.35) !important;
+    }
+
+    /* Light Mode Profile Button & Dropdown */
+    [data-theme="light"] .nav-profile-btn {
+      background: rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      color: #1d1d1f !important;
+    }
+    [data-theme="light"] .nav-profile-btn:hover {
+      background: rgba(0, 0, 0, 0.09) !important;
+    }
+    [data-theme="light"] .nav-profile-dropdown {
+      background: rgba(255, 255, 255, 0.96) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
+    }
+    [data-theme="light"] .profile-dropdown-header {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    [data-theme="light"] .profile-dropdown-title {
+      color: #1d1d1f !important;
+    }
+    [data-theme="light"] .profile-dropdown-email {
+      color: #6e6e73 !important;
+    }
+    [data-theme="light"] .profile-dropdown-item {
+      color: #1d1d1f !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+    [data-theme="light"] .profile-dropdown-item:hover {
+      background: rgba(0, 0, 0, 0.05) !important;
+      color: #000000 !important;
+    }
+    [data-theme="light"] .profile-dropdown-logout {
+      color: #e02020 !important;
+    }
+    [data-theme="light"] .profile-dropdown-logout:hover {
+      background: rgba(224, 32, 32, 0.08) !important;
+    }
   </style>
 </head>
 <body>
@@ -1077,12 +1318,13 @@
     <button class="nav-pill"        id="mnav-features" onclick="closeMenu(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</button>
     <button class="nav-pill"        id="mnav-about"    onclick="closeMenu(); document.getElementById('about')?.scrollIntoView({behavior:'smooth'})">About</button>
     <button class="nav-pill"        id="mnav-contact"  onclick="closeMenu(); document.getElementById('contact')?.scrollIntoView({behavior:'smooth'})">Contact</button>
-    <button class="nav-cta"         onclick="closeMenu()">Get App</button>
+    <button class="nav-cta"         id="mnav-dash"     onclick="closeMenu(); location.href='./Dashboard-Connected.html'" style="display: none;">Dashboard</button>
+    <button class="nav-cta"         id="mnav-getapp"   onclick="closeMenu()">Get App</button>
   </div>
 
   <nav id="navbar">
     <!-- Left: Hamburger + Logo -->
-    <div style="display: flex; align-items: center; gap: 12px;">
+    <div class="nav-left-group" style="display: flex; align-items: center; gap: 12px;">
       <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -1100,7 +1342,7 @@
     </div>
 
     <!-- Right Actions: Appearance Switcher + Auth / CTA -->
-    <div style="display: flex; align-items: center; gap: 10px;">
+    <div class="nav-right-actions" style="display: flex; align-items: center; gap: 10px;">
       <!-- Apple Appearance Segmented Control (apple-design skill §10, §14) -->
       <div class="theme-segmented-control" role="radiogroup" aria-label="Appearance Mode">
         <button type="button" class="theme-seg-btn" id="theme-btn-light" role="radio" aria-checked="false" title="Switch to Light Appearance">
@@ -1112,100 +1354,55 @@
         </button>
         <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true" title="Switch to Dark Appearance">
           <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
           <span class="theme-seg-label">Dark</span>
         </button>
       </div>
 
       <!-- Right: Profile + Dashboard Button -->
-      <div id="authNavSection" style="display: none; align-items: center; gap: 12px;">
+      <div id="authNavSection" style="display: none; align-items: center; gap: 10px;">
+        <!-- Settings Button -->
+        <button id="settingsBtn" onclick="openSettingsModal()" class="nav-profile-btn" title="Settings" aria-label="Open Settings" style="cursor: pointer;">
+          <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
         <!-- Dashboard Button -->
-        <button class="nav-cta" onclick="location.href='./Dashboard-Connected.html'" style="
-          background: #e02020;
-          color: #fff;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 24px;
-          font-weight: 700;
-          font-size: 0.875rem;
-          cursor: pointer;
-          box-shadow: 0 4px 14px rgba(224, 32, 32, 0.4);
-          transition: transform 0.2s;
-        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <button id="navDashboardBtn" class="nav-cta nav-dash-btn" onclick="location.href='./Dashboard-Connected.html'">
           Dashboard
         </button>
         <!-- Profile Dropdown Button -->
         <div class="relative" style="position: relative; z-index: 50;">
-          <button id="profileBtn" style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.2s;
-          " onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
+          <button id="profileBtn" class="nav-profile-btn" aria-label="Profile Menu" style="cursor: pointer;">
             <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </button>
           <!-- Dropdown Menu -->
-          <div id="profileDropdown" style="
-            position: absolute;
-            right: 0;
-            top: 100%;
-            width: 200px;
-            background: rgba(25, 38, 51, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            display: none;
-            flex-direction: column;
-            z-index: 9999;
-            margin-top: 8px;
-          ">
-            <div style="padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-              <p style="font-size: 0.875rem; font-weight: 600; color: #fff;">Profile</p>
-              <p style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 4px;" id="profileEmail">Loading...</p>
+          <div id="profileDropdown" class="nav-profile-dropdown" style="overflow: hidden;">
+            <div class="profile-dropdown-header">
+              <p class="profile-dropdown-title">Profile</p>
+              <p class="profile-dropdown-email" id="profileEmail">Loading...</p>
             </div>
-            <a href="#" style="
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              padding: 12px 16px;
-              color: rgba(255, 255, 255, 0.8);
-              text-decoration: none;
-              font-size: 0.875rem;
-              transition: all 0.2s;
-              border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            " onmouseover="this.style.background='rgba(255, 255, 255, 0.1); this.style.color=&quot;#fff&quot;'" onmouseout="this.style.background='transparent'; this.style.color='rgba(255, 255, 255, 0.8)'">
+            <button type="button" id="myProfileBtn" onclick="openProfileModal()" class="profile-dropdown-item" style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left;">
               <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
               My Profile
-            </a>
-            <button onclick="logout()" style="
-              width: 100%;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              padding: 12px 16px;
-              background: none;
-              border: none;
-              color: #ff6b6b;
-              font-size: 0.875rem;
-              cursor: pointer;
-              transition: all 0.2s;
-              text-align: left;
-            " onmouseover="this.style.background='rgba(255, 107, 107, 0.1)'" onmouseout="this.style.background='none'">
+            </button>
+            <button type="button" onclick="openSettingsModal()" class="profile-dropdown-item" style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left;">
+              <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              Settings
+            </button>
+            <button onclick="logout()" class="profile-dropdown-item profile-dropdown-logout" style="cursor: pointer;">
               <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -1218,18 +1415,7 @@
       </div>
 
       <!-- Get App Button (shown when not authenticated) -->
-      <button id="navGetAppBtn" class="nav-cta" style="
-        background: #e02020;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 24px;
-        font-weight: 700;
-        font-size: 0.875rem;
-        cursor: pointer;
-        box-shadow: 0 4px 14px rgba(224, 32, 32, 0.4);
-        transition: transform 0.2s;
-      " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      <button id="navGetAppBtn" class="nav-cta" onclick="location.href='#home'">
         Get App
       </button>
     </div>
@@ -1411,6 +1597,7 @@
   <script src="api-config.js"></script>
   <script src="api-client.js"></script>
   <script src="auth-service.js"></script>
+  <script src="quickpull-modals.js"></script>
   <script>
     /* ══════════════════════════════════
        DATA
@@ -1905,6 +2092,10 @@
         populateProfileEmail();
 
         document.getElementById('navGetAppBtn').style.display = 'none';
+        const mDash = document.getElementById('mnav-dash');
+        const mGetApp = document.getElementById('mnav-getapp');
+        if (mDash) mDash.style.display = 'block';
+        if (mGetApp) mGetApp.style.display = 'none';
       } else {
         // Show login/signup form
         document.getElementById('auth-form').parentElement.style.display = '';
@@ -1917,6 +2108,10 @@
 
         // Show Get App button
         document.getElementById('navGetAppBtn').style.display = 'block';
+        const mDash = document.getElementById('mnav-dash');
+        const mGetApp = document.getElementById('mnav-getapp');
+        if (mDash) mDash.style.display = 'none';
+        if (mGetApp) mGetApp.style.display = 'block';
       }
 
       renderAuthForm();

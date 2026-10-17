@@ -166,15 +166,17 @@ exports.getProfile = async (req, res) => {
 // UPDATE USER PROFILE
 exports.updateProfile = async (req, res) => {
   try {
-    const { firstName, lastName, profileImage, vehicle, vehicleNumber, vehicleColor, licenseNumber } = req.body;
+    const { firstName, lastName, phone, userType, profileImage, vehicle, vehicleNumber, vehicleColor, licenseNumber } = req.body;
 
     console.log('📝 updateProfile called');
     console.log('🔐 req.user:', req.user);
-    console.log('📦 Update data:', { firstName, lastName, profileImage, vehicle, vehicleNumber, vehicleColor, licenseNumber });
+    console.log('📦 Update data:', { firstName, lastName, phone, userType, profileImage, vehicle, vehicleNumber, vehicleColor, licenseNumber });
 
     const updateData = {};
     if (firstName) updateData.firstName = firstName;
     if (lastName) updateData.lastName = lastName;
+    if (phone) updateData.phone = phone;
+    if (userType) updateData.userType = userType;
     if (profileImage) updateData.profileImage = profileImage;
     if (vehicle) updateData.vehicle = vehicle;
     if (vehicleNumber) updateData.vehicleNumber = vehicleNumber;

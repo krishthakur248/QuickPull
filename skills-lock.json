@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/apple-design/SKILL.md",
       "computedHash": "f3f1d2cbc8f3e79ccddff05f4e42d34d995f057fb30ff670e4edf8c87d568b69"
+    },
+    "gravitas": {
+      "source": "udaysharmadev/Gravitas",
+      "sourceType": "github",
+      "skillPath": "skills/gravitas/SKILL.md",
+      "computedHash": "1ef9a8048a626aafe7c87f74cefaf030e71cff6231abad5e917cc5d9cd1fdefb"
     }
   }
 }
