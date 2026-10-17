@@ -1,655 +1,1615 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>QuickPull · Admin Dashboard</title>
+  <title>QuickPull · Admin Console</title>
 
+  <!-- Apple SF-style Typography: Inter + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap"
-    rel="stylesheet"
-  />
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
 
-  <!-- Leaflet Map library (matches AddRide-Connected.html) -->
+  <!-- Leaflet Map library -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
+  <!-- Anti-flash appearance initialization (apple-design skill §14) -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('admin_theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { }
+    })();
+  </script>
+
   <style>
-    /* ── Mission Control tokens ────────────────────────────────────────────── */
-    :root {
-      --bg:           #020617;
-      --surface:      #0f172a;
-      --surface-high: #1e293b;
-      --border:       #1e293b;
-      --border-hi:    #334155;
-      --text:         #f8fafc;
-      --text-muted:   #94a3b8;
-      --text-dim:     #64748b;
-      --cyan:         #06b6d4;
-      --cyan-hover:   #22d3ee;
-      --green:        #10b981;
-      --amber:        #f59e0b;
-      --rose:         #f43f5e;
-      --sidebar-w:    240px;
+    /* ═══════════════════════════════════════════════════════════════════════
+       APPLE DESIGN SYSTEM TOKENS (macOS Sequoia / iOS 18 HIG)
+       Translating Apple Human Interface Guidelines for Web
+       ═══════════════════════════════════════════════════════════════════════ */
+    :root,
+    [data-theme="dark"] {
+      --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, monospace;
+
+      /* Dark Canvas & Translucent Materials (apple-design skill §12) */
+      --canvas: #07090e;
+      --surface-sidebar: rgba(13, 16, 24, 0.82);
+      --surface-topbar: rgba(13, 16, 24, 0.78);
+      --surface-card: rgba(18, 23, 36, 0.74);
+      --surface-card-hover: rgba(26, 33, 50, 0.82);
+      --surface-subtle: rgba(255, 255, 255, 0.04);
+      --surface-recessed: rgba(10, 13, 21, 0.72);
+      --surface-drawer: rgba(15, 20, 32, 0.94);
+      --surface-modal: rgba(18, 24, 38, 0.96);
+
+      /* Borders & Light Specular Highlights */
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hi: rgba(255, 255, 255, 0.15);
+      --border-specular: rgba(255, 255, 255, 0.22);
+      --border-focus: #0a84ff;
+
+      /* Typography & Vibrancy */
+      --text: #f5f5f7;
+      --text-secondary: rgba(245, 245, 247, 0.74);
+      --text-dim: rgba(245, 245, 247, 0.46);
+
+      /* Apple System Accents (Dark Palette) */
+      --cyan: #38bdf8;
+      --cyan-bright: #0ea5e9;
+      --cyan-glass: rgba(56, 189, 248, 0.12);
+      --cyan-border: rgba(56, 189, 248, 0.32);
+
+      --emerald: #30d158;
+      --emerald-glass: rgba(48, 209, 88, 0.12);
+      --emerald-border: rgba(48, 209, 88, 0.32);
+
+      --amber: #ff9f0a;
+      --amber-glass: rgba(255, 159, 10, 0.12);
+      --amber-border: rgba(255, 159, 10, 0.32);
+
+      --rose: #ff453a;
+      --rose-glass: rgba(255, 69, 58, 0.12);
+      --rose-border: rgba(255, 69, 58, 0.32);
+
+      --indigo: #a78bfa;
+      --indigo-glass: rgba(167, 139, 250, 0.12);
+      --indigo-border: rgba(167, 139, 250, 0.32);
+
+      /* Depth & Shadows */
+      --shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.35);
+      --shadow-topbar: 0 4px 20px rgba(0, 0, 0, 0.25);
+      --shadow-card: 0 12px 32px -4px rgba(0, 0, 0, 0.45);
+      --shadow-card-hover: 0 16px 40px -4px rgba(0, 0, 0, 0.55);
+      --shadow-card-inner: inset 0 1px 1px 0 rgba(255, 255, 255, 0.08);
+      --shadow-modal: 0 24px 64px -8px rgba(0, 0, 0, 0.8);
+      --modal-overlay-bg: rgba(0, 0, 0, 0.72);
+
+      /* Dynamic Background & Ambient Glow */
+      --glow-1: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, transparent 70%);
+      --glow-2: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+      --banner-bg: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%);
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(245,245,247,0.45)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+      /* Maps & Popups */
+      --map-tile-filter: brightness(0.68) invert(1) contrast(1.7) hue-rotate(190deg) saturate(0.32) brightness(0.9);
+      --map-bg: #07090e;
+      --map-popup-bg: rgba(18, 24, 38, 0.96);
+
+      /* Layout Dimensions */
+      --sidebar-w: 260px;
+      --topbar-h: 64px;
+
+      /* Spring Animation Curves (apple-design skill §4) */
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* ═══════════════════════════════════════════════════════════════════════
+       APPLE LIGHT MODE PALETTE (macOS Sequoia / iOS 18 Light Materials)
+       ═══════════════════════════════════════════════════════════════════════ */
+    [data-theme="light"] {
+      /* Canvas & Materials */
+      --canvas: #f5f5f7;
+      --surface-sidebar: rgba(246, 246, 248, 0.88);
+      --surface-topbar: rgba(255, 255, 255, 0.85);
+      --surface-card: rgba(255, 255, 255, 0.88);
+      --surface-card-hover: #ffffff;
+      --surface-subtle: rgba(0, 0, 0, 0.035);
+      --surface-recessed: rgba(238, 238, 242, 0.78);
+      --surface-drawer: rgba(255, 255, 255, 0.95);
+      --surface-modal: rgba(255, 255, 255, 0.98);
+
+      /* Borders & Light Specular Highlights */
+      --border: rgba(0, 0, 0, 0.08);
+      --border-hi: rgba(0, 0, 0, 0.14);
+      --border-specular: rgba(255, 255, 255, 0.95);
+      --border-focus: #0071e3;
+
+      /* Typography & Vibrancy */
+      --text: #1d1d1f;
+      --text-secondary: #515154;
+      --text-dim: #86868b;
+
+      /* Apple System Accents (Light Palette) */
+      --cyan: #0071e3;
+      --cyan-bright: #0077ed;
+      --cyan-glass: rgba(0, 113, 227, 0.08);
+      --cyan-border: rgba(0, 113, 227, 0.22);
+
+      --emerald: #34c759;
+      --emerald-glass: rgba(52, 199, 89, 0.1);
+      --emerald-border: rgba(52, 199, 89, 0.28);
+
+      --amber: #ff9500;
+      --amber-glass: rgba(255, 149, 0, 0.1);
+      --amber-border: rgba(255, 149, 0, 0.28);
+
+      --rose: #ff3b30;
+      --rose-glass: rgba(255, 59, 48, 0.09);
+      --rose-border: rgba(255, 59, 48, 0.25);
+
+      --indigo: #5856d6;
+      --indigo-glass: rgba(88, 86, 214, 0.09);
+      --indigo-border: rgba(88, 86, 214, 0.24);
+
+      /* Depth & Shadows */
+      --shadow-sidebar: 4px 0 24px rgba(0, 0, 0, 0.05);
+      --shadow-topbar: 0 2px 14px rgba(0, 0, 0, 0.05);
+      --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+      --shadow-card-hover: 0 10px 30px -4px rgba(0, 0, 0, 0.1), 0 3px 8px -2px rgba(0, 0, 0, 0.06);
+      --shadow-card-inner: inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+      --shadow-modal: 0 20px 48px -4px rgba(0, 0, 0, 0.14), 0 4px 14px -2px rgba(0, 0, 0, 0.08);
+      --modal-overlay-bg: rgba(0, 0, 0, 0.35);
+
+      /* Dynamic Background & Ambient Glow */
+      --glow-1: radial-gradient(circle, rgba(0, 113, 227, 0.05) 0%, transparent 70%);
+      --glow-2: radial-gradient(circle, rgba(88, 86, 214, 0.035) 0%, transparent 70%);
+      --banner-bg: linear-gradient(135deg, rgba(0, 113, 227, 0.08) 0%, rgba(88, 86, 214, 0.04) 100%);
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(29,29,31,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+      /* Maps & Popups */
+      --map-tile-filter: saturate(1.08) contrast(1.02);
+      --map-bg: #f2f2f7;
+      --map-popup-bg: rgba(255, 255, 255, 0.98);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
+      font-family: var(--font-system);
+      background-color: var(--canvas);
       color: var(--text);
       min-height: 100vh;
       display: flex;
-      font-size: .875rem;
+      font-size: 0.875rem;
+      position: relative;
+      overflow-x: hidden;
+      line-height: 1.45;
+      transition: background-color 0.25s var(--ease-spring), color 0.25s var(--ease-spring);
     }
 
-    /* ════════════════════════════════════════
-       SIDEBAR
-    ════════════════════════════════════════ */
+    /* Ambient Background Glows */
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+      transition: background 0.3s var(--ease-spring);
+    }
+
+    .bg-glow-1 {
+      top: -100px;
+      right: 10%;
+      background: var(--glow-1);
+    }
+
+    .bg-glow-2 {
+      bottom: -100px;
+      left: 20%;
+      background: var(--glow-2);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       SIDEBAR — macOS Sequoia Translucent Sidebar
+       ═══════════════════════════════════════════════════════════════════════ */
     .sidebar {
       width: var(--sidebar-w);
       flex-shrink: 0;
-      background: var(--surface);
+      background: var(--surface-sidebar);
+      backdrop-filter: blur(32px) saturate(200%);
+      -webkit-backdrop-filter: blur(32px) saturate(200%);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       height: 100vh;
       position: sticky;
       top: 0;
+      z-index: 30;
+      box-shadow: var(--shadow-sidebar);
+      transition: background-color 0.25s var(--ease-spring), border-color 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring);
     }
 
-    /* Brand strip */
+    /* Brand Header */
     .sidebar-brand {
-      padding: 1.25rem 1rem;
+      padding: 1.25rem 1.15rem 1.1rem;
       border-bottom: 1px solid var(--border);
     }
 
     .sidebar-brand-row {
       display: flex;
       align-items: center;
-      gap: .625rem;
+      gap: 0.75rem;
     }
 
     .sidebar-logo {
-      width: 32px;
-      height: 32px;
-      background: rgba(6,182,212,.15);
-      border: 1px solid rgba(6,182,212,.3);
-      border-radius: 4px;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(14, 165, 233, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-top: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 11px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.25);
       flex-shrink: 0;
+    }
+
+    .sidebar-logo svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: var(--cyan);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .sidebar-title {
       font-weight: 700;
-      font-size: .9375rem;
-      letter-spacing: -.01em;
+      font-size: 1.05rem;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      line-height: 1.15;
     }
 
-    .sidebar-subtitle {
-      font-size: .6875rem;
-      font-weight: 600;
-      letter-spacing: .06em;
+    .sidebar-subtitle-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.2rem;
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--cyan);
     }
 
-    /* Admin user info */
+    /* Logged-in Admin Card */
     .sidebar-user {
-      padding: .875rem 1rem;
+      padding: 0.875rem 1.15rem;
       border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-user-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan-glass), var(--indigo-glass));
+      border: 1px solid var(--border-hi);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-user-details {
+      min-width: 0;
+      flex: 1;
     }
 
     .sidebar-user-label {
-      font-size: .6875rem;
+      font-size: 0.625rem;
       font-weight: 600;
-      letter-spacing: .05em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--text-dim);
-      margin-bottom: .375rem;
+      line-height: 1;
+      margin-bottom: 0.2rem;
     }
 
     .sidebar-user-name {
       font-weight: 600;
-      font-size: .8125rem;
+      font-size: 0.8125rem;
       color: var(--text);
-    }
-
-    .sidebar-user-email {
-      font-size: .75rem;
-      color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    .sidebar-user-email {
+      font-size: 0.6875rem;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.1rem;
     }
 
     /* Navigation */
     .sidebar-nav {
       flex: 1;
-      padding: .75rem 0;
+      padding: 0.875rem 0.625rem;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
     }
 
     .nav-section-label {
-      font-size: .6875rem;
-      font-weight: 600;
-      letter-spacing: .06em;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
       color: var(--text-dim);
-      padding: .5rem 1rem .25rem;
+      padding: 0.65rem 0.65rem 0.3rem;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: .625rem;
-      padding: .5rem 1rem;
-      font-size: .8125rem;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8125rem;
       font-weight: 500;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       text-decoration: none;
       cursor: pointer;
-      border-left: 2px solid transparent;
-      transition: color .15s, background .15s, border-color .15s;
+      border-radius: 10px;
+      position: relative;
+      transition:
+        background-color 0.15s var(--ease-spring),
+        color 0.15s var(--ease-spring),
+        transform 0.1s var(--ease-spring);
       user-select: none;
+    }
+
+    /* Kill latency: active state on press (§1) */
+    .nav-item:active {
+      transform: scale(0.975);
     }
 
     .nav-item:hover {
       color: var(--text);
-      background: rgba(255,255,255,.04);
+      background: var(--surface-subtle);
     }
 
     .nav-item.nav-active {
-      color: var(--cyan);
-      background: rgba(6,182,212,.08);
-      border-left-color: var(--cyan);
+      color: var(--text);
+      font-weight: 600;
+      background: var(--cyan-glass);
+      border: 1px solid var(--cyan-border);
+      border-top: 1px solid var(--border-specular);
+      box-shadow: 0 2px 10px var(--cyan-glass);
     }
 
-    .nav-item.nav-disabled {
-      opacity: .4;
-      cursor: not-allowed;
-      pointer-events: none;
+    .nav-item.nav-active .nav-icon svg {
+      stroke: var(--cyan);
+      filter: drop-shadow(0 0 5px var(--cyan));
     }
 
-    .nav-icon { font-size: 1rem; width: 1.25rem; text-align: center; }
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-icon svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: var(--text-dim);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.15s, filter 0.15s;
+    }
+
+    .nav-item:hover .nav-icon svg {
+      stroke: var(--text);
+    }
 
     .nav-badge {
       margin-left: auto;
-      background: var(--surface-high);
+      background: var(--surface-subtle);
       color: var(--text-dim);
-      font-size: .625rem;
+      font-size: 0.625rem;
       font-weight: 600;
-      letter-spacing: .04em;
-      padding: .125rem .375rem;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.45rem;
       border-radius: 9999px;
-      border: 1px solid var(--border-hi);
+      border: 1px solid var(--border);
     }
 
-    /* Sidebar footer: logout */
+    /* Sidebar Footer: Sign Out */
     .sidebar-footer {
-      padding: .75rem 1rem;
+      padding: 0.875rem 0.875rem 1.15rem;
       border-top: 1px solid var(--border);
     }
 
     .btn-logout {
       display: flex;
       align-items: center;
-      gap: .5rem;
+      justify-content: center;
+      gap: 0.5rem;
       width: 100%;
-      background: transparent;
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
+      background: var(--rose-glass);
+      border: 1px solid var(--rose-border);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
       font-weight: 500;
-      padding: .5rem .75rem;
+      padding: 0.55rem 0.75rem;
       cursor: pointer;
-      transition: color .15s, border-color .15s, background .15s;
+      transition:
+        color 0.15s var(--ease-spring),
+        border-color 0.15s var(--ease-spring),
+        background-color 0.15s var(--ease-spring),
+        transform 0.1s var(--ease-spring);
+    }
+
+    .btn-logout svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .btn-logout:hover {
       color: var(--rose);
-      border-color: rgba(244,63,94,.4);
-      background: rgba(244,63,94,.06);
+      border-color: var(--rose);
+      background: var(--rose-glass);
     }
 
-    /* ════════════════════════════════════════
-       MAIN CONTENT AREA
-    ════════════════════════════════════════ */
+    .btn-logout:active {
+      transform: scale(0.975);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       MAIN CONTENT VIEWPORT & FLOATING TOPBAR
+       ═══════════════════════════════════════════════════════════════════════ */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-width: 0;
+      height: 100vh;
       overflow-y: auto;
+      position: relative;
+      z-index: 10;
     }
 
-    /* Top bar */
+    /* Topbar */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: .875rem 1.5rem;
+      height: var(--topbar-h);
+      padding: 0 2rem;
       border-bottom: 1px solid var(--border);
-      background: var(--surface);
+      background: var(--surface-topbar);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+      box-shadow: var(--shadow-topbar);
+      transition: background-color 0.25s var(--ease-spring), border-color 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
     .topbar-title {
-      font-size: 1rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.022em;
+      color: var(--text);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       APPLE SEGMENTED THEME TOGGLE (macOS HIG System Appearance Switcher)
+       ═══════════════════════════════════════════════════════════════════════ */
+    .theme-segmented-control {
+      display: inline-flex;
+      align-items: center;
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 3px;
+      position: relative;
+      user-select: none;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+      transition: background-color 0.25s var(--ease-spring), border-color 0.25s var(--ease-spring);
+    }
+
+    .theme-seg-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.28rem 0.65rem;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: var(--font-system);
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+      transition:
+        color 0.18s var(--ease-spring),
+        background-color 0.18s var(--ease-spring),
+        box-shadow 0.18s var(--ease-spring),
+        transform 0.1s var(--ease-spring);
+    }
+
+    .theme-seg-btn:hover {
+      color: var(--text);
+    }
+
+    .theme-seg-btn:active {
+      transform: scale(0.96);
+    }
+
+    .theme-seg-btn.active {
+      color: var(--text);
       font-weight: 600;
-      letter-spacing: -.01em;
+      background: var(--surface-card);
+      border-color: var(--border-hi);
+      border-top-color: var(--border-specular);
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.12),
+        0 1px 1px rgba(255, 255, 255, 0.15) inset;
+    }
+
+    .theme-seg-icon {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .theme-seg-btn.active .theme-seg-icon {
+      stroke: var(--cyan);
     }
 
     .topbar-status {
       display: flex;
       align-items: center;
-      gap: .375rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .6875rem;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
       color: var(--text-dim);
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      transition: background-color 0.25s var(--ease-spring), border-color 0.25s var(--ease-spring), color 0.25s var(--ease-spring);
     }
 
-    .live-dot {
-      width: 6px;
-      height: 6px;
+    .live-beacon {
+      position: relative;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--green);
-      animation: pulse 2.5s infinite;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
     }
 
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+    .live-beacon::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1px solid var(--emerald);
+      opacity: 0.6;
+      animation: ripple 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
 
-    /* Content sections */
+    @keyframes ripple {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.9;
+      }
+
+      100% {
+        transform: scale(2.4);
+        opacity: 0;
+      }
+    }
+
+    /* Content wrapper */
     .content {
-      padding: 1.5rem;
+      padding: 2rem;
       flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
     }
 
-    .content-section { display: none; }
+    .content-section {
+      display: none;
+      animation: sectionFade 0.3s var(--ease-spring);
+    }
 
-    /* Section heading */
+    @keyframes sectionFade {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Section Headers */
     .section-header {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .section-title {
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: -.01em;
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      line-height: 1.2;
     }
 
     .section-subtitle {
-      font-size: .8125rem;
-      color: var(--text-muted);
-      margin-top: .25rem;
+      font-size: 0.8125rem;
+      color: var(--text-dim);
+      margin-top: 0.25rem;
     }
 
-    /* ── Coming-soon placeholder ─────────────────────────────────────────── */
-    .placeholder-card {
-      background: var(--surface);
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      padding: 3rem 2rem;
-      text-align: center;
-      max-width: 480px;
-      margin: 2rem auto;
+    /* ═══════════════════════════════════════════════════════════════════════
+       EXECUTIVE DASHBOARD (Live Operations Command Center)
+       ═══════════════════════════════════════════════════════════════════════ */
+    .telemetry-banner {
+      background: var(--banner-bg);
+      border: 1px solid var(--cyan-border);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 18px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s var(--ease-spring), border-color 0.25s, box-shadow 0.25s;
     }
 
-    .placeholder-icon { font-size: 2.5rem; margin-bottom: 1rem; }
-
-    .placeholder-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: .5rem;
+    .telemetry-banner::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--cyan);
     }
 
-    .placeholder-text {
-      font-size: .8125rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .placeholder-phase {
-      display: inline-block;
-      margin-top: .875rem;
-      background: rgba(6,182,212,.1);
-      border: 1px solid rgba(6,182,212,.25);
+    .telemetry-banner-title {
+      font-size: 0.8125rem;
+      font-weight: 700;
       color: var(--cyan);
-      font-size: .6875rem;
-      font-weight: 600;
-      letter-spacing: .06em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      padding: .25rem .75rem;
-      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    /* ════════════════════════════════════════
-       AUDIT LOG TABLE
-    ════════════════════════════════════════ */
-    .table-card {
-      background: var(--surface);
+    .telemetry-banner-desc {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .metric-card {
+      background: var(--surface-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 18px;
+      padding: 1.35rem 1.4rem;
+      box-shadow: var(--shadow-card), var(--shadow-card-inner);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition:
+        transform 0.2s var(--ease-spring),
+        box-shadow 0.2s var(--ease-spring),
+        background-color 0.2s var(--ease-spring),
+        border-color 0.2s var(--ease-spring);
+    }
+
+    .metric-card:hover {
+      background: var(--surface-card-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card-hover), var(--shadow-card-inner);
+    }
+
+    .metric-card:active {
+      transform: scale(0.985);
+    }
+
+    .metric-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .metric-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .metric-icon-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .badge-cyan-tint {
+      background: var(--cyan-glass);
+      color: var(--cyan);
+      border: 1px solid var(--cyan-border);
+    }
+
+    .badge-emerald-tint {
+      background: var(--emerald-glass);
+      color: var(--emerald);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .badge-amber-tint {
+      background: var(--amber-glass);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+    }
+
+    .badge-rose-tint {
+      background: var(--rose-glass);
+      color: var(--rose);
+      border: 1px solid var(--rose-border);
+    }
+
+    .badge-indigo-tint {
+      background: var(--indigo-glass);
+      color: var(--indigo);
+      border: 1px solid var(--indigo-border);
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-footer {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .metric-ratio-bar {
+      width: 100%;
+      height: 5px;
+      background: var(--surface-recessed);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      display: flex;
+    }
+
+    .metric-ratio-fill-1 {
+      background: var(--cyan);
+      height: 100%;
+    }
+
+    .metric-ratio-fill-2 {
+      background: var(--emerald);
+      height: 100%;
+    }
+
+    /* Quick Launchpad */
+    .launchpad-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .launchpad-card {
+      background: var(--surface-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 18px;
+      padding: 1.35rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-card), var(--shadow-card-inner);
+      transition:
+        transform 0.15s var(--ease-spring),
+        border-color 0.15s var(--ease-spring),
+        background-color 0.15s var(--ease-spring),
+        box-shadow 0.15s var(--ease-spring);
+    }
+
+    .launchpad-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--cyan-border);
+      background: var(--surface-card-hover);
+      box-shadow: var(--shadow-card-hover), var(--shadow-card-inner);
+    }
+
+    .launchpad-card:active {
+      transform: scale(0.98);
+    }
+
+    .launchpad-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--text);
+    }
+
+    .launchpad-desc {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
+
+    .launchpad-arrow {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: transform 0.2s var(--ease-spring), background 0.2s, border-color 0.2s;
+    }
+
+    .launchpad-card:hover .launchpad-arrow {
+      transform: translateX(3px);
+      background: var(--cyan-glass);
+      border-color: var(--cyan-border);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       DASHBOARD BOTTOM PANELS (Live Dispatch Feed & Platform Vitals)
+       ═══════════════════════════════════════════════════════════════════════ */
+    .dashboard-bottom-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 1.25rem;
+      margin-top: 1.75rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dash-panel {
+      background: var(--surface-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 18px;
+      padding: 1.35rem 1.4rem;
+      box-shadow: var(--shadow-card), var(--shadow-card-inner);
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s var(--ease-spring), border-color 0.25s;
+    }
+
+    .dash-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dash-panel-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dash-panel-action {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--cyan);
+      background: var(--cyan-glass);
+      border: 1px solid var(--cyan-border);
+      padding: 0.25rem 0.65rem;
       border-radius: 6px;
-      overflow-x: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      cursor: pointer;
+      transition: all 0.15s var(--ease-spring);
+    }
+
+    .dash-panel-action:hover {
+      background: var(--cyan);
+      color: #fff;
+      border-color: var(--cyan);
+    }
+
+    .dash-panel-action:active {
+      transform: scale(0.97);
+    }
+
+    .recent-trips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      flex: 1;
+    }
+
+    .recent-trip-item {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: all 0.18s var(--ease-spring);
+    }
+
+    .recent-trip-item:hover {
+      background: var(--surface-card-hover);
+      border-color: var(--cyan-border);
+      transform: translateX(3px);
+    }
+
+    .recent-trip-item:active {
+      transform: scale(0.985);
+    }
+
+    .vitals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      flex: 1;
+    }
+
+    .vital-item {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .vital-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+      font-size: 0.8125rem;
+    }
+
+    .vital-label {
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .vital-value {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .vital-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--surface-recessed);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .vital-bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.4s var(--ease-spring);
+    }
+
+    .services-status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-top: 0.85rem;
+    }
+
+    .service-badge-pill {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       TABLE CARDS & TOOLBARS (Audit Log, Users, Trips)
+       ═══════════════════════════════════════════════════════════════════════ */
+    .table-card {
+      background: var(--surface-card);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid var(--border);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card), var(--shadow-card-inner);
+      transition: background-color 0.25s var(--ease-spring), border-color 0.25s;
     }
 
     .table-toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: .75rem 1rem;
+      padding: 1rem 1.35rem;
       border-bottom: 1px solid var(--border);
-      background: var(--surface);
+      background: var(--surface-subtle);
     }
 
     .table-toolbar-title {
-      font-size: .8125rem;
-      font-weight: 600;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
     }
 
+    /* Apple-style Small Action Buttons */
     .btn-sm {
-      background: var(--surface-high);
+      background: var(--surface-recessed);
       border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: .75rem;
-      font-weight: 500;
-      padding: .25rem .625rem;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-family: var(--font-system);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
       cursor: pointer;
-      transition: color .15s, border-color .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition:
+        color 0.15s var(--ease-spring),
+        border-color 0.15s var(--ease-spring),
+        background-color 0.15s var(--ease-spring),
+        transform 0.1s var(--ease-spring);
+      user-select: none;
     }
 
     .btn-sm:hover:not(:disabled) {
       color: var(--text);
-      border-color: var(--text-dim);
+      border-color: var(--border-focus);
+      background: var(--surface-card-hover);
     }
 
-    .btn-sm:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-sm:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .btn-sm:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Table & Rows */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      text-align: left;
     }
 
     thead th {
-      background: var(--surface);
+      background: var(--surface-recessed);
       border-bottom: 1px solid var(--border);
       color: var(--text-dim);
-      font-size: .6875rem;
-      font-weight: 600;
-      letter-spacing: .06em;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: .5rem 1rem;
-      text-align: left;
+      padding: 0.75rem 1.25rem;
       white-space: nowrap;
     }
 
-    tbody tr { border-bottom: 1px solid var(--border); }
-
-    tbody tr:last-child { border-bottom: none; }
-
-    .log-row td {
-      padding: .625rem 1rem;
-      vertical-align: middle;
-      font-size: .8125rem;
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.15s var(--ease-spring);
     }
 
-    .log-row:hover td { background: rgba(255,255,255,.02); }
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .log-row td,
+    .user-row td,
+    .trip-row-clickable td {
+      padding: 0.85rem 1.25rem;
+      vertical-align: middle;
+      font-size: 0.8125rem;
+    }
+
+    .log-row:hover td,
+    .user-row:hover td,
+    .trip-row-clickable:hover td {
+      background: var(--surface-subtle);
+    }
+
+    .user-row,
+    .trip-row-clickable {
+      cursor: pointer;
+    }
 
     .cell-mono {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .75rem;
-      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
 
     .table-placeholder {
-      padding: 2.5rem;
+      padding: 3rem 1rem;
       text-align: center;
       color: var(--text-dim);
-      font-size: .8125rem;
+      font-size: 0.8125rem;
     }
 
-    .table-error { color: #fb7185; }
+    .table-error {
+      color: var(--rose);
+    }
 
-    /* ── Action badges ──────────────────────────────────────────────────── */
+    /* ── Apple-style Badges & Pills ──────────────────────────────────────── */
     .badge {
-      display: inline-block;
-      padding: .125rem .5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
       border-radius: 9999px;
-      font-size: .6875rem;
-      font-weight: 600;
-      letter-spacing: .04em;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
       white-space: nowrap;
+      line-height: 1.2;
     }
 
-    /* Success / verified */
     .badge-success {
-      background: rgba(16,185,129,.12);
-      color: #34d399;
-      border: 1px solid rgba(5,150,105,.4);
+      background: var(--emerald-glass);
+      color: var(--emerald);
+      border: 1px solid var(--emerald-border);
     }
 
-    /* Failed / blocked */
     .badge-danger {
-      background: rgba(244,63,94,.12);
-      color: #fb7185;
-      border: 1px solid rgba(225,29,72,.4);
+      background: var(--rose-glass);
+      color: var(--rose);
+      border: 1px solid var(--rose-border);
     }
 
-    /* Warning / simulation */
     .badge-warning {
-      background: rgba(245,158,11,.12);
-      color: #fbbf24;
-      border: 1px solid rgba(217,119,6,.4);
+      background: var(--amber-glass);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
     }
 
-    /* Neutral / info */
     .badge-info {
-      background: rgba(6,182,212,.1);
-      color: #67e8f9;
-      border: 1px solid rgba(6,182,212,.3);
+      background: var(--cyan-glass);
+      color: var(--cyan);
+      border: 1px solid var(--cyan-border);
     }
 
-    /* ── Pagination row ─────────────────────────────────────────────────── */
+    .badge-dim {
+      background: var(--surface-subtle);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Pagination Row ──────────────────────────────────────────────────── */
     .pagination {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: .625rem 1rem;
+      padding: 0.85rem 1.35rem;
       border-top: 1px solid var(--border);
-      background: var(--surface);
+      background: var(--surface-subtle);
     }
 
     .page-info {
-      font-size: .75rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
       color: var(--text-dim);
     }
 
-    .page-btns { display: flex; gap: .5rem; }
+    .page-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
 
-    /* ════════════════════════════════════════
-       USER MANAGEMENT — extra styles
-    ════════════════════════════════════════ */
-
-    /* Filter bar */
+    /* ═══════════════════════════════════════════════════════════════════════
+       FILTER CONTROLS & SEARCH INPUTS
+       ═══════════════════════════════════════════════════════════════════════ */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: .625rem;
-      margin-bottom: 1.25rem;
+      gap: 0.75rem;
+      margin-bottom: 1.35rem;
       align-items: center;
     }
 
-    .filter-search {
-      flex: 1 1 240px;
-      min-width: 200px;
-      height: 38px;
-      background: var(--surface);
-      border: 1px solid var(--border-hi);
-      border-radius: 6px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
-      padding: 0 .875rem;
-      outline: none;
-      transition: border-color .15s, box-shadow .15s;
+    .filter-search-wrapper {
+      position: relative;
+      flex: 1 1 260px;
+      min-width: 220px;
     }
-    .filter-search::placeholder { color: var(--text-dim); }
+
+    .filter-search-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-dim);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+      transition: stroke 0.15s;
+    }
+
+    .filter-search-wrapper:focus-within .filter-search-icon {
+      stroke: var(--cyan);
+    }
+
+    .filter-search {
+      width: 100%;
+      height: 40px;
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
+      padding: 0 0.85rem 0 2.45rem;
+      outline: none;
+      transition:
+        border-color 0.2s var(--ease-spring),
+        box-shadow 0.2s var(--ease-spring),
+        background-color 0.2s;
+    }
+
+    .filter-search::placeholder {
+      color: var(--text-dim);
+    }
+
     .filter-search:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 1px rgba(6,182,212,.25);
+      background: var(--surface-card);
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--cyan-glass);
     }
 
     .filter-select {
-      height: 38px;
-      background: var(--surface);
-      border: 1px solid var(--border-hi);
-      border-radius: 6px;
-      color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
-      padding: 0 .875rem;
+      height: 40px;
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0 1.75rem 0 0.85rem;
       outline: none;
       cursor: pointer;
-      transition: border-color .15s, color .15s;
-    }
-    .filter-select:hover {
-      border-color: var(--cyan);
-      color: var(--text);
-    }
-    .filter-select:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 1px rgba(6,182,212,.25);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: var(--select-arrow);
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      transition:
+        border-color 0.2s var(--ease-spring),
+        box-shadow 0.2s var(--ease-spring),
+        color 0.2s;
     }
 
-    /* Table extras */
-    .user-row { cursor: pointer; transition: background .15s; }
-    .user-row:hover td { background: rgba(6,182,212,.06); }
-    .user-name-cell { display: flex; align-items: center; gap: .625rem; }
+    .filter-select:hover {
+      border-color: var(--border-hi);
+      color: var(--text);
+    }
+
+    .filter-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px var(--cyan-glass);
+    }
+
+    /* ── User Management Extra Elements ──────────────────────────────────── */
+    .user-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
     .user-avatar-mini {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: rgba(6,182,212,.15);
-      border: 1px solid rgba(6,182,212,.3);
+      background: linear-gradient(135deg, var(--cyan-glass), var(--indigo-glass));
+      border: 1px solid var(--cyan-border);
       color: var(--cyan);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: .6875rem;
+      font-size: 0.6875rem;
       font-weight: 700;
       flex-shrink: 0;
       text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
-    .user-name { font-weight: 600; color: var(--text); font-size: .8125rem; }
-    .text-dim  { color: var(--text-dim); }
-    .text-muted { color: var(--text-muted); }
-    .badge-dim {
-      background: rgba(100,116,139,.12);
-      color: var(--text-dim);
-      border: 1px solid var(--border-hi);
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.8125rem;
+      letter-spacing: -0.01em;
     }
-    .badge-warning {
-      background: rgba(245,158,11,.12);
-      color: #fbbf24;
-      border: 1px solid rgba(217,119,6,.35);
-    }
-    .badge-info {
-      background: rgba(6,182,212,.12);
-      color: var(--cyan);
-      border: 1px solid rgba(6,182,212,.35);
-    }
+
     .btn-view {
-      background: rgba(6,182,212,.1);
-      border-color: rgba(6,182,212,.3);
+      background: var(--cyan-glass);
+      border: 1px solid var(--cyan-border);
       color: var(--cyan);
-      padding: .25rem .625rem;
-      border-radius: 4px;
-      font-weight: 500;
-      transition: background .15s, color .15s;
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s var(--ease-spring);
     }
+
     .btn-view:hover {
       background: var(--cyan);
-      color: #020617;
+      color: #fff;
       border-color: var(--cyan);
+      box-shadow: 0 2px 10px var(--cyan-glass);
     }
-    .flag-count  { font-size: .8125rem; font-weight: 600; }
-    .flag-high   { color: #fb7185; }
-    .flag-low    { color: #fbbf24; }
 
-    /* ── Slide-in detail drawer ──────────────────────────────────────────── */
+    .btn-view:active {
+      transform: scale(0.97);
+    }
+
+    .flag-count {
+      font-size: 0.8125rem;
+      font-weight: 700;
+    }
+
+    .flag-high {
+      color: var(--rose);
+    }
+
+    .flag-low {
+      color: var(--amber);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       SLIDE-IN DETAIL DRAWERS (macOS / iOS Sheet HIG)
+       ═══════════════════════════════════════════════════════════════════════ */
     .drawer-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(2,6,23,.5);
+      background: var(--modal-overlay-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       opacity: 0;
       pointer-events: none;
-      transition: opacity .2s;
-      z-index: 40;
+      transition: opacity 0.25s var(--ease-spring);
+      z-index: 50;
     }
-    .drawer-open .drawer-overlay { opacity: 1; pointer-events: auto; }
+
+    .drawer-open .drawer-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
     .drawer {
       position: fixed;
       top: 0;
       right: 0;
-      width: 540px;
+      width: 560px;
       max-width: 96vw;
       height: 100vh;
       max-height: 100vh;
-      background: var(--surface);
+      background: var(--surface-drawer);
+      backdrop-filter: blur(36px) saturate(200%);
+      -webkit-backdrop-filter: blur(36px) saturate(200%);
       border-left: 1px solid var(--border-hi);
-      box-shadow: -12px 0 40px rgba(0,0,0,.65);
+      box-shadow: -24px 0 64px rgba(0, 0, 0, 0.4);
       display: flex;
       flex-direction: column;
       transform: translateX(100%);
-      transition: transform .25s cubic-bezier(.4,0,.2,1);
-      z-index: 50;
+      transition: transform 0.32s var(--ease-spring);
+      z-index: 60;
       overflow: hidden;
     }
-    .drawer-open .drawer { transform: translateX(0); }
+
+    .drawer-open .drawer {
+      transform: translateX(0);
+    }
 
     .drawer-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1rem 1.25rem;
+      padding: 1.15rem 1.5rem;
       border-bottom: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(8px);
+      background: var(--surface-card);
+      backdrop-filter: blur(16px);
       flex-shrink: 0;
     }
-    .drawer-topbar-title { font-size: .875rem; font-weight: 600; letter-spacing: -.01em; }
-    .drawer-close {
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: .8125rem;
-      font-weight: 500;
-      padding: .35rem .65rem;
-      transition: color .15s, background .15s;
+
+    .drawer-topbar-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--text);
     }
-    .drawer-close:hover { color: var(--text); background: rgba(255,255,255,.1); }
+
+    .drawer-close {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border-hi);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.4rem 0.75rem;
+      transition: all 0.15s var(--ease-spring);
+    }
+
+    .drawer-close:hover {
+      color: var(--text);
+      background: var(--surface-card-hover);
+      border-color: var(--border-focus);
+    }
+
+    .drawer-close:active {
+      transform: scale(0.96);
+    }
 
     #drawer-content,
     #trip-drawer-content {
@@ -658,536 +1618,826 @@
       height: 100%;
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: 1.25rem 1.5rem 3.5rem 1.5rem;
+      padding: 1.5rem 1.65rem 4rem 1.65rem;
     }
 
-    #trip-drawer-content::-webkit-scrollbar,
-    #drawer-content::-webkit-scrollbar {
+    #drawer-content::-webkit-scrollbar,
+    #trip-drawer-content::-webkit-scrollbar {
       width: 6px;
     }
-    #trip-drawer-content::-webkit-scrollbar-track,
-    #drawer-content::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.4);
+
+    #drawer-content::-webkit-scrollbar-track,
+    #trip-drawer-content::-webkit-scrollbar-track {
+      background: transparent;
     }
-    #trip-drawer-content::-webkit-scrollbar-thumb,
-    #drawer-content::-webkit-scrollbar-thumb {
+
+    #drawer-content::-webkit-scrollbar-thumb,
+    #trip-drawer-content::-webkit-scrollbar-thumb {
       background: var(--border-hi);
-      border-radius: 3px;
+      border-radius: 9999px;
     }
-    #trip-drawer-content::-webkit-scrollbar-thumb:hover,
-    #drawer-content::-webkit-scrollbar-thumb:hover {
+
+    #drawer-content::-webkit-scrollbar-thumb:hover,
+    #trip-drawer-content::-webkit-scrollbar-thumb:hover {
       background: var(--cyan);
     }
 
-    /* User Drawer inner elements */
-    .user-drawer-card {
-      background: var(--surface-high);
-      border: 1px solid var(--border-hi);
-      border-radius: 8px;
-      padding: 1rem 1.125rem;
-      margin-bottom: 1rem;
-    }
-    .drawer-header {
-      display: flex;
-      align-items: center;
-      gap: .875rem;
-    }
-    .drawer-avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: rgba(6,182,212,.15);
-      border: 1px solid rgba(6,182,212,.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.125rem;
-      color: var(--cyan);
-      flex-shrink: 0;
-      text-transform: uppercase;
-      box-shadow: 0 0 20px rgba(6,182,212,.12);
-    }
-    .drawer-name  { font-size: 1.0625rem; font-weight: 700; color: var(--text); }
-    .drawer-email { font-size: .75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: .15rem; }
-    .drawer-status-row { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: .75rem; }
-    .block-reason-box {
-      background: rgba(244,63,94,.08);
-      border: 1px solid rgba(244,63,94,.3);
-      border-radius: 6px;
-      padding: .625rem .875rem;
-      font-size: .8125rem;
-      color: #fb7185;
-      margin-bottom: 1rem;
-      line-height: 1.45;
-    }
-    .drawer-section-title {
-      font-size: .6875rem;
-      font-weight: 700;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin: 1.125rem 0 .5rem;
-      padding-bottom: .375rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .drawer-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .625rem;
-      margin-bottom: .875rem;
-    }
-    .drawer-field {
-      background: rgba(2, 6, 23, 0.6);
-      border: 1px solid var(--border-hi);
-      border-radius: 6px;
-      padding: .5rem .75rem;
-    }
-    .field-label  { display: block; font-size: .6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-dim); margin-bottom: .2rem; }
-    .field-value  { font-size: .8125rem; font-weight: 600; color: var(--text); }
-
-    /* Verify controls */
-    .verify-row   { display: flex; flex-direction: column; gap: .625rem; margin-bottom: 1rem; }
-    .verify-item  {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: .75rem;
-      background: rgba(2, 6, 23, 0.6);
-      border: 1px solid var(--border-hi);
-      border-radius: 6px;
-      padding: .625rem .875rem;
-    }
-    .verify-label { font-size: .8125rem; font-weight: 500; color: var(--text); }
-    .verify-actions { display: flex; align-items: center; gap: .5rem; }
-    .btn-verify   { background: rgba(16,185,129,.15); border: 1px solid rgba(5,150,105,.4); color: #34d399; }
-    .btn-verify:hover { background: rgba(16,185,129,.25); }
-    .btn-unverify { background: rgba(245,158,11,.15); border: 1px solid rgba(217,119,6,.4); color: #fbbf24; }
-    .btn-unverify:hover { background: rgba(245,158,11,.25); }
-
-    /* Block/unblock button */
-    .block-action-row { margin: .25rem 0 .875rem; }
-    .btn-action {
-      display: inline-flex;
-      align-items: center;
-      gap: .375rem;
-      padding: .625rem 1rem;
-      border-radius: 6px;
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: opacity .15s, background .15s;
-    }
-    .btn-action:hover { opacity: .85; }
-    .btn-block   { background: rgba(244,63,94,.15); color: #fb7185; border: 1px solid rgba(244,63,94,.4); width: 100%; justify-content: center; }
-    .btn-block:hover { background: rgba(244,63,94,.25); }
-    .btn-unblock { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(5,150,105,.4); width: 100%; justify-content: center; }
-    .btn-unblock:hover { background: rgba(16,185,129,.25); }
-
-    /* Trip mini-rows in drawer */
-    .trips-list   { display: flex; flex-direction: column; gap: .5rem; margin-bottom: .875rem; }
-    .trip-row     {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: .75rem;
-      background: rgba(2, 6, 23, 0.6);
-      border: 1px solid var(--border-hi);
-      border-radius: 6px;
-      padding: .5rem .75rem;
-      font-size: .8125rem;
-      transition: border-color .15s, background .15s;
-    }
-    .trip-row:hover {
-      background: rgba(255,255,255,.04);
-      border-color: var(--cyan);
-    }
-    .trip-code    { font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--cyan); font-weight: 600; }
-    .trip-empty   { font-size: .8125rem; color: var(--text-dim); padding: .5rem 0; font-style: italic; }
-
-    /* Loading/error states inside drawer */
-    .drawer-loading, .drawer-error {
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-dim);
-      font-size: .8125rem;
-    }
-    .drawer-error { color: #fb7185; }
-
-    /* ── Block reason modal ──────────────────────────────────────────────── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2,6,23,.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .15s;
-      z-index: 100;
-    }
-    .modal-open { opacity: 1; pointer-events: auto; }
-
-    .modal-card {
-      background: var(--surface);
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      padding: 1.5rem;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 8px 40px rgba(0,0,0,.7);
-    }
-    .modal-title  { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; }
-    .modal-sub    { font-size: .8125rem; color: var(--text-muted); margin-bottom: 1rem; }
-    .modal-textarea {
-      width: 100%;
-      height: 80px;
-      background: #0b1120;
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
-      padding: .625rem .75rem;
-      outline: none;
-      resize: vertical;
-      margin-bottom: .875rem;
-    }
-    .modal-textarea:focus { border-color: var(--rose); }
-    .modal-btns   { display: flex; gap: .5rem; justify-content: flex-end; }
-    .btn-modal-confirm {
-      background: var(--rose);
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
-      font-weight: 600;
-      padding: .5rem .875rem;
-      cursor: pointer;
-    }
-    .btn-modal-confirm:hover { opacity: .85; }
-    .btn-modal-cancel {
-      background: var(--surface-high);
-      border: 1px solid var(--border-hi);
-      border-radius: 4px;
-      color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: .8125rem;
-      padding: .5rem .875rem;
-      cursor: pointer;
-    }
-
-    /* ── Toast notification ──────────────────────────────────────────────── */
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      padding: .625rem 1rem;
-      border-radius: 4px;
-      font-size: .8125rem;
-      font-weight: 500;
-      box-shadow: 0 4px 16px rgba(0,0,0,.5);
-      transform: translateY(1rem);
-      opacity: 0;
-      transition: transform .2s, opacity .2s;
-      z-index: 200;
-      max-width: 320px;
-    }
-    .toast-visible { transform: translateY(0); opacity: 1; }
-    .toast-success { background: #064e3b; border: 1px solid #065f46; color: #34d399; }
-    .toast-error   { background: #4c0519; border: 1px solid #881337; color: #fb7185; }
-    .toast-info    { background: var(--surface); border: 1px solid var(--border-hi); color: var(--text-muted); }
-
-    /* ════════════════════════════════════════
-       TRIP MANAGEMENT — extra styles
-    ════════════════════════════════════════ */
-
-    /* Trip code in drawer header */
+    /* Drawer Header & Content Cards */
     .trip-drawer-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: .75rem;
-      background: var(--surface-high);
-      border: 1px solid var(--border-hi);
-      border-radius: 8px;
-      padding: .875rem 1rem;
-      margin-bottom: 1rem;
-    }
-    .trip-code-large {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.1875rem;
-      font-weight: 700;
-      color: var(--cyan);
-      letter-spacing: .02em;
+      gap: 1rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 16px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
     }
 
-    /* Route cards side-by-side */
+    .drawer-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan-glass), var(--indigo-glass));
+      border: 1px solid var(--cyan-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--cyan);
+      flex-shrink: 0;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px var(--cyan-glass);
+    }
+
+    .drawer-section-title {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 1.5rem 0 0.65rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .drawer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .drawer-field {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.65rem 0.85rem;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.25rem;
+    }
+
+    .field-value {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Verification Status Route Card */
     .route-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: .625rem;
-      margin-bottom: .75rem;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
     }
+
     .route-card {
-      background: rgba(2, 6, 23, 0.7);
+      background: var(--surface-recessed);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: .625rem .75rem;
+      border-radius: 12px;
+      padding: 0.85rem;
+      position: relative;
     }
-    .route-card-pickup { border-left: 3px solid var(--green); }
-    .route-card-dropoff { border-left: 3px solid var(--rose); }
-    .route-card-unverified { border-left: 3px solid var(--border-hi); }
+
+    .route-card-pickup {
+      border-left: 3px solid var(--emerald);
+    }
+
+    .route-card-dropoff {
+      border-left: 3px solid var(--rose);
+    }
+
+    .route-card-unverified {
+      border-left: 3px solid var(--border-hi);
+    }
+
     .route-card-label {
-      font-size: .6875rem;
+      font-size: 0.6875rem;
       font-weight: 700;
-      letter-spacing: .05em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: .25rem;
+      margin-bottom: 0.35rem;
       display: flex;
       align-items: center;
-      gap: .35rem;
+      gap: 0.4rem;
     }
-    .route-card-pickup .route-card-label { color: #34d399; }
-    .route-card-dropoff .route-card-label { color: #fb7185; }
+
+    .route-card-pickup .route-card-label {
+      color: var(--emerald);
+    }
+
+    .route-card-dropoff .route-card-label {
+      color: var(--rose);
+    }
+
     .route-card-addr {
-      font-size: .8125rem;
+      font-size: 0.8125rem;
       color: var(--text);
       font-weight: 500;
-      line-height: 1.35;
+      line-height: 1.4;
       word-break: break-word;
     }
 
-    /* Real Leaflet Map Container */
+    /* Action buttons inside drawer */
+    .btn-verify {
+      background: var(--emerald-glass);
+      border: 1px solid var(--emerald-border);
+      color: var(--emerald);
+      cursor: pointer;
+    }
+
+    .btn-verify:hover {
+      background: var(--emerald);
+      color: #fff;
+    }
+
+    .btn-unverify {
+      background: var(--amber-glass);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+      cursor: pointer;
+    }
+
+    .btn-unverify:hover {
+      background: var(--amber);
+      color: #fff;
+    }
+
+    .trip-actions-card {
+      background: var(--rose-glass);
+      border: 1px solid var(--rose-border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .trip-action-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.65rem;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1rem;
+      border-radius: 10px;
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s var(--ease-spring);
+    }
+
+    .btn-action:active {
+      transform: scale(0.975);
+    }
+
+    .btn-trip-complete {
+      flex: 1;
+      background: var(--emerald-glass);
+      color: var(--emerald);
+      border-color: var(--emerald-border);
+    }
+
+    .btn-trip-complete:hover {
+      background: var(--emerald);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--emerald-glass);
+    }
+
+    .btn-trip-cancel {
+      flex: 1;
+      background: var(--rose-glass);
+      color: var(--rose);
+      border-color: var(--rose-border);
+    }
+
+    .btn-trip-cancel:hover {
+      background: var(--rose);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--rose-glass);
+    }
+
+    .block-reason-box {
+      background: var(--rose-glass);
+      border: 1px solid var(--rose-border);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      font-size: 0.8125rem;
+      color: var(--rose);
+      margin-bottom: 1rem;
+      line-height: 1.45;
+    }
+
+    /* Riders list in drawer */
+    .riders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .rider-item {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .rider-item:hover {
+      background: var(--surface-card-hover);
+      border-color: var(--cyan-border);
+    }
+
+    /* Trip Drawer Elements */
+    .trip-code-large {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+    }
+
     .trip-map-container {
       width: 100%;
-      height: 230px;
-      border-radius: 8px;
+      height: 240px;
+      border-radius: 14px;
       overflow: hidden;
-      border: 1px solid var(--border-hi);
+      border: 1px solid var(--border);
       position: relative;
-      background: #020617;
-      margin-bottom: 1rem;
-      box-shadow: inset 0 0 20px rgba(0,0,0,.6);
+      background: var(--map-bg);
+      margin-bottom: 0.85rem;
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.2);
     }
+
+    /* Apple Maps Dark Mode Tile Treatment */
+    .trip-map-container .leaflet-tile {
+      filter: var(--map-tile-filter);
+      transition: filter 0.3s var(--ease-spring);
+    }
+
     #admin-trip-map {
       width: 100%;
       height: 100%;
       z-index: 1;
     }
+
     .map-legend-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: .35rem .65rem;
-      background: rgba(2, 6, 23, .85);
+      padding: 0.45rem 0.85rem;
+      background: var(--surface-recessed);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: .6875rem;
-      color: var(--text-muted);
-      margin-bottom: .875rem;
+      border-radius: 10px;
+      font-size: 0.6875rem;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
     }
+
     .map-legend-items {
       display: flex;
       align-items: center;
-      gap: .75rem;
+      gap: 0.85rem;
       flex-wrap: wrap;
     }
+
     .map-legend-item {
       display: flex;
       align-items: center;
-      gap: .25rem;
+      gap: 0.35rem;
     }
 
-    /* Leaflet popup dark theme customization */
+    /* Leaflet popup dark mode override */
     .leaflet-popup-content-wrapper {
-      background: var(--surface-high) !important;
+      background: var(--map-popup-bg) !important;
       color: var(--text) !important;
       border: 1px solid var(--border-hi) !important;
-      border-radius: 6px !important;
-      box-shadow: 0 4px 16px rgba(0,0,0,.6) !important;
-      font-family: 'Inter', sans-serif !important;
-      font-size: .75rem !important;
-      padding: 2px !important;
+      border-radius: 12px !important;
+      box-shadow: var(--shadow-card) !important;
+      font-family: var(--font-system) !important;
+      font-size: 0.75rem !important;
+      padding: 4px !important;
     }
+
     .leaflet-popup-tip {
-      background: var(--surface-high) !important;
+      background: var(--map-popup-bg) !important;
       border: 1px solid var(--border-hi) !important;
     }
 
-    /* Riders list in drawer */
-    .riders-list { display: flex; flex-direction: column; gap: .5rem; }
-    .rider-item {
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: .625rem .75rem;
+    /* Drawer Loading / Error States */
+    .drawer-loading,
+    .drawer-error {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.875rem;
     }
-    .rider-name { font-weight: 600; font-size: .8125rem; margin-bottom: .25rem; }
-    .rider-meta { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 
-    /* Force action buttons box */
-    .trip-actions-card {
-      background: rgba(244,63,94,.05);
-      border: 1px solid rgba(244,63,94,.2);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-top: .75rem;
-      margin-bottom: 2rem;
+    .drawer-error {
+      color: var(--rose);
     }
-    .trip-action-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: .5rem; margin-bottom: .5rem; }
-    .btn-trip-complete {
-      flex: 1;
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       MODALS — Centered Apple Glass Sheets
+       ═══════════════════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--modal-overlay-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
       justify-content: center;
-      background: rgba(16,185,129,.15);
-      color: #34d399;
-      border: 1px solid rgba(5,150,105,.4);
-      padding: .625rem .75rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s var(--ease-spring);
+      z-index: 100;
+      padding: 1.5rem;
     }
-    .btn-trip-complete:hover {
-      background: rgba(16,185,129,.25);
+
+    .modal-open {
+      opacity: 1;
+      pointer-events: auto;
     }
-    .btn-trip-cancel {
-      flex: 1;
-      justify-content: center;
-      background: rgba(244,63,94,.15);
-      color: #fb7185;
-      border: 1px solid rgba(225,29,72,.4);
-      padding: .625rem .75rem;
+
+    .modal-card {
+      background: var(--surface-modal);
+      backdrop-filter: blur(36px) saturate(200%);
+      -webkit-backdrop-filter: blur(36px) saturate(200%);
+      border: 1px solid var(--border-hi);
+      border-top: 1px solid var(--border-specular);
+      border-radius: 22px;
+      padding: 1.75rem 1.65rem 1.5rem;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: var(--shadow-modal), var(--shadow-card-inner);
+      transform: scale(0.95) translateY(10px);
+      transition: transform 0.25s var(--ease-spring);
     }
-    .btn-trip-cancel:hover {
-      background: rgba(244,63,94,.25);
+
+    .modal-open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+
+    .modal-sub {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 1.15rem;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      height: 90px;
+      background: var(--surface-recessed);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
+      padding: 0.75rem 0.85rem;
+      outline: none;
+      resize: vertical;
+      margin-bottom: 1.15rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .modal-textarea:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px var(--rose-glass);
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 0.65rem;
+      justify-content: flex-end;
+    }
+
+    .btn-modal-cancel {
+      background: var(--surface-recessed);
+      border: 1px solid var(--border-hi);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      transition: all 0.15s var(--ease-spring);
+    }
+
+    .btn-modal-cancel:hover {
+      color: var(--text);
+      background: var(--surface-card-hover);
+    }
+
+    .btn-modal-cancel:active {
+      transform: scale(0.975);
+    }
+
+    .btn-modal-confirm {
+      background: linear-gradient(180deg, var(--rose) 0%, #e11d48 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: #fff;
+      font-family: var(--font-system);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 0.55rem 1.15rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px var(--rose-glass);
+      transition: all 0.15s var(--ease-spring);
+    }
+
+    .btn-modal-confirm:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 6px 20px var(--rose-glass);
+    }
+
+    .btn-modal-confirm:active {
+      transform: scale(0.975);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       TOAST NOTIFICATIONS (Dynamic Island / HUD Capsule)
+       ═══════════════════════════════════════════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-modal), var(--shadow-card-inner);
+      transform: translateY(1.5rem) scale(0.95);
+      opacity: 0;
+      pointer-events: none;
+      transition:
+        transform 0.25s var(--ease-spring),
+        opacity 0.25s var(--ease-spring);
+      z-index: 200;
+      max-width: 380px;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .toast-visible {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast-success {
+      background: rgba(16, 185, 129, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .toast-error {
+      background: rgba(225, 29, 72, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .toast-info {
+      background: var(--surface-modal);
+      border: 1px solid var(--border-specular);
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       ACCESSIBILITY & REDUCED MOTION (apple-design skill §14)
+       ═══════════════════════════════════════════════════════════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .drawer {
+        transform: none !important;
+        transition: opacity 0.15s ease !important;
+      }
+
+      .drawer-overlay {
+        transition: opacity 0.15s ease !important;
+      }
+
+      .content-section {
+        animation: none !important;
+      }
+
+      .live-beacon::after {
+        animation: none !important;
+      }
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+
+      .sidebar,
+      .topbar,
+      .table-card,
+      .metric-card,
+      .drawer,
+      .modal-card {
+        background: var(--canvas) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 72px;
+      }
+
+      .sidebar-brand-row div,
+      .sidebar-user-details,
+      .sidebar-subtitle-badge,
+      .nav-item span:not(.nav-icon),
+      .nav-badge,
+      .nav-section-label {
+        display: none;
+      }
+
+      .sidebar-brand {
+        padding: 1rem 0.5rem;
+        text-align: center;
+      }
+
+      .sidebar-user {
+        justify-content: center;
+        padding: 0.75rem 0.5rem;
+      }
+
+      .nav-item {
+        justify-content: center;
+        padding: 0.75rem 0.5rem;
+      }
+
+      .btn-logout span {
+        display: none;
+      }
+
+      .theme-seg-label {
+        display: none;
+      }
     }
   </style>
 </head>
 
 <body>
+  <!-- Ambient background lighting fields -->
+  <div class="bg-glow bg-glow-1" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow-2" aria-hidden="true"></div>
 
-  <!-- ════════════════════════════════════════
+  <!-- ═══════════════════════════════════════════════════════════════════════
        SIDEBAR
-  ════════════════════════════════════════ -->
+       ═══════════════════════════════════════════════════════════════════════ -->
   <aside class="sidebar">
 
-    <!-- Brand -->
+    <!-- Brand Header -->
     <div class="sidebar-brand">
       <div class="sidebar-brand-row">
-        <div class="sidebar-logo">🛡️</div>
+        <div class="sidebar-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <path d="m9 12 2 2 4-4"></path>
+          </svg>
+        </div>
         <div>
           <div class="sidebar-title">QuickPull</div>
-          <div class="sidebar-subtitle">Admin Console</div>
+          <div class="sidebar-subtitle-badge">Console · Ops</div>
         </div>
       </div>
     </div>
 
-    <!-- Logged-in admin info -->
+    <!-- Signed-in Admin Identity -->
     <div class="sidebar-user">
-      <div class="sidebar-user-label">Signed in as</div>
-      <div class="sidebar-user-name" id="sidebar-admin-name">—</div>
-      <div class="sidebar-user-email" id="sidebar-admin-email">—</div>
+      <div class="sidebar-user-avatar" id="sidebar-admin-avatar">AD</div>
+      <div class="sidebar-user-details">
+        <div class="sidebar-user-label">Signed in as</div>
+        <div class="sidebar-user-name" id="sidebar-admin-name">Administrator</div>
+        <div class="sidebar-user-email" id="sidebar-admin-email">admin@quickpull.com</div>
+      </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="sidebar-nav" aria-label="Admin navigation">
+    <!-- Navigation List -->
+    <nav class="sidebar-nav" aria-label="Admin Navigation">
 
-      <div class="nav-section-label">Management</div>
+      <div class="nav-section-label">Operations</div>
 
-      <!-- Dashboard — Phase 4 -->
-      <a class="nav-item nav-disabled" data-section="dashboard" href="#" title="Available in Phase 4">
-        <span class="nav-icon">📊</span>
-        Dashboard
-        <span class="nav-badge">Phase 4</span>
+      <!-- Dashboard — Executive Telemetry (Live Ops) -->
+      <a class="nav-item" data-section="dashboard" href="#" id="nav-dashboard">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+            <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+            <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+            <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+          </svg>
+        </span>
+        <span>Dashboard</span>
       </a>
 
-      <!-- Users — Phase 2 (now live) -->
-      <a class="nav-item" data-section="users" href="#">
-        <span class="nav-icon">👥</span>
-        Users
+      <!-- Users Section -->
+      <a class="nav-item" data-section="users" href="#" id="nav-users">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </span>
+        <span>Users</span>
       </a>
 
-      <!-- Trips — Phase 3 (now live) -->
-      <a class="nav-item" data-section="trips" href="#">
-        <span class="nav-icon">🚗</span>
-        Trips
+      <!-- Trips Section -->
+      <a class="nav-item" data-section="trips" href="#" id="nav-trips">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2">
+            </path>
+            <circle cx="7" cy="17" r="2"></circle>
+            <path d="M9 17h6"></path>
+            <circle cx="17" cy="17" r="2"></circle>
+          </svg>
+        </span>
+        <span>Trips</span>
       </a>
 
-      <div class="nav-section-label" style="margin-top:.5rem">Security</div>
+      <div class="nav-section-label">Compliance & Security</div>
 
-      <!-- Audit Log — Phase 1 (working now) -->
+      <!-- Audit Log -->
       <a class="nav-item nav-active" data-section="audit-log" href="#" id="nav-audit">
-        <span class="nav-icon">📋</span>
-        Audit Log
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </span>
+        <span>Audit Log</span>
       </a>
 
     </nav>
 
-    <!-- Logout -->
+    <!-- Sign Out Footer -->
     <div class="sidebar-footer">
       <button class="btn-logout" id="logout-btn" type="button">
-        <span>↩</span> Sign Out
+        <svg viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Sign Out</span>
       </button>
     </div>
 
   </aside>
 
-  <!-- ════════════════════════════════════════
-       MAIN CONTENT
-  ════════════════════════════════════════ -->
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MAIN VIEWPORT
+       ═══════════════════════════════════════════════════════════════════════ -->
   <main class="main">
 
-    <!-- Top bar -->
+    <!-- Floating Topbar -->
     <header class="topbar">
-      <div class="topbar-title" id="topbar-title">Audit Log</div>
-      <div class="topbar-status">
-        <span class="live-dot"></span>
-        Connected to Render
+      <div class="topbar-left">
+        <h1 class="topbar-title" id="topbar-title">Audit Log</h1>
+      </div>
+      <div class="topbar-right">
+        <!-- Apple Appearance Segmented Control (apple-design skill §10, §14) -->
+        <div class="theme-segmented-control" role="radiogroup" aria-label="Appearance Mode">
+          <button type="button" class="theme-seg-btn" id="theme-btn-light" role="radio" aria-checked="false" title="Switch to Light Appearance">
+            <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <span class="theme-seg-label">Light</span>
+          </button>
+          <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true" title="Switch to Dark Appearance">
+            <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+            <span class="theme-seg-label">Dark</span>
+          </button>
+        </div>
+
+        <div class="topbar-status">
+          <span class="live-beacon" aria-hidden="true"></span>
+          <span>Render Cloud Live</span>
+        </div>
       </div>
     </header>
 
     <div class="content">
 
-      <!-- ── Audit Log section (WORKING in Phase 1) ───────────────────── -->
+      <!-- ═══════════════════════════════════════════════════════════════════
+           SECTION 1: AUDIT LOG (Default active)
+           ═══════════════════════════════════════════════════════════════════ -->
       <section class="content-section" id="section-audit-log">
 
         <div class="section-header">
           <div>
-            <div class="section-title">Audit Log</div>
-            <div class="section-subtitle">
-              Every admin action — logins, blocks, verifications — recorded permanently.
-            </div>
+            <h2 class="section-title">Audit Log</h2>
+            <p class="section-subtitle">
+              Immutable ledger of administrative actions — logins, verifications, blocks, and force overrides.
+            </p>
           </div>
-          <button class="btn-sm" onclick="loadAuditLog(1)" title="Refresh">⟳ Refresh</button>
+          <button class="btn-sm" onclick="loadAuditLog(1)" title="Refresh audit log">
+            <span>⟳</span> Refresh Log
+          </button>
         </div>
 
         <div class="table-card">
           <div class="table-toolbar">
-            <span class="table-toolbar-title">All Events</span>
+            <span class="table-toolbar-title">Security & Enforcement Records</span>
           </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Admin</th>
-                <th>Action</th>
-                <th>Target</th>
-                <th>IP Address</th>
-              </tr>
-            </thead>
-            <tbody id="audit-log-tbody">
-              <tr>
-                <td colspan="5" class="table-placeholder">Loading…</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Admin Principal</th>
+                  <th>Action</th>
+                  <th>Target Resource</th>
+                  <th>Network IP</th>
+                </tr>
+              </thead>
+              <tbody id="audit-log-tbody">
+                <tr>
+                  <td colspan="5" class="table-placeholder">Loading audit events…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="pagination">
             <span class="page-info" id="audit-page-info">—</span>
             <div class="page-btns">
-              <button class="btn-sm" id="audit-prev" onclick="auditPrev()" disabled>← Prev</button>
+              <button class="btn-sm" id="audit-prev" onclick="auditPrev()" disabled>← Previous</button>
               <button class="btn-sm" id="audit-next" onclick="auditNext()" disabled>Next →</button>
             </div>
           </div>
@@ -1195,97 +2445,298 @@
 
       </section>
 
-      <!-- ── Dashboard placeholder (Phase 4) ─────────────────────────── -->
+      <!-- ═══════════════════════════════════════════════════════════════════
+           SECTION 2: EXECUTIVE DASHBOARD (Live Operations Command Center)
+           ═══════════════════════════════════════════════════════════════════ -->
       <section class="content-section" id="section-dashboard">
+
         <div class="section-header">
           <div>
-            <div class="section-title">Dashboard</div>
-            <div class="section-subtitle">Overview metrics and live counters.</div>
+            <h2 class="section-title">Operations Overview</h2>
+            <p class="section-subtitle">Real-time platform telemetry, user metrics, and fleet activity.</p>
+          </div>
+          <button class="btn-sm" id="dash-sync-btn" onclick="initDashboardSection()" title="Refresh telemetry">
+            <span>⟳</span> Sync Telemetry
+          </button>
+        </div>
+
+        <!-- Security Remediation & Fleet Status Banner -->
+        <div class="telemetry-banner">
+          <div>
+            <div class="telemetry-banner-title">
+              <span>🛡️</span> Security Remediation Active & Enforced
+            </div>
+            <p class="telemetry-banner-desc">
+              DB-level JWT enforcement, password hash protection (<code
+                style="font-family:var(--font-mono);color:var(--cyan)">select: false</code>), and mass-assignment guards
+              engaged.
+            </p>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;flex-shrink:0;">
+            <span class="badge badge-success">Cluster Healthy</span>
           </div>
         </div>
-        <div class="placeholder-card">
-          <div class="placeholder-icon">📊</div>
-          <div class="placeholder-title">Dashboard — Coming in Phase 4</div>
-          <p class="placeholder-text">
-            Will show: total users, active trips, completions today, average driver rating,
-            verified users, blocked users, and riders waiting for a match.
-            Only numbers that can be computed from data already stored in the database.
-          </p>
-          <span class="placeholder-phase">Phase 4</span>
+
+        <!-- 4 Key Operational Metrics Cards -->
+        <div class="metrics-grid">
+
+          <!-- Total Registered Principals -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Total Users</span>
+              <div class="metric-icon-badge badge-cyan-tint">👥</div>
+            </div>
+            <div class="metric-value" id="dash-total-users">—</div>
+            <div class="metric-ratio-bar">
+              <div class="metric-ratio-fill-1" id="dash-ratio-drivers" style="width: 50%" title="Drivers"></div>
+              <div class="metric-ratio-fill-2" id="dash-ratio-riders" style="width: 50%" title="Riders"></div>
+            </div>
+            <div class="metric-footer">
+              <span id="dash-drivers-count">Drivers: —</span>
+              <span id="dash-riders-count">Riders: —</span>
+            </div>
+          </div>
+
+          <!-- Total Fleet Trips -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Active & Total Trips</span>
+              <div class="metric-icon-badge badge-emerald-tint">🚗</div>
+            </div>
+            <div class="metric-value" id="dash-total-trips">—</div>
+            <div class="metric-footer">
+              <span style="color:var(--emerald);font-weight:600;" id="dash-active-trips">Active Trips: —</span>
+              <span id="dash-completed-trips">Completed: —</span>
+            </div>
+          </div>
+
+          <!-- Security & Audit Telemetry -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Recorded Audit Events</span>
+              <div class="metric-icon-badge badge-indigo-tint">📋</div>
+            </div>
+            <div class="metric-value" id="dash-total-logs">—</div>
+            <div class="metric-footer">
+              <span>Security Events Tracked</span>
+              <span style="color:var(--cyan);font-weight:600;">100% Logged</span>
+            </div>
+          </div>
+
+          <!-- Account Moderation -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Suspended / Blocked</span>
+              <div class="metric-icon-badge badge-rose-tint">🚫</div>
+            </div>
+            <div class="metric-value" id="dash-blocked-users" style="color:var(--rose)">—</div>
+            <div class="metric-footer">
+              <span id="dash-verified-users">ID Verified: —</span>
+              <span style="color:var(--emerald);font-weight:600;">Enforced</span>
+            </div>
+          </div>
+
         </div>
+
+        <!-- Quick Launchpad -->
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;letter-spacing:-.01em;">Operations Launchpad</h3>
+        <div class="launchpad-grid">
+
+          <div class="launchpad-card" onclick="document.querySelector('[data-section=\'users\']').click()">
+            <div>
+              <div class="launchpad-title">User Directory & Verification</div>
+              <div class="launchpad-desc">Inspect user profiles, verify identity credentials, and moderate accounts.
+              </div>
+            </div>
+            <div class="launchpad-arrow">→</div>
+          </div>
+
+          <div class="launchpad-card" onclick="document.querySelector('[data-section=\'trips\']').click()">
+            <div>
+              <div class="launchpad-title">Trip Dispatch & Tracking</div>
+              <div class="launchpad-desc">Monitor live routes on interactive map, review fares, or force-resolve stuck
+                trips.</div>
+            </div>
+            <div class="launchpad-arrow">→</div>
+          </div>
+
+          <div class="launchpad-card" onclick="document.querySelector('[data-section=\'audit-log\']').click()">
+            <div>
+              <div class="launchpad-title">Security & Incident Logs</div>
+              <div class="launchpad-desc">Inspect real-time authentication events, IP addresses, and moderation audit
+                trail.</div>
+            </div>
+            <div class="launchpad-arrow">→</div>
+          </div>
+
+        </div><!-- /launchpad-grid -->
+
+        <!-- Live Dispatch Stream & System Vitals Grid -->
+        <div class="dashboard-bottom-grid">
+
+          <!-- Left Panel: Live Dispatch Activity Stream -->
+          <div class="dash-panel">
+            <div class="dash-panel-header">
+              <div class="dash-panel-title">
+                <span>🚗</span> Recent Dispatch Activity
+              </div>
+              <button class="dash-panel-action" type="button" onclick="document.querySelector('[data-section=\'trips\']').click()">
+                View All Trips →
+              </button>
+            </div>
+            <div class="recent-trips-list" id="dash-recent-trips">
+              <div class="table-placeholder">Loading live dispatch stream…</div>
+            </div>
+          </div>
+
+          <!-- Right Panel: Fleet Vitals & Guardrails -->
+          <div class="dash-panel">
+            <div class="dash-panel-header">
+              <div class="dash-panel-title">
+                <span>⚡</span> Platform & Security Vitals
+              </div>
+              <span class="badge badge-success" style="font-size:.6875rem;">All Systems Nominal</span>
+            </div>
+            <div class="vitals-list">
+              <div class="vital-item">
+                <div class="vital-label-row">
+                  <span class="vital-label">🛡️ ID Document Verification</span>
+                  <span class="vital-value" id="dash-vital-id-rate">0%</span>
+                </div>
+                <div class="vital-bar">
+                  <div class="vital-bar-fill" id="dash-vital-id-bar" style="width:0%;background:linear-gradient(90deg, var(--cyan), var(--emerald));"></div>
+                </div>
+              </div>
+
+              <div class="vital-item">
+                <div class="vital-label-row">
+                  <span class="vital-label">📱 Phone OTP Verification</span>
+                  <span class="vital-value" id="dash-vital-phone-rate">0%</span>
+                </div>
+                <div class="vital-bar">
+                  <div class="vital-bar-fill" id="dash-vital-phone-bar" style="width:0%;background:linear-gradient(90deg, #6366f1, var(--cyan));"></div>
+                </div>
+              </div>
+
+              <div class="vital-item">
+                <div class="vital-label-row">
+                  <span class="vital-label">🚕 Fleet Completion Rate</span>
+                  <span class="vital-value" id="dash-vital-trip-rate">0%</span>
+                </div>
+                <div class="vital-bar">
+                  <div class="vital-bar-fill" id="dash-vital-trip-bar" style="width:0%;background:linear-gradient(90deg, var(--emerald), #10b981);"></div>
+                </div>
+              </div>
+
+              <!-- Services Status Pill Grid -->
+              <div class="services-status-grid">
+                <div class="service-badge-pill">
+                  <span class="live-beacon" style="width:8px;height:8px;" aria-hidden="true"></span>
+                  <span>Render API Gateway</span>
+                </div>
+                <div class="service-badge-pill">
+                  <span class="live-beacon" style="width:8px;height:8px;background:var(--emerald);" aria-hidden="true"></span>
+                  <span>MongoDB Atlas Cluster</span>
+                </div>
+                <div class="service-badge-pill">
+                  <span class="live-beacon" style="width:8px;height:8px;background:var(--cyan);" aria-hidden="true"></span>
+                  <span>Socket.IO Engine</span>
+                </div>
+                <div class="service-badge-pill">
+                  <span class="live-beacon" style="width:8px;height:8px;background:#818cf8;" aria-hidden="true"></span>
+                  <span>AI Moderation Guard</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </section>
 
-      <!-- ── User Management section (LIVE in Phase 2) ──────────────────── -->
+      <!-- ═══════════════════════════════════════════════════════════════════
+           SECTION 3: USER MANAGEMENT
+           ═══════════════════════════════════════════════════════════════════ -->
       <section class="content-section" id="section-users">
 
         <div class="section-header">
           <div>
-            <div class="section-title">User Management</div>
-            <div class="section-subtitle">Search, verify, block, and inspect all user accounts.</div>
+            <h2 class="section-title">User Management</h2>
+            <p class="section-subtitle">Search, verify identity documents, review flags, and manage account access.</p>
           </div>
-          <span id="users-count" class="text-dim" style="font-size:.8125rem">—</span>
+          <span id="users-count" class="badge badge-dim" style="font-size:.75rem">—</span>
         </div>
 
         <!-- Filter bar -->
         <div class="filter-bar">
-          <input
-            id="user-search"
-            class="filter-search"
-            type="text"
-            placeholder="Search by name, email, or phone…"
-          />
+          <div class="filter-search-wrapper">
+            <svg class="filter-search-icon" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="user-search" class="filter-search" type="text" placeholder="Search by name, email, or phone…" />
+          </div>
+
           <select id="filter-usertype" class="filter-select" data-filter="userType">
-            <option value="">All types</option>
+            <option value="">All User Types</option>
             <option value="driver">Driver</option>
             <option value="rider">Rider</option>
             <option value="both">Both</option>
           </select>
+
           <select id="filter-idverified" class="filter-select" data-filter="idVerified">
             <option value="">ID: All</option>
             <option value="true">ID Verified</option>
             <option value="false">ID Unverified</option>
           </select>
+
           <select id="filter-phoneverified" class="filter-select" data-filter="phoneVerified">
             <option value="">Phone: All</option>
             <option value="true">Phone Verified</option>
             <option value="false">Phone Unverified</option>
           </select>
+
           <select id="filter-blocked" class="filter-select" data-filter="blocked">
             <option value="">Status: All</option>
-            <option value="false">Active only</option>
-            <option value="true">Blocked only</option>
+            <option value="false">Active Only</option>
+            <option value="true">Blocked Only</option>
           </select>
+
           <select id="filter-simulation" class="filter-select" data-filter="simulation">
-            <option value="">All accounts</option>
-            <option value="false">Real users</option>
-            <option value="true">Simulation only</option>
+            <option value="">Accounts: All</option>
+            <option value="false">Real Users</option>
+            <option value="true">Simulation Only</option>
           </select>
         </div>
 
-        <!-- Users table -->
+        <!-- Users Table -->
         <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Type</th>
-                <th>Verified</th>
-                <th>Flags</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="users-tbody">
-              <tr><td colspan="8" class="table-placeholder">Loading…</td></tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Principal Name</th>
+                  <th>Email Address</th>
+                  <th>Type</th>
+                  <th>Verification</th>
+                  <th>Safety Flags</th>
+                  <th>Status</th>
+                  <th>Joined Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr>
+                  <td colspan="8" class="table-placeholder">Loading users…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="pagination">
             <span class="page-info" id="users-page-info">—</span>
             <div class="page-btns">
-              <button class="btn-sm" id="users-prev" onclick="usersPrev()" disabled>← Prev</button>
+              <button class="btn-sm" id="users-prev" onclick="usersPrev()" disabled>← Previous</button>
               <button class="btn-sm" id="users-next" onclick="usersNext()" disabled>Next →</button>
             </div>
           </div>
@@ -1293,66 +2744,71 @@
 
       </section>
 
-      <!-- ── Detail drawer (shared, hidden by default) ─────────────────── -->
-      <!-- Sits outside the section so it overlays the full page -->
-
-      <!-- ── Trip Management section (LIVE in Phase 3) ──────────────────── -->
+      <!-- ═══════════════════════════════════════════════════════════════════
+           SECTION 4: TRIP MANAGEMENT
+           ═══════════════════════════════════════════════════════════════════ -->
       <section class="content-section" id="section-trips">
 
         <div class="section-header">
           <div>
-            <div class="section-title">Trip Management</div>
-            <div class="section-subtitle">View, inspect, and force-complete or cancel stuck trips.</div>
+            <h2 class="section-title">Trip Management</h2>
+            <p class="section-subtitle">Real-time ride dispatch telemetry, route inspection, and override controls.</p>
           </div>
-          <span id="trips-count" class="text-dim" style="font-size:.8125rem">—</span>
+          <span id="trips-count" class="badge badge-dim" style="font-size:.75rem">—</span>
         </div>
 
         <!-- Filter bar -->
         <div class="filter-bar">
-          <input
-            id="trip-search"
-            class="filter-search"
-            type="text"
-            placeholder="Search by trip code…"
-            style="max-width:240px"
-          />
+          <div class="filter-search-wrapper" style="max-width:280px">
+            <svg class="filter-search-icon" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="trip-search" class="filter-search" type="text" placeholder="Search by trip code…" />
+          </div>
+
           <select id="trip-filter-status" class="filter-select" data-filter="status">
-            <option value="">All statuses</option>
-            <option value="active">Active</option>
+            <option value="">All Statuses</option>
+            <option value="active">Active Only</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
+
           <select id="trip-filter-date" class="filter-select" data-filter="dateRange">
-            <option value="">All time</option>
+            <option value="">All Time</option>
             <option value="today">Today</option>
-            <option value="week">Last 7 days</option>
-            <option value="month">Last 30 days</option>
+            <option value="week">Last 7 Days</option>
+            <option value="month">Last 30 Days</option>
           </select>
         </div>
 
-        <!-- Trips table -->
+        <!-- Trips Table -->
         <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>Trip Code</th>
-                <th>Driver</th>
-                <th>Riders</th>
-                <th>Vehicle</th>
-                <th>Status</th>
-                <th>Start Time</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="trips-tbody">
-              <tr><td colspan="7" class="table-placeholder">Loading…</td></tr>
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Trip Code</th>
+                  <th>Driver</th>
+                  <th>Riders</th>
+                  <th>Vehicle</th>
+                  <th>Status</th>
+                  <th>Departure Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="trips-tbody">
+                <tr>
+                  <td colspan="7" class="table-placeholder">Loading trips…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="pagination">
             <span class="page-info" id="trips-page-info">—</span>
             <div class="page-btns">
-              <button class="btn-sm" id="trips-prev" onclick="tripsPrev()" disabled>← Prev</button>
+              <button class="btn-sm" id="trips-prev" onclick="tripsPrev()" disabled>← Previous</button>
               <button class="btn-sm" id="trips-next" onclick="tripsNext()" disabled>Next →</button>
             </div>
           </div>
@@ -1360,76 +2816,82 @@
 
       </section>
 
-
     </div><!-- /content -->
   </main><!-- /main -->
 
-  <!-- Drawer overlay (closes drawer when clicking outside) -->
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       USER DETAIL DRAWER
+       ═══════════════════════════════════════════════════════════════════════ -->
   <div id="user-drawer" style="position:relative">
-    <!-- Dark backdrop behind the drawer -->
     <div class="drawer-overlay" onclick="closeDrawer()"></div>
-    <!-- Drawer panel -->
     <div class="drawer">
       <div class="drawer-topbar">
-        <span class="drawer-topbar-title">User Profile</span>
-        <button class="drawer-close" id="drawer-close-btn" type="button">✕ Close</button>
+        <span class="drawer-topbar-title">User Profile & RBAC</span>
+        <button class="drawer-close" id="drawer-close-btn" type="button" onclick="closeDrawer()">✕ Close</button>
       </div>
       <div id="drawer-content"></div>
     </div>
   </div>
 
-  <!-- Block reason modal -->
-  <div class="modal-overlay" id="block-modal">
-    <div class="modal-card">
-      <div class="modal-title">🚫 Block User</div>
-      <div class="modal-sub">The user will immediately lose access to trips and messages. Enter a reason:</div>
-      <textarea
-        id="block-reason-input"
-        class="modal-textarea"
-        placeholder="e.g. Repeatedly sending abusive messages in chat…"
-        maxlength="500"
-      ></textarea>
-      <div class="modal-btns">
-        <button class="btn-modal-cancel" id="block-modal-cancel" type="button">Cancel</button>
-        <button class="btn-modal-confirm" id="block-modal-confirm" type="button">Block User</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Trip detail drawer -->
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       TRIP DETAIL DRAWER
+       ═══════════════════════════════════════════════════════════════════════ -->
   <div id="trip-drawer-wrapper" style="position:relative">
     <div class="drawer-overlay" onclick="closeTripDrawer()"></div>
     <div class="drawer">
       <div class="drawer-topbar">
-        <span class="drawer-topbar-title">Trip Detail</span>
-        <button class="drawer-close" id="trip-drawer-close" type="button">✕ Close</button>
+        <span class="drawer-topbar-title">Trip Route & Telemetry</span>
+        <button class="drawer-close" id="trip-drawer-close" type="button" onclick="closeTripDrawer()">✕ Close</button>
       </div>
       <div id="trip-drawer-content"></div>
     </div>
   </div>
 
-  <!-- Force-cancel reason modal -->
-  <div class="modal-overlay" id="fcancel-modal">
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       BLOCK USER MODAL
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="block-modal">
     <div class="modal-card">
-      <div class="modal-title">✖ Force Cancel Trip</div>
-      <div class="modal-sub">Trip <strong id="fcancel-trip-code"></strong> will be marked as cancelled and all active riders removed. Enter a reason:</div>
-      <textarea
-        id="fcancel-reason-input"
-        class="modal-textarea"
-        placeholder="e.g. Trip stuck due to driver going offline…"
-        maxlength="500"
-      ></textarea>
+      <div class="modal-title">🚫 Suspend User Account</div>
+      <div class="modal-sub">The user will immediately lose access to all active trips, sockets, and messaging. Enter
+        moderation reason:</div>
+      <textarea id="block-reason-input" class="modal-textarea"
+        placeholder="e.g. Safety policy violation, invalid documentation, or abusive behavior…"
+        maxlength="500"></textarea>
       <div class="modal-btns">
-        <button class="btn-modal-cancel" id="fcancel-modal-cancel" type="button">Cancel</button>
-        <button class="btn-modal-confirm" id="fcancel-modal-confirm" type="button">Force Cancel</button>
+        <button class="btn-modal-cancel" id="block-modal-cancel" type="button">Cancel</button>
+        <button class="btn-modal-confirm" id="block-modal-confirm" type="button">Confirm Suspension</button>
       </div>
     </div>
   </div>
 
-  <script src="../api-config.js"></script>
-  <script src="admin-api.js"></script>
-  <script src="admin-users.js"></script>
-  <script src="admin-trips.js"></script>
-  <script src="admin-app.js"></script>
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       FORCE CANCEL TRIP MODAL
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="fcancel-modal">
+    <div class="modal-card">
+      <div class="modal-title">✕ Force Cancel Trip</div>
+      <div class="modal-sub">Trip <strong id="fcancel-trip-code"
+          style="color:var(--cyan);font-family:var(--font-mono)"></strong> will be immediately terminated and all riders
+        released. Enter reason:</div>
+      <textarea id="fcancel-reason-input" class="modal-textarea"
+        placeholder="e.g. Vehicle breakdown, driver unresponsive, or dispatch anomaly…" maxlength="500"></textarea>
+      <div class="modal-btns">
+        <button class="btn-modal-cancel" id="fcancel-modal-cancel" type="button">Cancel</button>
+        <button class="btn-modal-confirm" id="fcancel-modal-confirm" type="button">Confirm Cancellation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating HUD Toast -->
+  <div id="admin-toast" class="toast toast-info" role="status" aria-live="polite"></div>
+
+  <!-- Application Scripts -->
+  <script src="../api-config.js?v=apple"></script>
+  <script src="admin-api.js?v=apple"></script>
+  <script src="admin-users.js?v=apple"></script>
+  <script src="admin-trips.js?v=apple"></script>
+  <script src="admin-app.js?v=apple"></script>
 </body>
+
 </html>

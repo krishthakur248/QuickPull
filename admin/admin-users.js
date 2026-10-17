@@ -469,7 +469,7 @@ async function handleUnblock(userId) {
 }
 
 // ─── Toast notification ───────────────────────────────────────────────────────
-// A small notification that slides in from the bottom-right and disappears.
+// Apple HUD style Dynamic Island capsule that slides in with spring feedback.
 function showToast(message, type = 'info') {
   const existing = document.getElementById('admin-toast');
   if (existing) existing.remove();
@@ -477,17 +477,22 @@ function showToast(message, type = 'info') {
   const toast = document.createElement('div');
   toast.id = 'admin-toast';
   toast.className = `toast toast-${type}`;
-  toast.textContent = message;
+  const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+  toast.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.2);font-size:11px;font-weight:bold;">${icon}</span><span>${escHtml(message)}</span>`;
   document.body.appendChild(toast);
 
-  // Trigger slide-in animation after a tiny delay so CSS transition works
-  requestAnimationFrame(() => { requestAnimationFrame(() => { toast.classList.add('toast-visible'); }); });
+  // Trigger spring slide-in animation
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      toast.classList.add('toast-visible');
+    });
+  });
 
-  // Auto-remove after 3 seconds
+  // Auto-remove after 3.2 seconds
   setTimeout(() => {
     toast.classList.remove('toast-visible');
     setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  }, 3200);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

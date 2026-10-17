@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.innerHTML = '<span class="loading-spinner"></span>Authenticating…';
     } else {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Sign In';
+      submitBtn.textContent = 'Sign In to Console';
     }
   }
 

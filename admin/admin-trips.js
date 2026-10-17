@@ -280,6 +280,7 @@ async function initTripMap(trip) {
     scrollWheelZoom: false, // Prevents interfering with drawer scrolling
     doubleClickZoom: true,
   }).setView([centerLat, centerLng], 12);
+  window.currentTripMap = currentTripMap;
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
