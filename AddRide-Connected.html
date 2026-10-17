@@ -8,13 +8,32 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Car Pulling - Offer a Ride</title>
+    <title>QuickPull · Offer a Ride</title>
+
+    <!-- Anti-flash appearance initialization (apple-design skill §14) -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('quickpull_theme') || localStorage.getItem('admin_theme') || localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = saved || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+        } catch (e) { }
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@24,400,1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link rel="stylesheet" href="./apple-design.css" />
+    <script src="./quickpull-theme.js"></script>
 
     <style>
         * {
@@ -409,12 +428,268 @@
             transform: translateY(-2px) scale(1.03);
             box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35) !important;
         }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           APPLE HIG DESIGN & APPEARANCE SYSTEM (apple-design skill)
+           ═══════════════════════════════════════════════════════════════════ */
+        body {
+            background-color: var(--canvas) !important;
+            color: var(--text) !important;
+            font-family: var(--font-system) !important;
+            transition: background-color 0.25s var(--ease-spring), color 0.25s var(--ease-spring);
+        }
+
+        #addRideNav {
+            background: var(--surface-topbar) !important;
+            backdrop-filter: blur(24px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+            border: 1px solid var(--border) !important;
+            border-top: 1px solid var(--border-specular) !important;
+            box-shadow: var(--shadow-topbar) !important;
+            transition: all 0.25s var(--ease-spring);
+        }
+
+        /* Form Card Container (Single outer card - prevents box-in-box) */
+        .bg-white.rounded-2xl,
+        #tripCheckSkeleton {
+            background: var(--surface-card) !important;
+            border: 1px solid var(--border) !important;
+            border-top: 1px solid var(--border-specular) !important;
+            box-shadow: var(--shadow-card), var(--shadow-specular) !important;
+            color: var(--text) !important;
+            transition: all 0.22s var(--ease-spring);
+        }
+
+        /* The form inside the card should NOT have its own card borders or background */
+        #tripForm {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Inputs, Textareas, Selects */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            background-color: var(--surface-recessed) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text) !important;
+            border-radius: 12px !important;
+            transition: all 0.2s var(--ease-spring);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            background-color: var(--surface-card) !important;
+            border-color: var(--border-focus) !important;
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.18) !important;
+        }
+
+        /* Vehicle selection buttons */
+        #vehicleTypeCar, #vehicleTypeBike, #vehicleTypeEV {
+            background: var(--surface-recessed) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-secondary) !important;
+            border-radius: 12px !important;
+            transition: all 0.2s var(--ease-spring);
+        }
+        #vehicleTypeCar:hover, #vehicleTypeBike:hover, #vehicleTypeEV:hover {
+            border-color: var(--border-hi) !important;
+            color: var(--text) !important;
+            transform: scale(1.02);
+        }
+        #vehicleTypeCar.bg-blue-600,
+        #vehicleTypeBike.bg-blue-600,
+        #vehicleTypeEV.bg-blue-600 {
+            background: linear-gradient(135deg, #0a84ff, #0071e3) !important;
+            color: #ffffff !important;
+            border-color: transparent !important;
+            box-shadow: 0 4px 14px rgba(10, 132, 255, 0.35) !important;
+        }
+
+        /* Active trip, cards & modals */
+        .detail-card, .rider-card-enhanced, .profile-dropdown {
+            background: var(--surface-modal) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text) !important;
+            box-shadow: var(--shadow-card) !important;
+        }
+
+        /* Light Mode Overrides */
+        [data-theme="light"] body {
+            background-color: #f5f5f7 !important;
+            color: #1d1d1f !important;
+        }
+        [data-theme="light"] .bg-white.rounded-2xl,
+        [data-theme="light"] #tripCheckSkeleton {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+        }
+        [data-theme="light"] #addRideNav {
+            background: rgba(255, 255, 255, 0.88) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            border-top-color: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+        }
+        [data-theme="light"] #addRideNav span {
+            color: #1d1d1f !important;
+        }
+        [data-theme="light"] #addRideNav .ride-nav-link {
+            color: #48484a !important;
+        }
+        [data-theme="light"] #addRideNav .ride-nav-link:hover {
+            color: #0071e3 !important;
+            background: rgba(0, 113, 227, 0.08) !important;
+        }
+        [data-theme="light"] label {
+            color: #1d1d1f !important;
+        }
+        [data-theme="light"] p.text-gray-500,
+        [data-theme="light"] span.text-gray-500,
+        [data-theme="light"] .text-gray-600 {
+            color: #6e6e73 !important;
+        }
+        [data-theme="light"] input[type="text"],
+        [data-theme="light"] input[type="number"],
+        [data-theme="light"] select,
+        [data-theme="light"] textarea {
+            background-color: #f9fafb !important;
+            border: 1px solid rgba(0, 0, 0, 0.12) !important;
+            color: #1d1d1f !important;
+        }
+        [data-theme="light"] input:focus,
+        [data-theme="light"] select:focus,
+        [data-theme="light"] textarea:focus {
+            background-color: #ffffff !important;
+            border-color: #0071e3 !important;
+        }
+        [data-theme="light"] .from-blue-50,
+        [data-theme="light"] .to-indigo-50,
+        [data-theme="light"] .bg-blue-50,
+        [data-theme="light"] .bg-gray-50,
+        [data-theme="light"] #vehicleInformation {
+            background: rgba(0, 0, 0, 0.02) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            color: #1d1d1f !important;
+        }
+        [data-theme="light"] .bg-blue-100 {
+            background: rgba(0, 113, 227, 0.08) !important;
+            color: #0071e3 !important;
+        }
+        [data-theme="light"] .bg-indigo-100 {
+            background: rgba(88, 86, 214, 0.08) !important;
+            color: #5856d6 !important;
+        }
+        [data-theme="light"] .profile-dropdown {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+        }
+        [data-theme="light"] .profile-dropdown p,
+        [data-theme="light"] .profile-dropdown a {
+            color: #1d1d1f !important;
+        }
+        [data-theme="light"] .profile-dropdown a:hover {
+            background: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        /* Dark Mode Overrides */
+        [data-theme="dark"] body {
+            background-color: #07090e !important;
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] .bg-white.rounded-2xl,
+        [data-theme="dark"] #tripCheckSkeleton {
+            background: rgba(18, 23, 36, 0.85) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5) !important;
+        }
+        [data-theme="dark"] #addRideNav {
+            background: rgba(13, 16, 24, 0.82) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            border-top-color: rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        }
+        [data-theme="dark"] #addRideNav span {
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] #addRideNav .ride-nav-link {
+            color: rgba(245, 245, 247, 0.72) !important;
+        }
+        [data-theme="dark"] #addRideNav .ride-nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-theme="dark"] label {
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] p.text-gray-500,
+        [data-theme="dark"] span.text-gray-500,
+        [data-theme="dark"] .text-gray-600 {
+            color: rgba(245, 245, 247, 0.5) !important;
+        }
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background-color: rgba(10, 13, 21, 0.82) !important;
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] .profile-dropdown {
+            background: rgba(18, 24, 38, 0.96) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 24px 64px -8px rgba(0, 0, 0, 0.85) !important;
+        }
+        [data-theme="dark"] .profile-dropdown p,
+        [data-theme="dark"] .profile-dropdown a {
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] .profile-dropdown a:hover {
+            background: rgba(255, 255, 255, 0.06) !important;
+        }
+        [data-theme="dark"] .from-blue-50,
+        [data-theme="dark"] .to-indigo-50,
+        [data-theme="dark"] .bg-blue-50,
+        [data-theme="dark"] .bg-gray-50,
+        [data-theme="dark"] #vehicleInformation {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] .text-blue-900,
+        [data-theme="dark"] .text-gray-900,
+        [data-theme="dark"] .text-gray-800,
+        [data-theme="dark"] .text-gray-700 {
+            color: #f5f5f7 !important;
+        }
+        [data-theme="dark"] .text-blue-700,
+        [data-theme="dark"] .text-indigo-700 {
+            color: #38bdf8 !important;
+        }
+        [data-theme="dark"] .bg-blue-100 {
+            background: rgba(10, 132, 255, 0.15) !important;
+            color: #38bdf8 !important;
+            border: 1px solid rgba(56, 189, 248, 0.2) !important;
+        }
+        [data-theme="dark"] .bg-indigo-100 {
+            background: rgba(99, 102, 241, 0.15) !important;
+            color: #a5b4fc !important;
+            border: 1px solid rgba(129, 140, 248, 0.2) !important;
+        }
     </style>
 </head>
 
-<body class="min-h-screen" style="background: #E8F0FB; position: relative;">
+<body class="min-h-screen" style="background: var(--canvas); position: relative;">
     <div
-        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%); pointer-events: none; z-index: -1;">
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 50%, rgba(10, 132, 255, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 50%); pointer-events: none; z-index: -1;">
     </div>
     <!-- Navigation -->
     <nav id="addRideNav"
@@ -440,6 +715,23 @@
         </div>
 
         <div class="flex gap-2 sm:gap-4 items-center">
+            <!-- Apple Appearance Segmented Control (apple-design skill §10, §14) -->
+            <div class="theme-segmented-control" role="radiogroup" aria-label="Appearance Mode">
+                <button type="button" class="theme-seg-btn" id="theme-btn-light" role="radio" aria-checked="false" title="Switch to Light Appearance">
+                    <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                    </svg>
+                    <span class="theme-seg-label hidden sm:inline">Light</span>
+                </button>
+                <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true" title="Switch to Dark Appearance">
+                    <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                    </svg>
+                    <span class="theme-seg-label hidden sm:inline">Dark</span>
+                </button>
+            </div>
+
             <a href="./Dashboard-Connected.html"
                 class="ride-cta-shimmer px-4 sm:px-5 py-2 text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-lg text-xs sm:text-sm font-semibold transition-all shadow-md hover:shadow-lg">Dashboard</a>
             <!-- Settings Button -->

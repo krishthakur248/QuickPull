@@ -4,9 +4,25 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QuickPull — Real-Time Ride Sharing</title>
+
+  <!-- Anti-flash appearance initialization (apple-design skill §14) -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('quickpull_theme') || localStorage.getItem('admin_theme') || localStorage.getItem('theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      } catch (e) { }
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./apple-design.css" />
+  <script src="./quickpull-theme.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -795,6 +811,177 @@
       .name-row { flex-direction: column; gap: 0; }
     }
 
+    /* ═══════════════════════════════════════════════════════════════════
+       APPLE HIG DESIGN & APPEARANCE SYSTEM FOR LANDING (apple-design skill)
+       ═══════════════════════════════════════════════════════════════════ */
+    :root, [data-theme="dark"] {
+      --canvas: #07090e;
+      --text: #f5f5f7;
+      --text-secondary: rgba(245, 245, 247, 0.72);
+      --text-dim: rgba(245, 245, 247, 0.44);
+      --surface-topbar: rgba(13, 16, 24, 0.78);
+      --surface-card: rgba(18, 23, 36, 0.82);
+      --surface-card-hover: rgba(26, 33, 50, 0.9);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hi: rgba(255, 255, 255, 0.16);
+      --border-specular: rgba(255, 255, 255, 0.22);
+      --border-focus: #ff453a;
+      --surface-recessed: rgba(10, 13, 21, 0.78);
+      --shadow-topbar: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --shadow-card: 0 16px 48px -8px rgba(0, 0, 0, 0.6);
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="light"] {
+      --canvas: #f5f5f7;
+      --text: #1d1d1f;
+      --text-secondary: rgba(29, 29, 31, 0.72);
+      --text-dim: rgba(29, 29, 31, 0.46);
+      --surface-topbar: rgba(255, 255, 255, 0.86);
+      --surface-card: rgba(255, 255, 255, 0.92);
+      --surface-card-hover: #ffffff;
+      --border: rgba(0, 0, 0, 0.08);
+      --border-hi: rgba(0, 0, 0, 0.14);
+      --border-specular: rgba(255, 255, 255, 0.95);
+      --border-focus: #e02020;
+      --surface-recessed: rgba(235, 236, 240, 0.88);
+      --shadow-topbar: 0 4px 20px rgba(0, 0, 0, 0.06);
+      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      background-color: var(--canvas) !important;
+      color: var(--text) !important;
+      transition: background-color 0.25s var(--ease-spring), color 0.25s var(--ease-spring);
+    }
+
+    #navbar {
+      background: var(--surface-topbar) !important;
+      border: 1px solid var(--border) !important;
+      border-top: 1px solid var(--border-specular) !important;
+      box-shadow: var(--shadow-topbar) !important;
+    }
+
+    /* Auth Card */
+    .hero-card {
+      background: var(--surface-card) !important;
+      border: 1px solid var(--border) !important;
+      border-top: 1px solid var(--border-specular) !important;
+      box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+      border-radius: 24px !important;
+    }
+
+    .tab-bar {
+      background: var(--surface-recessed) !important;
+      border-radius: 9999px !important;
+      padding: 4px !important;
+    }
+
+    .field-input {
+      background: var(--surface-recessed) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 12px !important;
+      transition: all 0.2s var(--ease-spring);
+    }
+
+    .field-input:focus {
+      background: var(--surface-card) !important;
+      border-color: var(--border-focus) !important;
+    }
+
+    /* Dark Mode Sections Adaptation */
+    [data-theme="dark"] #features,
+    [data-theme="dark"] #about,
+    [data-theme="dark"] #testimonials,
+    [data-theme="dark"] #faq,
+    [data-theme="dark"] #contact {
+      background: var(--canvas) !important;
+      color: var(--text) !important;
+    }
+
+    [data-theme="dark"] .feat-card,
+    [data-theme="dark"] .about-stats > div,
+    [data-theme="dark"] .team-card,
+    [data-theme="dark"] .testi-card,
+    [data-theme="dark"] .faq-item,
+    [data-theme="dark"] .contact-card {
+      background: var(--surface-card) !important;
+      border: 1px solid var(--border) !important;
+      border-top: 1px solid var(--border-specular) !important;
+      color: var(--text) !important;
+      box-shadow: var(--shadow-card) !important;
+    }
+
+    [data-theme="dark"] .section-h2,
+    [data-theme="dark"] .about-h2,
+    [data-theme="dark"] .team-h3,
+    [data-theme="dark"] .faq-q,
+    [data-theme="dark"] .feat-title {
+      color: #f5f5f7 !important;
+    }
+
+    [data-theme="dark"] .section-sub,
+    [data-theme="dark"] .about-p,
+    [data-theme="dark"] .feat-desc,
+    [data-theme="dark"] .faq-a {
+      color: rgba(245, 245, 247, 0.72) !important;
+    }
+
+    [data-theme="dark"] .nav-logo {
+      color: #f5f5f7 !important;
+    }
+
+    /* Light Mode Sections Adaptation */
+    [data-theme="light"] #features,
+    [data-theme="light"] #about,
+    [data-theme="light"] #testimonials,
+    [data-theme="light"] #faq,
+    [data-theme="light"] #contact {
+      background: #f5f5f7 !important;
+      color: #1d1d1f !important;
+    }
+
+    [data-theme="light"] .feat-card,
+    [data-theme="light"] .about-stats > div,
+    [data-theme="light"] .team-card,
+    [data-theme="light"] .testi-card,
+    [data-theme="light"] .faq-item,
+    [data-theme="light"] .contact-card {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.9) !important;
+      color: #1d1d1f !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    [data-theme="light"] .nav-logo {
+      color: #1d1d1f !important;
+    }
+
+    [data-theme="light"] .nav-pill {
+      color: #48484a !important;
+    }
+
+    [data-theme="light"] .nav-pill:hover {
+      color: #1d1d1f !important;
+      background: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    [data-theme="light"] .section-h2,
+    [data-theme="light"] .about-h2,
+    [data-theme="light"] .team-h3,
+    [data-theme="light"] .faq-q,
+    [data-theme="light"] .feat-title {
+      color: #1d1d1f !important;
+    }
+
+    [data-theme="light"] .section-sub,
+    [data-theme="light"] .about-p,
+    [data-theme="light"] .feat-desc,
+    [data-theme="light"] .faq-a {
+      color: #6e6e73 !important;
+    }
   </style>
 </head>
 <body>
@@ -831,10 +1018,126 @@
       <button class="nav-pill"        id="nav-contact"  onclick="document.getElementById('contact')?.scrollIntoView({behavior:'smooth'})">Contact</button>
     </div>
 
-    <!-- Right: Profile + Dashboard Button -->
-    <div id="authNavSection" style="display: none; align-items: center; gap: 12px;">
-      <!-- Dashboard Button -->
-      <button class="nav-cta" onclick="location.href='./Dashboard-Connected.html'" style="
+    <!-- Right Actions: Appearance Switcher + Auth / CTA -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <!-- Apple Appearance Segmented Control (apple-design skill §10, §14) -->
+      <div class="theme-segmented-control" role="radiogroup" aria-label="Appearance Mode">
+        <button type="button" class="theme-seg-btn" id="theme-btn-light" role="radio" aria-checked="false" title="Switch to Light Appearance">
+          <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <span class="theme-seg-label">Light</span>
+        </button>
+        <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true" title="Switch to Dark Appearance">
+          <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <span class="theme-seg-label">Dark</span>
+        </button>
+      </div>
+
+      <!-- Right: Profile + Dashboard Button -->
+      <div id="authNavSection" style="display: none; align-items: center; gap: 12px;">
+        <!-- Dashboard Button -->
+        <button class="nav-cta" onclick="location.href='./Dashboard-Connected.html'" style="
+          background: #e02020;
+          color: #fff;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 24px;
+          font-weight: 700;
+          font-size: 0.875rem;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(224, 32, 32, 0.4);
+          transition: transform 0.2s;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          Dashboard
+        </button>
+        <!-- Profile Dropdown Button -->
+        <div class="relative" style="position: relative; z-index: 50;">
+          <button id="profileBtn" style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+          " onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
+            <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </button>
+          <!-- Dropdown Menu -->
+          <div id="profileDropdown" style="
+            position: absolute;
+            right: 0;
+            top: 100%;
+            width: 200px;
+            background: rgba(25, 38, 51, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+            margin-top: 8px;
+          ">
+            <div style="padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+              <p style="font-size: 0.875rem; font-weight: 600; color: #fff;">Profile</p>
+              <p style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 4px;" id="profileEmail">Loading...</p>
+            </div>
+            <a href="#" style="
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 12px 16px;
+              color: rgba(255, 255, 255, 0.8);
+              text-decoration: none;
+              font-size: 0.875rem;
+              transition: all 0.2s;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            " onmouseover="this.style.background='rgba(255, 255, 255, 0.1); this.style.color=&quot;#fff&quot;'" onmouseout="this.style.background='transparent'; this.style.color='rgba(255, 255, 255, 0.8)'">
+              <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              My Profile
+            </a>
+            <button onclick="logout()" style="
+              width: 100%;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              padding: 12px 16px;
+              background: none;
+              border: none;
+              color: #ff6b6b;
+              font-size: 0.875rem;
+              cursor: pointer;
+              transition: all 0.2s;
+              text-align: left;
+            " onmouseover="this.style.background='rgba(255, 107, 107, 0.1)'" onmouseout="this.style.background='none'">
+              <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Get App Button (shown when not authenticated) -->
+      <button id="navGetAppBtn" class="nav-cta" style="
         background: #e02020;
         color: #fff;
         border: none;
@@ -846,105 +1149,9 @@
         box-shadow: 0 4px 14px rgba(224, 32, 32, 0.4);
         transition: transform 0.2s;
       " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-        Dashboard
+        Get App
       </button>
-      <!-- Profile Dropdown Button -->
-      <div class="relative" style="position: relative; z-index: 50;">
-        <button id="profileBtn" style="
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: #fff;
-          cursor: pointer;
-          transition: all 0.2s;
-        " onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'">
-          <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </button>
-        <!-- Dropdown Menu -->
-        <div id="profileDropdown" style="
-          position: absolute;
-          right: 0;
-          top: 100%;
-          width: 200px;
-          background: rgba(25, 38, 51, 0.95);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 12px;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-          backdrop-filter: blur(20px);
-          display: none;
-          flex-direction: column;
-          z-index: 9999;
-          margin-top: 8px;
-        ">
-          <div style="padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-            <p style="font-size: 0.875rem; font-weight: 600; color: #fff;">Profile</p>
-            <p style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.5); margin-top: 4px;" id="profileEmail">Loading...</p>
-          </div>
-          <a href="#" style="
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 16px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-          " onmouseover="this.style.background='rgba(255, 255, 255, 0.1); this.style.color=&quot;#fff&quot;'" onmouseout="this.style.background='transparent'; this.style.color='rgba(255, 255, 255, 0.8)'">
-            <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            My Profile
-          </a>
-          <button onclick="logout()" style="
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 16px;
-            background: none;
-            border: none;
-            color: #ff6b6b;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-          " onmouseover="this.style.background='rgba(255, 107, 107, 0.1)'" onmouseout="this.style.background='none'">
-            <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="16 17 21 12 16 7"></polyline>
-              <line x1="21" y1="12" x2="9" y2="12"></line>
-            </svg>
-            Logout
-          </button>
-        </div>
-      </div>
     </div>
-
-    <!-- Get App Button (shown when not authenticated) -->
-    <button id="navGetAppBtn" class="nav-cta" style="
-      background: #e02020;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 24px;
-      font-weight: 700;
-      font-size: 0.875rem;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(224, 32, 32, 0.4);
-      transition: transform 0.2s;
-    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-      Get App
-    </button>
   </nav>
 
   <!-- ══════════════════════════════════
