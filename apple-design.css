@@ -194,6 +194,21 @@
   line-height: 1;
 }
 
+@media (max-width: 640px) {
+  .theme-seg-label {
+    display: none !important;
+  }
+
+  .theme-seg-btn {
+    padding: 0.28rem 0.45rem !important;
+    gap: 0 !important;
+  }
+
+  .theme-segmented-control {
+    padding: 2px !important;
+  }
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
    NATURAL LEAFLET OSM MAP (Normal, crisp natural colors)
    ════════════════════════════════════════════════════════════════════════════ */
@@ -205,7 +220,11 @@ img.leaflet-tile {
 }
 
 /* Map Containers */
-#mapContainer, #dashboardMap, #routeMap, #activeTripMap, #pickerMap {
+#mapContainer,
+#dashboardMap,
+#routeMap,
+#activeTripMap,
+#pickerMap {
   background: var(--map-bg) !important;
   transition: background-color 0.25s var(--ease-spring);
 }

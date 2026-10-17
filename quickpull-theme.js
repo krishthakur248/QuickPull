@@ -11,7 +11,7 @@
       try {
         const val = localStorage.getItem(key);
         if (val === 'dark' || val === 'light') return val;
-      } catch (e) {}
+      } catch (e) { }
     }
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
       return 'light';
@@ -26,7 +26,7 @@
 
     if (save) {
       THEME_KEYS.forEach((key) => {
-        try { localStorage.setItem(key, theme); } catch (e) {}
+        try { localStorage.setItem(key, theme); } catch (e) { }
       });
     }
 
@@ -47,7 +47,7 @@
     const maps = [window.dashboardMap, window.routeMap, window.currentTripMap, window.activeTripMap, window.pickerMap];
     maps.forEach((m) => {
       if (m && typeof m.invalidateSize === 'function') {
-        setTimeout(() => { try { m.invalidateSize(); } catch (e) {} }, 150);
+        setTimeout(() => { try { m.invalidateSize(); } catch (e) { } }, 150);
       }
     });
 
@@ -83,7 +83,7 @@
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
           let hasExplicit = false;
           THEME_KEYS.forEach((k) => {
-            try { if (localStorage.getItem(k)) hasExplicit = true; } catch (err) {}
+            try { if (localStorage.getItem(k)) hasExplicit = true; } catch (err) { }
           });
           if (!hasExplicit) {
             applyTheme(e.matches ? 'dark' : 'light', false);
@@ -98,7 +98,7 @@
     const t = getSavedTheme();
     document.documentElement.setAttribute('data-theme', t);
     document.documentElement.classList.toggle('dark', t === 'dark');
-  } catch (e) {}
+  } catch (e) { }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => window.QuickPullTheme.init());

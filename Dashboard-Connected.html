@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html class="dark" lang="en">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10,19 +12,22 @@
 
     <!-- Anti-flash appearance initialization (apple-design skill §14) -->
     <script>
-      (function () {
-        try {
-          var saved = localStorage.getItem('quickpull_theme') || localStorage.getItem('admin_theme') || localStorage.getItem('theme');
-          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var theme = saved || (prefersDark ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
-          document.documentElement.classList.toggle('dark', theme === 'dark');
-        } catch (e) { }
-      })();
+        (function () {
+            try {
+                var saved = localStorage.getItem('quickpull_theme') || localStorage.getItem('admin_theme') || localStorage.getItem('theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = saved || (prefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+            } catch (e) { }
+        })();
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -54,23 +59,47 @@
             -webkit-touch-callout: none;
             -webkit-user-select: none;
         }
-        input, textarea, select, button {
+
+        input,
+        textarea,
+        select,
+        button {
             -webkit-user-select: text;
         }
+
         html {
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
         }
+
         body {
             font-family: 'Space Grotesk', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #111a22; }
-        ::-webkit-scrollbar-thumb { background: #233648; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #137fec; }
-        #dashboardMap { height: 100%; border-radius: 8px; }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111a22;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #233648;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #137fec;
+        }
+
+        #dashboardMap {
+            height: 100%;
+            border-radius: 8px;
+        }
+
         .loading-spinner {
             border: 3px solid rgba(19, 127, 236, 0.1);
             border-top: 3px solid #137fec;
@@ -79,18 +108,31 @@
             height: 20px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         .ride-card {
             transition: all 0.3s ease;
         }
+
         .ride-card:hover {
             transform: translateY(-4px);
             border-color: #137fec;
         }
+
         .profile-dropdown {
             z-index: 9999 !important;
             position: fixed !important;
         }
+
         .map-modal {
             display: none;
             position: fixed;
@@ -103,22 +145,41 @@
             justify-content: center;
             align-items: center;
         }
+
         .map-modal.active {
             display: flex;
         }
+
         .map-modal-content {
             background: #192633;
             border-radius: 1rem;
-            padding: 20px;
-            width: 90%;
-            height: 90%;
+            padding: 16px;
+            width: 94%;
             max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
             border: 1px solid #233648;
+            overflow-y: auto;
         }
+
         #pickerMap {
-            height: 400px;
+            height: 320px;
+            min-height: 240px;
             border-radius: 1rem;
+            flex: 1;
         }
+
+        [data-theme="light"] .map-modal-content {
+            background: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+            color: #1d1d1f !important;
+        }
+
+        [data-theme="light"] .map-modal-content h3 {
+            color: #1d1d1f !important;
+        }
+
         /* FORCE MAP BEHIND ALL UI  (May cause underlaping)*/
         .leaflet-container,
         .leaflet-pane,
@@ -130,115 +191,166 @@
         .leaflet-popup-pane {
             z-index: 0 !important;
         }
-        /* Mobile map toggle */
+
+        /* Mobile layout & map toggle */
         @media (max-width: 768px) {
-            header {
-                padding: 8px 12px !important;
+            header#dashNav {
+                padding: 6px 12px !important;
                 gap: 4px !important;
             }
-            header > div:first-child {
+
+            header#dashNav>div:first-child {
                 gap: 6px !important;
+                flex-shrink: 0;
             }
-            header > div:first-child h2 {
+
+            header#dashNav>div:nth-child(2) {
                 display: none !important;
             }
-            header > div:nth-child(2) {
-                display: flex !important;
-                gap: 2px;
+
+            header#dashNav>div:last-child {
+                gap: 6px !important;
+                flex-shrink: 0;
             }
-            header > div:nth-child(2) button {
-                padding: 4px 8px !important;
-                font-size: 11px !important;
-                border-radius: 6px !important;
-            }
-            header .hidden.sm\:flex {
-                gap: 0 !important;
-            }
+
             #mapContainer {
                 display: none;
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                z-index: 40;
+                width: 100% !important;
+                height: 100% !important;
+                flex: 1;
+                position: relative !important;
             }
+
             #mapContainer.show {
-                display: block !important;
+                display: flex !important;
+                flex-direction: column;
+                width: 100% !important;
+                height: 100% !important;
             }
+
             #sidebarContainer {
                 display: flex;
-                z-index: 30;
+                width: 100% !important;
+                height: 100% !important;
+                flex: 1;
+                overflow-y: auto;
             }
+
             #sidebarContainer.hide-on-mobile {
-                display: none;
+                display: none !important;
             }
+
             #toggleMapBtn {
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #notificationContainer {
+                top: auto !important;
+                bottom: 24px !important;
+                left: 16px !important;
+                right: 16px !important;
                 display: flex;
+                flex-direction: column;
+                align-items: center;
+                pointer-events: none;
+            }
+
+            #notificationContainer>* {
+                pointer-events: auto;
+                width: 100% !important;
+                max-width: 360px !important;
             }
         }
+
         @media (min-width: 769px) {
             #toggleMapBtn {
                 display: none !important;
             }
+
             #mapContainer {
                 display: block !important;
             }
+
             #sidebarContainer {
                 display: flex !important;
             }
         }
+
         /* ═══ Enhanced Navbar ═══ */
         #dashNav {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
         }
+
         #dashNav.scrolled {
-            background: rgba(0,0,0,0.8) !important;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04) !important;
-            border-color: rgba(255,255,255,0.06) !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+            border-color: rgba(255, 255, 255, 0.06) !important;
         }
+
         #dashNav .dash-nav-link {
             position: relative;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         #dashNav .dash-nav-link::after {
-            content: ''; position: absolute;
-            bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 2px; background: #137fec;
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #137fec;
             border-radius: 2px;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #dashNav .dash-nav-link:hover::after { width: 55%; }
+
+        #dashNav .dash-nav-link:hover::after {
+            width: 55%;
+        }
+
         #dashNav .dash-nav-link:hover {
             color: #fff !important;
-            background: rgba(19,127,236,0.1) !important;
+            background: rgba(19, 127, 236, 0.1) !important;
         }
+
         /* ═══ Skeleton Loading ═══ */
         @keyframes shimmerDash {
-            0% { background-position: -400px 0; }
-            100% { background-position: 400px 0; }
+            0% {
+                background-position: -400px 0;
+            }
+
+            100% {
+                background-position: 400px 0;
+            }
         }
+
         .skeleton-shimmer {
             background: linear-gradient(90deg, #192633 25%, #253545 50%, #192633 75%);
             background-size: 400px 100%;
             animation: shimmerDash 1.4s ease infinite;
             border-radius: 8px;
         }
+
         .skeleton-card {
             background: linear-gradient(135deg, #192633 0%, #151f2a 100%);
             border: 1px solid #233648;
             border-radius: 16px;
             padding: 16px;
         }
+
         #mapSkeleton {
             transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                        filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 1;
             transform: scale(1);
             filter: blur(0px);
         }
+
         #mapSkeleton.fade-out {
             opacity: 0;
             transform: scale(1.02);
@@ -274,7 +386,10 @@
         }
 
         /* Inputs & Search Boxes */
-        #pickupInput, #destinationInput, #customLat, #customLng,
+        #pickupInput,
+        #destinationInput,
+        #customLat,
+        #customLng,
         .bg-\[\#192633\] {
             background-color: var(--surface-recessed) !important;
             border-color: var(--border) !important;
@@ -282,7 +397,8 @@
             transition: all 0.22s var(--ease-spring);
         }
 
-        #pickupInput:focus, #destinationInput:focus {
+        #pickupInput:focus,
+        #destinationInput:focus {
             background-color: var(--surface-card) !important;
             border-color: var(--border-focus) !important;
             box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15) !important;
@@ -292,9 +408,11 @@
         .text-\[\#92adc9\] {
             color: var(--text-dim) !important;
         }
+
         .text-\[\#5a6b7c\] {
             color: var(--text-dim) !important;
         }
+
         .border-\[\#233648\] {
             border-color: var(--border) !important;
         }
@@ -308,6 +426,7 @@
             border-radius: 16px !important;
             transition: all 0.22s var(--ease-spring) !important;
         }
+
         .ride-card:hover {
             transform: translateY(-2px) !important;
             background: var(--surface-card-hover) !important;
@@ -319,7 +438,7 @@
         .map-modal-content,
         .profile-dropdown,
         .modal-content,
-        div[id$="Modal"] > div,
+        div[id$="Modal"]>div,
         div[id$="Drawer"] {
             background: var(--surface-modal) !important;
             border: 1px solid var(--border) !important;
@@ -328,22 +447,29 @@
             box-shadow: var(--shadow-modal) !important;
         }
 
-        .profile-dropdown a, .profile-dropdown button {
+        .profile-dropdown a,
+        .profile-dropdown button {
             color: var(--text-secondary) !important;
         }
+
         .profile-dropdown a:hover {
             color: var(--text) !important;
             background: var(--surface-subtle) !important;
         }
 
         /* Map UI buttons */
-        .size-10, #toggleMapBtn, #closeMapBtn {
+        .size-10,
+        #toggleMapBtn,
+        #closeMapBtn {
             background: var(--surface-modal) !important;
             border: 1px solid var(--border) !important;
             color: var(--text) !important;
             box-shadow: var(--shadow-card) !important;
         }
-        .size-10:hover, #toggleMapBtn:hover, #closeMapBtn:hover {
+
+        .size-10:hover,
+        #toggleMapBtn:hover,
+        #closeMapBtn:hover {
             background: var(--surface-card-hover) !important;
         }
 
@@ -352,32 +478,40 @@
             background-color: #f5f5f7 !important;
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #sidebarContainer {
             background: rgba(255, 255, 255, 0.88) !important;
             border-right-color: rgba(0, 0, 0, 0.08) !important;
         }
+
         [data-theme="light"] #dashNav {
             background: rgba(255, 255, 255, 0.85) !important;
             border-color: rgba(0, 0, 0, 0.08) !important;
             border-top-color: rgba(255, 255, 255, 0.95) !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
         }
+
         [data-theme="light"] #dashNav h2 {
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #dashNav .dash-nav-link {
             color: #48484a !important;
         }
+
         [data-theme="light"] #dashNav .dash-nav-link:hover {
             color: #0071e3 !important;
             background: rgba(0, 113, 227, 0.08) !important;
         }
+
         [data-theme="light"] #dashNav button:not(.theme-seg-btn) {
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #dashNav button:not(.theme-seg-btn):hover {
             background: rgba(0, 0, 0, 0.05) !important;
         }
+
         [data-theme="light"] #pickupInput,
         [data-theme="light"] #destinationInput,
         [data-theme="light"] #customLat,
@@ -387,10 +521,12 @@
             border-color: rgba(0, 0, 0, 0.08) !important;
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #pickupInput::placeholder,
         [data-theme="light"] #destinationInput::placeholder {
             color: #8e8e93 !important;
         }
+
         [data-theme="light"] .ride-card {
             background: rgba(255, 255, 255, 0.92) !important;
             border: 1px solid rgba(0, 0, 0, 0.08) !important;
@@ -398,16 +534,19 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] .ride-card:hover {
             background: #ffffff !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
             border-color: rgba(0, 113, 227, 0.3) !important;
         }
+
         [data-theme="light"] .ride-card h4,
         [data-theme="light"] .ride-card .text-white,
         [data-theme="light"] .ride-card span.text-white {
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #sidebarContainer h2,
         [data-theme="light"] #sidebarContainer h3,
         [data-theme="light"] #sidebarContainer h4,
@@ -415,30 +554,36 @@
         [data-theme="light"] #sidebarContainer span.text-white {
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #sidebarContainer p,
         [data-theme="light"] #sidebarContainer .text-gray-400,
         [data-theme="light"] #sidebarContainer .text-gray-300 {
             color: #6e6e73 !important;
         }
+
         [data-theme="light"] #sidebarContainer .text-\[\#92adc9\],
         [data-theme="light"] #sidebarContainer .text-\[\#5a6b7c\] {
             color: #8e8e93 !important;
         }
+
         [data-theme="light"] .profile-dropdown,
         [data-theme="light"] .map-modal-content,
-        [data-theme="light"] div[id$="Modal"] > div {
+        [data-theme="light"] div[id$="Modal"]>div {
             background: rgba(255, 255, 255, 0.98) !important;
             border-color: rgba(0, 0, 0, 0.08) !important;
             color: #1d1d1f !important;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
         }
+
         [data-theme="light"] .profile-dropdown p,
         [data-theme="light"] .profile-dropdown a {
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] .profile-dropdown a:hover {
             background: rgba(0, 0, 0, 0.04) !important;
         }
+
         [data-theme="light"] .size-10,
         [data-theme="light"] #closeMapBtn {
             background: rgba(255, 255, 255, 0.92) !important;
@@ -446,19 +591,23 @@
             color: #1d1d1f !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
         }
+
         [data-theme="light"] .size-10:hover,
         [data-theme="light"] #closeMapBtn:hover {
             background: #ffffff !important;
         }
+
         [data-theme="light"] #availableRidesTabBtn:not(.bg-primary) {
             background: rgba(0, 0, 0, 0.05) !important;
             color: #48484a !important;
         }
+
         /* Map Container, Skeleton, Legend & Controls Theme Overrides */
         #mapContainer {
             background-color: var(--map-bg) !important;
             transition: background-color 0.25s var(--ease-spring);
         }
+
         #dashboardMap {
             background-color: var(--map-bg) !important;
         }
@@ -467,43 +616,54 @@
         [data-theme="light"] #mapContainer {
             background-color: #e8ecf1 !important;
         }
+
         [data-theme="light"] #mapSkeleton {
             background-color: #e8ecf1 !important;
         }
+
         [data-theme="light"] #mapSkeleton .skeleton-shimmer {
             background: linear-gradient(90deg, #d8dee8 25%, #edf0f5 50%, #d8dee8 75%) !important;
             background-size: 400px 100% !important;
         }
+
         [data-theme="light"] #mapSkeleton .border-3 {
             border-color: rgba(0, 0, 0, 0.12) !important;
             border-top-color: #0071e3 !important;
         }
+
         [data-theme="light"] #mapSkeleton p {
             color: #1d1d1f !important;
         }
+
         [data-theme="light"] #mapSkeleton p.text-\[\#5a7d99\] {
             color: #6e6e73 !important;
         }
+
         [data-theme="light"] #mapContainer .absolute.bottom-8.left-8 {
             background: rgba(255, 255, 255, 0.92) !important;
             border: 1px solid rgba(0, 0, 0, 0.08) !important;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
         }
+
         [data-theme="light"] #mapContainer .absolute.bottom-8.left-8 span {
             color: #1d1d1f !important;
         }
-        [data-theme="light"] .absolute.bottom-8.right-8 > div {
+
+        [data-theme="light"] .absolute.bottom-8.right-8>div {
             border-color: rgba(0, 0, 0, 0.08) !important;
             background: rgba(255, 255, 255, 0.92) !important;
         }
+
         [data-theme="light"] .absolute.bottom-8.right-8 button {
             border-color: rgba(0, 0, 0, 0.08) !important;
         }
 
         /* Map Container & Tiles (Normal OpenStreetMap Display) */
-        #mapContainer, #dashboardMap {
+        #mapContainer,
+        #dashboardMap {
             background-color: #e8ecf1 !important;
         }
+
         .leaflet-tile-pane,
         .leaflet-tile,
         img.leaflet-tile {
@@ -518,42 +678,67 @@
         }
 
         /* Scrollbars */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--border-focus); }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-hi);
+            border-radius: 9999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-focus);
+        }
     </style>
 </head>
+
 <body class="bg-background-dark text-white font-display overflow-hidden h-screen flex flex-col">
 
     <!-- Top Navigation -->
-    <header id="dashNav" class="fixed top-1 left-3 right-3 sm:top-2 sm:left-4 sm:right-4 z-40 rounded-2xl border border-white/12 bg-black/40 backdrop-blur-xl shadow-lg flex items-center justify-between px-4 sm:px-6 h-14">
-        <div class="flex items-center gap-2 sm:gap-3 text-white cursor-pointer" onclick="location.href='./index.html'" title="Back to Home">
-            <div class="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center text-primary text-sm">
+    <header id="dashNav"
+        class="fixed top-1 left-3 right-3 sm:top-2 sm:left-4 sm:right-4 z-40 rounded-2xl border border-white/12 bg-black/40 backdrop-blur-xl shadow-lg flex items-center justify-between px-4 sm:px-6 h-14">
+        <div class="flex items-center gap-2 sm:gap-3 text-white cursor-pointer" onclick="location.href='./index.html'"
+            title="Back to Home">
+            <div
+                class="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center text-primary text-sm flex-shrink-0">
                 <span class="material-symbols-outlined text-[18px]">directions_car</span>
             </div>
-            <h2 class="text-sm sm:text-base font-bold tracking-tight hidden sm:inline">Quick<span class="text-red-500">Pull</span></h2>
+            <h2 class="text-xs sm:text-base font-bold tracking-tight inline">Quick<span class="text-red-500">Pull</span>
+            </h2>
         </div>
 
         <!-- Navigation Links (hidden on mobile) -->
         <div class="hidden sm:flex items-center gap-1">
-            <button onclick="location.href='./index.html'" class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">Home</button>
-            <button onclick="location.href='./index.html#features'" class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">Features</button>
-            <button onclick="location.href='./index.html#about'" class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">About</button>
-            <button onclick="location.href='./index.html#contact'" class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">Contact</button>
+            <button onclick="location.href='./index.html'"
+                class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">Home</button>
+            <button onclick="location.href='./index.html#features'"
+                class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">Features</button>
+            <button onclick="location.href='./index.html#about'"
+                class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">About</button>
+            <button onclick="location.href='./index.html#contact'"
+                class="dash-nav-link px-3 py-1.5 text-gray-300 hover:text-white rounded-full text-xs font-medium transition-colors hover:bg-white/10">Contact</button>
         </div>
 
-        <div class="flex items-center gap-1 sm:gap-3">
+        <div class="flex items-center gap-1.5 sm:gap-3">
             <!-- Apple Appearance Segmented Control (apple-design skill §10, §14) -->
             <div class="theme-segmented-control" role="radiogroup" aria-label="Appearance Mode">
-                <button type="button" class="theme-seg-btn" id="theme-btn-light" role="radio" aria-checked="false" title="Switch to Light Appearance">
+                <button type="button" class="theme-seg-btn" id="theme-btn-light" role="radio" aria-checked="false"
+                    title="Switch to Light Appearance">
                     <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
                         <circle cx="12" cy="12" r="4"></circle>
-                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                        <path
+                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41">
+                        </path>
                     </svg>
                     <span class="theme-seg-label hidden sm:inline">Light</span>
                 </button>
-                <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true" title="Switch to Dark Appearance">
+                <button type="button" class="theme-seg-btn active" id="theme-btn-dark" role="radio" aria-checked="true"
+                    title="Switch to Dark Appearance">
                     <svg viewBox="0 0 24 24" class="theme-seg-icon" aria-hidden="true">
                         <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
                     </svg>
@@ -562,32 +747,39 @@
             </div>
 
             <!-- Mobile Map Toggle Button -->
-            <button id="toggleMapBtn" onclick="toggleMapView()" class="md:hidden p-2 rounded-full hover:bg-white/10 transition-colors text-white" title="View Map">
-                <span class="material-symbols-outlined text-[20px]">map</span>
+            <button type="button" id="toggleMapBtn" onclick="toggleMapView(event)"
+                class="md:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-white cursor-pointer active:scale-95"
+                title="View Map" aria-label="Toggle Map View">
+                <span class="material-symbols-outlined text-[19px] pointer-events-none">map</span>
             </button>
 
             <!-- Settings Button -->
-            <button class="p-2 rounded-full hover:bg-white/10 transition-colors text-white hidden sm:flex" title="Settings">
+            <button class="p-2 rounded-full hover:bg-white/10 transition-colors text-white hidden sm:flex"
+                title="Settings">
                 <span class="material-symbols-outlined text-[20px]">settings</span>
             </button>
 
             <!-- Profile Dropdown Button -->
             <div class="relative z-50">
-                <button id="profileBtn" class="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors z-10 relative text-white">
+                <button id="profileBtn"
+                    class="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors z-10 relative text-white">
                     <span class="material-symbols-outlined text-[20px]">account_circle</span>
                     <span class="material-symbols-outlined text-[14px] hidden sm:inline">arrow_drop_down</span>
                 </button>
                 <!-- Dropdown Menu -->
-                <div id="profileDropdown" class="profile-dropdown right-0 sm:right-2 top-12 sm:top-14 w-40 sm:w-48 bg-[#192633]/95 border border-white/10 rounded-lg shadow-2xl hidden backdrop-blur-md">
+                <div id="profileDropdown"
+                    class="profile-dropdown right-0 sm:right-2 top-12 sm:top-14 w-40 sm:w-48 bg-[#192633]/95 border border-white/10 rounded-lg shadow-2xl hidden backdrop-blur-md">
                     <div class="p-3 border-b border-white/10">
                         <p class="text-sm font-semibold text-white">Profile</p>
                         <p class="text-xs text-gray-400" id="profileEmail">Loading...</p>
                     </div>
-                    <a href="#" class="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-sm">
+                    <a href="#"
+                        class="flex items-center gap-2 px-4 py-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors text-sm">
                         <span class="material-symbols-outlined text-[18px]">person</span>
                         My Profile
                     </a>
-                    <button onclick="logout()" class="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-600/20 transition-colors text-sm border-t border-white/10">
+                    <button onclick="logout()"
+                        class="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-600/20 transition-colors text-sm border-t border-white/10">
                         <span class="material-symbols-outlined text-[18px]">logout</span>
                         Logout
                     </button>
@@ -600,47 +792,46 @@
     <div class="flex flex-1 overflow-hidden pt-16 sm:pt-18">
 
         <!-- Left Sidebar (Search & Rides) -->
-        <aside id="sidebarContainer" class="w-full md:w-[400px] flex flex-col bg-[#111a22] border-r border-[#233648] shrink-0 z-10 overflow-hidden">
+        <aside id="sidebarContainer"
+            class="w-full md:w-[400px] flex flex-col bg-[#111a22] border-r border-[#233648] shrink-0 z-10 overflow-hidden">
 
             <!-- Search Area -->
-            <div class="p-6 pb-2 flex-shrink-0">
-                <div class="flex flex-col gap-2">
-                    <label class="text-[#92adc9] text-xs font-bold uppercase tracking-wider ml-1">Pickup Location</label>
+            <div class="p-4 sm:p-6 pb-2 flex-shrink-0">
+                <div class="flex flex-col gap-1.5 sm:gap-2">
+                    <label class="text-[#92adc9] text-xs font-bold uppercase tracking-wider ml-1">Pickup
+                        Location</label>
                     <div class="relative group">
                         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-secondary">
                             <span class="material-symbols-outlined">location_on</span>
                         </div>
                         <input
-                            class="w-full h-14 bg-[#192633] text-white placeholder-[#5a6b7c] pl-12 pr-12 rounded-2xl border border-transparent focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-all shadow-[0_4px_14px_0_rgba(0,0,0,0.2)]"
-                            placeholder="Your location"
-                            type="text"
-                            id="pickupInput"
-                            readonly
-                        >
-                        <button onclick="openMapModal('pickup')" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-[#92adc9] hover:text-white rounded-full hover:bg-[#233648] transition-colors">
+                            class="w-full h-12 sm:h-14 bg-[#192633] text-white placeholder-[#5a6b7c] pl-12 pr-12 rounded-2xl border border-transparent focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-all shadow-[0_4px_14px_0_rgba(0,0,0,0.2)]"
+                            placeholder="Your location" type="text" id="pickupInput" readonly>
+                        <button onclick="openMapModal('pickup')"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-[#92adc9] hover:text-white rounded-full hover:bg-[#233648] transition-colors">
                             <span class="material-symbols-outlined text-[20px]">map</span>
                         </button>
                     </div>
                     <div class="text-xs text-[#5a6b7c] ml-1 flex gap-2">
-                        <button type="button" onclick="useCurrentLocation()" class="text-secondary hover:text-primary font-medium">Use Current</button>
+                        <button type="button" onclick="useCurrentLocation()"
+                            class="text-secondary hover:text-primary font-medium">Use Current</button>
                         <span class="text-[#233648]">•</span>
-                        <button type="button" onclick="openMapModal('pickup')" class="text-secondary hover:text-primary font-medium">Pick on Map</button>
+                        <button type="button" onclick="openMapModal('pickup')"
+                            class="text-secondary hover:text-primary font-medium">Pick on Map</button>
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2 mt-4">
+                <div class="flex flex-col gap-1.5 sm:gap-2 mt-3 sm:mt-4">
                     <label class="text-[#92adc9] text-xs font-bold uppercase tracking-wider ml-1">Destination</label>
                     <div class="relative group">
                         <div class="absolute left-4 top-1/2 -translate-y-1/2 text-primary">
                             <span class="material-symbols-outlined">location_on</span>
                         </div>
                         <input
-                            class="w-full h-14 bg-[#192633] text-white placeholder-[#5a6b7c] pl-12 pr-12 rounded-2xl border border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-[0_4px_14px_0_rgba(0,0,0,0.2)]"
-                            placeholder="Where to?"
-                            type="text"
-                            id="destinationInput"
-                        >
-                        <button onclick="openMapModal('destination')" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-[#92adc9] hover:text-white rounded-full hover:bg-[#233648] transition-colors">
+                            class="w-full h-12 sm:h-14 bg-[#192633] text-white placeholder-[#5a6b7c] pl-12 pr-12 rounded-2xl border border-transparent focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-[0_4px_14px_0_rgba(0,0,0,0.2)]"
+                            placeholder="Where to?" type="text" id="destinationInput">
+                        <button onclick="openMapModal('destination')"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-[#92adc9] hover:text-white rounded-full hover:bg-[#233648] transition-colors">
                             <span class="material-symbols-outlined text-[20px]">map</span>
                         </button>
                     </div>
@@ -648,39 +839,46 @@
             </div>
 
             <!-- Coordinates Display -->
-            <div class="px-6 grid grid-cols-2 gap-3 py-3 flex-shrink-0">
-                <div class="bg-[#192633] p-3 rounded-2xl border border-[#233648]">
+            <div class="px-4 sm:px-6 grid grid-cols-2 gap-2 sm:gap-3 py-2 sm:py-3 flex-shrink-0">
+                <div class="bg-[#192633] p-2.5 sm:p-3 rounded-2xl border border-[#233648]">
                     <div class="text-[#92adc9] text-xs font-medium mb-1">Latitude</div>
-                    <input type="text" id="destLat" readonly class="text-white text-sm font-bold bg-transparent w-full" placeholder="Lat">
+                    <input type="text" id="destLat" readonly class="text-white text-sm font-bold bg-transparent w-full"
+                        placeholder="Lat">
                 </div>
-                <div class="bg-[#192633] p-3 rounded-2xl border border-[#233648]">
+                <div class="bg-[#192633] p-2.5 sm:p-3 rounded-2xl border border-[#233648]">
                     <div class="text-[#92adc9] text-xs font-medium mb-1">Longitude</div>
-                    <input type="text" id="destLng" readonly class="text-white text-sm font-bold bg-transparent w-full" placeholder="Lng">
+                    <input type="text" id="destLng" readonly class="text-white text-sm font-bold bg-transparent w-full"
+                        placeholder="Lng">
                 </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="grid grid-cols-2 gap-3 px-6 py-3 flex-shrink-0">
-                <button onclick="searchRides()" class="bg-primary hover:bg-blue-600 text-white px-4 py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg">
+            <div class="grid grid-cols-2 gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 flex-shrink-0">
+                <button onclick="searchRides()"
+                    class="bg-primary hover:bg-blue-600 text-white px-4 py-2.5 sm:py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-95">
                     <span class="material-symbols-outlined text-[18px]">search</span>
                     Search
                 </button>
-                <a href="./AddRide-Connected.html" class="bg-secondary hover:bg-green-700 text-black px-4 py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg">
+                <a href="./AddRide-Connected.html"
+                    class="bg-secondary hover:bg-green-700 text-black px-4 py-2.5 sm:py-3 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-95">
                     <span class="material-symbols-outlined text-[18px]">directions_car</span>
                     Offer
                 </a>
             </div>
 
             <!-- Tabbed Layout: Available Rides vs My Trips -->
-            <div class="flex-1 overflow-hidden flex flex-col px-6 pt-4 pb-2">
+            <div class="flex-1 overflow-hidden flex flex-col px-4 sm:px-6 pt-3 sm:pt-4 pb-2">
 
                 <!-- Tab Headers -->
                 <div class="flex gap-2 mb-3 flex-shrink-0">
-                    <button onclick="switchTab('available')" id="availableTab" class="px-4 py-2 rounded-lg font-bold text-sm bg-primary text-white transition-all">
+                    <button onclick="switchTab('available')" id="availableTab"
+                        class="px-4 py-2 rounded-lg font-bold text-sm bg-primary text-white transition-all">
                         Available Rides
                     </button>
-                    <button onclick="switchTab('mytrips')" id="mytripsTab" class="px-4 py-2 rounded-lg font-bold text-sm bg-[#233648] text-[#92adc9] hover:bg-[#2d465e] transition-all">
-                        My Trips <span id="acceptedCount" class="text-xs ml-1 px-2 py-0.5 rounded-full bg-secondary/20 text-secondary">0</span>
+                    <button onclick="switchTab('mytrips')" id="mytripsTab"
+                        class="px-4 py-2 rounded-lg font-bold text-sm bg-[#233648] text-[#92adc9] hover:bg-[#2d465e] transition-all">
+                        My Trips <span id="acceptedCount"
+                            class="text-xs ml-1 px-2 py-0.5 rounded-full bg-secondary/20 text-secondary">0</span>
                     </button>
                 </div>
 
@@ -691,7 +889,9 @@
                     <div id="availableRidesTab" class="flex-1 overflow-y-auto flex flex-col gap-4">
                         <div class="flex items-center justify-between mb-1">
                             <h3 class="text-white font-bold text-lg">Available Rides</h3>
-                            <span id="matchCount" class="text-xs font-medium px-2 py-1 rounded-full bg-primary/20 text-primary">0 Found</span>
+                            <span id="matchCount"
+                                class="text-xs font-medium px-2 py-1 rounded-full bg-primary/20 text-primary">0
+                                Found</span>
                         </div>
                         <div class="flex-1 overflow-y-auto flex flex-col gap-4" id="ridesList">
                             <div class="text-center py-8 text-[#92adc9] text-sm">
@@ -732,7 +932,8 @@
                 <div class="w-full h-full p-4 flex flex-col gap-3">
                     <div class="skeleton-shimmer flex-1 rounded-xl"></div>
                     <div class="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                        <div class="w-12 h-12 rounded-full border-3 border-[#233648] border-t-primary animate-spin"></div>
+                        <div class="w-12 h-12 rounded-full border-3 border-[#233648] border-t-primary animate-spin">
+                        </div>
                         <p class="text-[#92adc9] text-sm font-medium">Loading map...</p>
                         <p class="text-[#5a7d99] text-xs">Getting your location</p>
                     </div>
@@ -740,28 +941,33 @@
             </div>
             <div id="dashboardMap" class="w-full h-full"></div>
 
-            <!-- Mobile Close Button -->
-            <button id="closeMapBtn" onclick="closeMapView()" class="hidden absolute top-4 left-4 md:hidden z-50 p-2 rounded-full bg-[#192633] text-white border border-[#233648] hover:bg-[#233648] transition-colors">
-                <span class="material-symbols-outlined">close</span>
+            <!-- Mobile Close Button (top-left fallback) -->
+            <button id="closeMapBtn" onclick="closeMapView()"
+                class="hidden absolute top-3 left-3 md:hidden z-50 p-2 rounded-full bg-[#192633]/90 text-white border border-[#233648] hover:bg-[#233648] backdrop-blur-md shadow-lg transition-colors">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
             </button>
 
             <!-- Map Controls -->
             <div class="absolute bottom-8 right-8 z-30 flex flex-col gap-2">
-                <button onclick="refreshMap()" class="size-10 bg-[#192633] text-white rounded-xl shadow-lg border border-[#233648] hover:bg-[#233648] hover:border-primary/50 transition-all flex items-center justify-center">
+                <button onclick="refreshMap()"
+                    class="size-10 bg-[#192633] text-white rounded-xl shadow-lg border border-[#233648] hover:bg-[#233648] hover:border-primary/50 transition-all flex items-center justify-center">
                     <span class="material-symbols-outlined">my_location</span>
                 </button>
                 <div class="flex flex-col rounded-xl overflow-hidden shadow-lg border border-[#233648]">
-                    <button onclick="zoomIn()" class="size-10 bg-[#192633] text-white hover:bg-[#233648] transition-colors flex items-center justify-center border-b border-[#233648]">
+                    <button onclick="zoomIn()"
+                        class="size-10 bg-[#192633] text-white hover:bg-[#233648] transition-colors flex items-center justify-center border-b border-[#233648]">
                         <span class="material-symbols-outlined">add</span>
                     </button>
-                    <button onclick="zoomOut()" class="size-10 bg-[#192633] text-white hover:bg-[#233648] transition-colors flex items-center justify-center">
+                    <button onclick="zoomOut()"
+                        class="size-10 bg-[#192633] text-white hover:bg-[#233648] transition-colors flex items-center justify-center">
                         <span class="material-symbols-outlined">remove</span>
                     </button>
                 </div>
             </div>
 
             <!-- Map Legend -->
-            <div class="absolute bottom-8 left-8 z-30 bg-[#192633]/90 backdrop-blur-sm p-3 rounded-xl border border-[#233648] shadow-lg">
+            <div
+                class="absolute bottom-8 left-8 z-30 bg-[#192633]/90 backdrop-blur-sm p-3 rounded-xl border border-[#233648] shadow-lg">
                 <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-2">
                         <div class="w-4 h-1 bg-primary rounded-full"></div>
@@ -788,10 +994,12 @@
             <div id="pickerMap" class="mb-4"></div>
             <p class="text-sm text-[#92adc9] mb-4">Click on the map to select your destination</p>
             <div class="flex gap-2">
-                <button onclick="confirmMapSelection()" class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-lg font-bold transition-colors">
+                <button onclick="confirmMapSelection()"
+                    class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-lg font-bold transition-colors">
                     Confirm Location
                 </button>
-                <button onclick="closeMapModal()" class="flex-1 bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-lg font-bold transition-colors">
+                <button onclick="closeMapModal()"
+                    class="flex-1 bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-lg font-bold transition-colors">
                     Cancel
                 </button>
             </div>
@@ -799,7 +1007,8 @@
     </div>
 
     <!-- Join Ride Modal -->
-    <div id="joinRideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center" style="z-index: 9999;">
+    <div id="joinRideModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center"
+        style="z-index: 9999;">
         <div class="bg-[#192633] rounded-2xl p-6 max-w-md w-full mx-4 border border-[#233648]">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-white">Join This Ride?</h3>
@@ -811,10 +1020,12 @@
                 <!-- Populated dynamically -->
             </div>
             <div class="flex gap-2">
-                <button id="joinRideConfirmBtn" onclick="confirmJoinRide()" class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+                <button id="joinRideConfirmBtn" onclick="confirmJoinRide()"
+                    class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
                     <span id="joinRideBtnText">Send Request</span>
                 </button>
-                <button onclick="closeJoinModal()" class="flex-1 bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-xl font-bold transition-colors">
+                <button onclick="closeJoinModal()"
+                    class="flex-1 bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-xl font-bold transition-colors">
                     Cancel
                 </button>
             </div>
@@ -822,7 +1033,9 @@
     </div>
 
     <!-- Driver Details Modal -->
-    <div id="driverDetailsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center" style="z-index: 9999;">
+    <div id="driverDetailsModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center"
+        style="z-index: 9999;">
         <div class="bg-[#192633] rounded-2xl p-6 max-w-md w-full mx-4 border border-[#233648]">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-white">Driver Details</h3>
@@ -833,14 +1046,17 @@
             <div id="driverDetailsContent" class="space-y-3 mb-6">
                 <!-- Populated dynamically -->
             </div>
-            <button onclick="closeDriverDetailsModal()" class="w-full bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
+            <button onclick="closeDriverDetailsModal()"
+                class="w-full bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
                 Close
             </button>
         </div>
     </div>
 
     <!-- Driver Location Modal -->
-    <div id="driverLocationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center" style="z-index: 9999;">
+    <div id="driverLocationModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center"
+        style="z-index: 9999;">
         <div class="bg-[#192633] rounded-2xl p-4 max-w-2xl w-full mx-4 border border-[#233648]">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-white">Driver Location</h3>
@@ -850,7 +1066,8 @@
             </div>
             <div id="driverLocationMap" style="height: 400px; border-radius: 12px; overflow: hidden;"></div>
             <div class="mt-4 flex gap-2">
-                <button onclick="closeDriverLocationModal()" class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
+                <button onclick="closeDriverLocationModal()"
+                    class="flex-1 bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
                     Close
                 </button>
             </div>
@@ -858,7 +1075,9 @@
     </div>
 
     <!-- Trip Details Modal -->
-    <div id="tripDetailsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center" style="z-index: 9999;">
+    <div id="tripDetailsModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center"
+        style="z-index: 9999;">
         <div class="bg-[#192633] rounded-2xl p-6 max-w-md w-full mx-4 border border-[#233648]">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-white">Trip Details</h3>
@@ -869,33 +1088,41 @@
             <div id="tripDetailsContent" class="space-y-4 mb-6">
                 <!-- Populated dynamically -->
             </div>
-            <button onclick="closeTripDetailsModal()" class="w-full bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
+            <button onclick="closeTripDetailsModal()"
+                class="w-full bg-primary hover:bg-blue-600 text-white py-2 rounded-xl font-bold transition-colors">
                 Close
             </button>
         </div>
     </div>
 
     <!-- Message Modal -->
-    <div id="messageModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center" style="z-index: 9999;">
+    <div id="messageModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center"
+        style="z-index: 9999;">
         <div class="bg-[#192633] rounded-2xl p-6 max-w-md w-full mx-4 border border-[#233648]">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-white">Message <span id="messageDriverName" class="text-secondary">Driver</span></h3>
+                <h3 class="text-lg font-bold text-white">Message <span id="messageDriverName"
+                        class="text-secondary">Driver</span></h3>
                 <button onclick="closeMessageModal()" class="text-[#92adc9] hover:text-white">
                     <span class="material-symbols-outlined text-2xl">close</span>
                 </button>
             </div>
-            <div id="messagesContainer" class="bg-[#151f2a] rounded-lg p-3 h-64 overflow-y-auto mb-3 space-y-2 border border-[#233648]">
+            <div id="messagesContainer"
+                class="bg-[#151f2a] rounded-lg p-3 h-64 overflow-y-auto mb-3 space-y-2 border border-[#233648]">
                 <!-- Messages populated here -->
             </div>
             <!-- Smart Reply Chips -->
             <div id="smartReplyChipsDash" class="hidden mb-2 flex gap-2 flex-wrap"></div>
             <div class="flex gap-2">
-                <input type="text" id="messageInput" placeholder="Type message..." class="flex-1 bg-[#151f2a] text-white placeholder-[#5a6b7c] px-3 py-2 rounded-lg border border-[#233648] focus:border-primary focus:outline-none" onkeypress="if(event.key==='Enter')sendMessage()">
-                <button onclick="sendMessage()" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold transition-colors">
+                <input type="text" id="messageInput" placeholder="Type message..."
+                    class="flex-1 bg-[#151f2a] text-white placeholder-[#5a6b7c] px-3 py-2 rounded-lg border border-[#233648] focus:border-primary focus:outline-none"
+                    onkeypress="if(event.key==='Enter')sendMessage()">
+                <button onclick="sendMessage()"
+                    class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold transition-colors">
                     Send
                 </button>
             </div>
-            <button onclick="closeMessageModal()" class="w-full bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-xl font-bold transition-colors mt-3">
+            <button onclick="closeMessageModal()"
+                class="w-full bg-[#233648] hover:bg-[#2d465e] text-white py-2 rounded-xl font-bold transition-colors mt-3">
                 Close
             </button>
         </div>
@@ -916,7 +1143,7 @@
 
     <script>
         // Navbar scroll effect
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const nav = document.getElementById('dashNav');
             if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
         }, { passive: true });
@@ -989,7 +1216,7 @@
             const minimumFare = 40; // Minimum base fare
 
             let ratePerKm;
-            switch(type) {
+            switch (type) {
                 case 'bike':
                 case 'motorcycle':
                     ratePerKm = 20; // ₹20 per km for bikes
@@ -1018,9 +1245,9 @@
             const a =
                 Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos((lat1 * Math.PI) / 180) *
-                    Math.cos((lat2 * Math.PI) / 180) *
-                    Math.sin(dLon / 2) *
-                    Math.sin(dLon / 2);
+                Math.cos((lat2 * Math.PI) / 180) *
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             const distance = R * c;
             console.log(`Calculated distance: ${distance.toFixed(2)} km`);
@@ -1037,9 +1264,15 @@
         async function loadDashboard() {
             try {
                 const user = AuthService.getCurrentUser();
+                if (window.innerWidth <= 768 && typeof setMobileView === 'function') {
+                    setMobileView('dashboard');
+                }
                 await getUserLocation();
                 await loadAcceptedRides();
                 initializeMap();
+                if (window.innerWidth <= 768 && typeof setMobileView === 'function') {
+                    setMobileView('dashboard');
+                }
                 checkActiveTrip();
             } catch (error) {
                 console.error('Error loading dashboard:', error);
@@ -1172,7 +1405,7 @@
             }
 
             const mapContainer = document.getElementById('mapContainer');
-            if (mapContainer) {
+            if (mapContainer && window.innerWidth > 768) {
                 mapContainer.classList.add('show');
             }
 
@@ -1182,6 +1415,7 @@
             const mapCenter = [safeLocation.lat, safeLocation.lng];
 
             dashboardMap = L.map('dashboardMap').setView(mapCenter, 15);
+            window.dashboardMapInstance = dashboardMap;
 
             const tileLayerInstance = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap',
@@ -1231,7 +1465,7 @@
                     opacity: 1,
                     fillOpacity: 0.8
                 }).addTo(dashboardMap)
-                 .bindPopup('Pickup Location');
+                    .bindPopup('Pickup Location');
             }
 
             // Also show user's current location
@@ -1243,7 +1477,7 @@
                 opacity: 0.7,
                 fillOpacity: 0.6
             }).addTo(dashboardMap)
-             .bindPopup('Your Location');
+                .bindPopup('Your Location');
         }
 
         function openMapModal(mode) {
@@ -1401,7 +1635,7 @@
                 const ridesList = document.getElementById('ridesList');
                 ridesList.innerHTML = `
                     <div class="space-y-4 animate-pulse">
-                        ${[1,2,3].map(() => `
+                        ${[1, 2, 3].map(() => `
                         <div class="skeleton-card">
                             <div class="flex gap-4">
                                 <div class="skeleton-shimmer w-12 h-12 rounded-full flex-shrink-0"></div>
@@ -1589,7 +1823,7 @@
                 const acceptedList = document.getElementById('acceptedRidesList');
                 acceptedList.innerHTML = `
                     <div class="space-y-2 animate-pulse">
-                        ${[1,2].map(() => `
+                        ${[1, 2].map(() => `
                         <div class="skeleton-card p-2">
                             <div class="flex items-center gap-2 mb-1">
                                 <div class="skeleton-shimmer w-8 h-8 rounded-full flex-shrink-0"></div>
@@ -1676,11 +1910,10 @@
                             </div>
                             <div class="min-w-0">
                                 <p class="text-white font-bold text-xs truncate">${trip.driver.firstName} ${trip.driver.lastName}</p>
-                                <p class="text-[10px] text-[#92adc9]">${
-                                    trip.driver.ratingCount > 0
-                                        ? '★ ' + (trip.driver.score10 || trip.driver.rating || '—') + '/10'
-                                        : '<span class="text-[9px]">New driver</span>'
-                                }</p>
+                                <p class="text-[10px] text-[#92adc9]">${trip.driver.ratingCount > 0
+                        ? '★ ' + (trip.driver.score10 || trip.driver.rating || '—') + '/10'
+                        : '<span class="text-[9px]">New driver</span>'
+                    }</p>
                             </div>
                         </div>
                         <span class="${statusBadgeColor} px-1.5 py-0.5 rounded text-[9px] font-bold flex-shrink-0">${statusText}</span>
@@ -1974,7 +2207,7 @@
             ).join('');
             // Store texts to avoid all quoting issues
             container._srTexts = suggestions.map(s => s.text);
-            container.onclick = function(e) {
+            container.onclick = function (e) {
                 const btn = e.target.closest('[data-reply-idx]');
                 if (!btn) return;
                 const text = container._srTexts[parseInt(btn.dataset.replyIdx)];
@@ -2000,13 +2233,13 @@
             try {
                 await MessageService.sendMessage(window.currentMessagingTrip, window.currentMessagingDriver, text);
                 await loadMessageHistory(window.currentMessagingTrip);
-            } catch(e) {
+            } catch (e) {
                 showNotification('Error sending reply', 'error');
             }
         }
 
         // Expose as window globals so notification-manager.js can call them
-        window.showSmartReplyChips  = showSmartReplyChipsDash;
+        window.showSmartReplyChips = showSmartReplyChipsDash;
         window.clearSmartReplyChips = clearSmartReplyChipsDash;
 
         // Add a red flag badge to a specific message bubble by message ID
@@ -2486,7 +2719,7 @@
         }
 
         async function confirmJoinRide() {
-            const btn    = document.getElementById('joinRideConfirmBtn');
+            const btn = document.getElementById('joinRideConfirmBtn');
             const btnTxt = document.getElementById('joinRideBtnText');
             const currentRideId = selectedRideForJoin;
             const cardBtn = currentRideId ? document.getElementById(`cardJoinBtn_${currentRideId}`) : null;
@@ -2635,7 +2868,7 @@
                     return dist;
                 }
 
-                console.warn('[Distance] ❌ Missing coordinates - pickup:', {pickupLat, pickupLng}, 'dropoff:', {dropoffLat, dropoffLng});
+                console.warn('[Distance] ❌ Missing coordinates - pickup:', { pickupLat, pickupLng }, 'dropoff:', { dropoffLat, dropoffLng });
                 return '0';
             } catch (error) {
                 console.error('Error calculating trip distance:', error);
@@ -2650,9 +2883,9 @@
             const a =
                 Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos((lat1 * Math.PI) / 180) *
-                    Math.cos((lat2 * Math.PI) / 180) *
-                    Math.sin(dLon / 2) *
-                    Math.sin(dLon / 2);
+                Math.cos((lat2 * Math.PI) / 180) *
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             return R * c;
         }
@@ -2925,7 +3158,7 @@
 
             const eta = riderData.eta;
             const pickupStr = eta ? formatPickupEta(eta.pickupSeconds) : null;
-            const tripStr   = eta ? formatTripEta(eta.tripSeconds) : null;
+            const tripStr = eta ? formatTripEta(eta.tripSeconds) : null;
 
             if (pickupStr || tripStr) {
                 return `
@@ -2979,7 +3212,7 @@
         function updateRiderEtaDisplay(tripId, pickupSeconds, tripSeconds) {
             console.log('[ETA] updateRiderEtaDisplay called for trip:', tripId, { pickupSeconds, tripSeconds });
             const pickupStr = formatPickupEta(pickupSeconds);
-            const tripStr   = formatTripEta(tripSeconds);
+            const tripStr = formatTripEta(tripSeconds);
 
             // Update in-memory acceptedRides cache
             if (Array.isArray(acceptedRides)) {
@@ -3183,43 +3416,152 @@
             }
         });
 
-        // Mobile map toggle functions
-        function toggleMapView() {
+        // Mobile view & map switching (Apple Design Principles)
+        let currentMobileView = 'dashboard';
+        let isTogglingMobileView = false;
+
+        function setMobileView(view) {
+            currentMobileView = view;
+            const isMobile = window.innerWidth <= 768;
             const mapContainer = document.getElementById('mapContainer');
             const sidebarContainer = document.getElementById('sidebarContainer');
+            const toggleMapBtn = document.getElementById('toggleMapBtn');
             const closeBtn = document.getElementById('closeMapBtn');
 
-            mapContainer.classList.add('show');
-            sidebarContainer.classList.add('hide-on-mobile');
-            closeBtn.classList.remove('hidden');
-
-            // Trigger map resize after showing
-            setTimeout(() => {
-                if (dashboardMap) {
-                    dashboardMap.invalidateSize();
+            if (!isMobile) {
+                if (mapContainer) {
+                    mapContainer.classList.remove('show');
+                    mapContainer.style.display = '';
                 }
-            }, 100);
+                if (sidebarContainer) {
+                    sidebarContainer.classList.remove('hide-on-mobile');
+                    sidebarContainer.style.display = '';
+                }
+                if (closeBtn) closeBtn.classList.add('hidden');
+                if (toggleMapBtn) toggleMapBtn.style.display = 'none';
+                return;
+            }
+
+            if (toggleMapBtn) toggleMapBtn.style.display = 'inline-flex';
+
+            if (view === 'map') {
+                if (sidebarContainer) {
+                    sidebarContainer.classList.add('hide-on-mobile');
+                    sidebarContainer.style.display = 'none';
+                }
+                if (mapContainer) {
+                    mapContainer.classList.add('show');
+                    mapContainer.style.display = 'flex';
+                }
+                if (toggleMapBtn) {
+                    toggleMapBtn.innerHTML = '<span class="material-symbols-outlined text-[19px] pointer-events-none">arrow_back</span>';
+                    toggleMapBtn.title = 'Back to Dashboard';
+                    toggleMapBtn.setAttribute('aria-label', 'Back to Dashboard');
+                    toggleMapBtn.classList.add('bg-primary', 'text-white', 'border-primary');
+                    toggleMapBtn.classList.remove('bg-white/5', 'hover:bg-white/10');
+                }
+                if (closeBtn) closeBtn.classList.remove('hidden');
+
+                const dismissSkeletonAndResize = () => {
+                    const skel = document.getElementById('mapSkeleton');
+                    if (skel) skel.remove();
+
+                    const mapInstance = (typeof dashboardMap !== 'undefined' && dashboardMap && typeof dashboardMap.invalidateSize === 'function')
+                        ? dashboardMap
+                        : (window.dashboardMapInstance && typeof window.dashboardMapInstance.invalidateSize === 'function' ? window.dashboardMapInstance : null);
+
+                    if (mapInstance) {
+                        mapInstance.invalidateSize({ pan: false });
+                        const safeLoc = (typeof getSafeMapCenter === 'function') ? getSafeMapCenter() : { lat: 28.6139, lng: 77.2090 };
+                        if (mapInstance.getCenter && (mapInstance.getCenter().lat === 0 || isNaN(mapInstance.getCenter().lat))) {
+                            mapInstance.setView([safeLoc.lat, safeLoc.lng], 15);
+                        }
+                    } else if (typeof initializeMap === 'function') {
+                        initializeMap();
+                    }
+                };
+
+                requestAnimationFrame(dismissSkeletonAndResize);
+                setTimeout(dismissSkeletonAndResize, 50);
+                setTimeout(dismissSkeletonAndResize, 150);
+                setTimeout(dismissSkeletonAndResize, 400);
+            } else {
+                // Dashboard view
+                if (mapContainer) {
+                    mapContainer.classList.remove('show');
+                    mapContainer.style.display = 'none';
+                }
+                if (sidebarContainer) {
+                    sidebarContainer.classList.remove('hide-on-mobile');
+                    sidebarContainer.style.display = 'flex';
+                }
+                if (toggleMapBtn) {
+                    toggleMapBtn.innerHTML = '<span class="material-symbols-outlined text-[19px] pointer-events-none">map</span>';
+                    toggleMapBtn.title = 'View Map';
+                    toggleMapBtn.setAttribute('aria-label', 'View Map');
+                    toggleMapBtn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    toggleMapBtn.classList.add('bg-white/5', 'hover:bg-white/10');
+                }
+                if (closeBtn) closeBtn.classList.add('hidden');
+            }
         }
 
-        function closeMapView() {
-            const mapContainer = document.getElementById('mapContainer');
-            const sidebarContainer = document.getElementById('sidebarContainer');
-            const closeBtn = document.getElementById('closeMapBtn');
+        function toggleMapView(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (isTogglingMobileView) return;
+            isTogglingMobileView = true;
+            setTimeout(() => { isTogglingMobileView = false; }, 250);
 
-            mapContainer.classList.remove('show');
-            sidebarContainer.classList.remove('hide-on-mobile');
-            closeBtn.classList.add('hidden');
+            const nextView = (currentMobileView === 'map') ? 'dashboard' : 'map';
+            setMobileView(nextView);
         }
+
+        function closeMapView(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            setMobileView('dashboard');
+        }
+
+        window.setMobileView = setMobileView;
+        window.toggleMapView = toggleMapView;
+        window.closeMapView = closeMapView;
+
+        // Ensure proper view on resize and page load
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                setMobileView('desktop');
+            } else {
+                const mapContainer = document.getElementById('mapContainer');
+                const isMapShowing = mapContainer && mapContainer.classList.contains('show');
+                setMobileView(isMapShowing ? 'map' : 'dashboard');
+            }
+        });
+
+        // Initialize mobile state on dashboard start
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeMapBtn = document.getElementById('closeMapBtn');
+            if (closeMapBtn) {
+                closeMapBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeMapView(e);
+                });
+            }
+
+            if (window.innerWidth <= 768) {
+                setMobileView('dashboard');
+            }
+        });
     </script>
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- REVIEW POPUP MODAL                                                   -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <div id="reviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+    <div id="reviewModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden" role="dialog"
+        aria-modal="true" aria-labelledby="reviewModalTitle">
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="ReviewManager.skip()"></div>
 
         <!-- Card -->
-        <div class="relative z-10 w-full max-w-sm bg-gradient-to-b from-[#192633] to-[#111a22] rounded-2xl border border-[#233648] shadow-2xl overflow-hidden">
+        <div
+            class="relative z-10 w-full max-w-sm bg-gradient-to-b from-[#192633] to-[#111a22] rounded-2xl border border-[#233648] shadow-2xl overflow-hidden">
 
             <!-- Accent top bar -->
             <div class="h-1 w-full bg-gradient-to-r from-primary via-purple-500 to-secondary"></div>
@@ -3231,7 +3573,9 @@
 
                 <!-- Driver info -->
                 <div id="reviewDriverInfo" class="flex items-center gap-3 mb-5 bg-[#233648]/60 rounded-xl p-3">
-                    <div id="reviewDriverAvatar" class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0"></div>
+                    <div id="reviewDriverAvatar"
+                        class="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                    </div>
                     <div>
                         <p id="reviewDriverName" class="text-white font-bold text-sm"></p>
                         <p id="reviewDriverRating" class="text-[#92adc9] text-xs mt-0.5"></p>
@@ -3246,26 +3590,16 @@
                 <!-- Comment -->
                 <textarea id="reviewComment"
                     class="w-full bg-[#233648] text-white text-sm rounded-xl p-3 resize-none border border-[#2d465e] focus:border-primary focus:outline-none placeholder-[#4a6070] transition-colors"
-                    rows="3"
-                    maxlength="300"
-                    placeholder="Optional — any comments? (max 300 chars)"
-                    aria-label="Optional comment"
-                ></textarea>
+                    rows="3" maxlength="300" placeholder="Optional — any comments? (max 300 chars)"
+                    aria-label="Optional comment"></textarea>
                 <p class="text-right text-[10px] text-[#4a6070] mt-1"><span id="reviewCharCount">0</span>/300</p>
 
                 <!-- Actions -->
                 <div class="flex gap-3 mt-4">
-                    <button
-                        id="reviewSkipBtn"
-                        onclick="ReviewManager.skip()"
-                        class="flex-1 py-2.5 rounded-xl bg-[#233648] hover:bg-[#2d465e] text-[#92adc9] text-sm font-bold transition-all"
-                    >Skip</button>
-                    <button
-                        id="reviewSubmitBtn"
-                        onclick="ReviewManager.submit()"
-                        disabled
-                        class="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold transition-all opacity-40 cursor-not-allowed"
-                    >Submit</button>
+                    <button id="reviewSkipBtn" onclick="ReviewManager.skip()"
+                        class="flex-1 py-2.5 rounded-xl bg-[#233648] hover:bg-[#2d465e] text-[#92adc9] text-sm font-bold transition-all">Skip</button>
+                    <button id="reviewSubmitBtn" onclick="ReviewManager.submit()" disabled
+                        class="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold transition-all opacity-40 cursor-not-allowed">Submit</button>
                 </div>
 
                 <!-- Success state (hidden until submit) -->
@@ -3279,203 +3613,204 @@
     </div>
 
     <script>
-    // ════════════════════════════════════════════════════════════════════════
-    // ReviewManager — handles the review popup lifecycle
-    // ════════════════════════════════════════════════════════════════════════
-    const ReviewManager = (() => {
-        let _queue   = [];  // array of pending review objects
-        let _current = null;
-        let _selectedRating = 0;
+        // ════════════════════════════════════════════════════════════════════════
+        // ReviewManager — handles the review popup lifecycle
+        // ════════════════════════════════════════════════════════════════════════
+        const ReviewManager = (() => {
+            let _queue = [];  // array of pending review objects
+            let _current = null;
+            let _selectedRating = 0;
 
-        // ── Build star selector ──────────────────────────────────────────────
-        function _buildStars() {
-            const container = document.getElementById('starContainer');
-            container.innerHTML = '';
-            for (let i = 1; i <= 5; i++) {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.dataset.star = i;
-                btn.setAttribute('aria-label', `${i} star${i > 1 ? 's' : ''}`);
-                btn.className = 'text-4xl transition-transform duration-100 hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded select-none';
-                btn.textContent = '☆';
-                btn.addEventListener('click', () => _selectStar(i));
-                btn.addEventListener('mouseenter', () => _highlightStars(i));
-                container.appendChild(btn);
+            // ── Build star selector ──────────────────────────────────────────────
+            function _buildStars() {
+                const container = document.getElementById('starContainer');
+                container.innerHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.dataset.star = i;
+                    btn.setAttribute('aria-label', `${i} star${i > 1 ? 's' : ''}`);
+                    btn.className = 'text-4xl transition-transform duration-100 hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded select-none';
+                    btn.textContent = '☆';
+                    btn.addEventListener('click', () => _selectStar(i));
+                    btn.addEventListener('mouseenter', () => _highlightStars(i));
+                    container.appendChild(btn);
+                }
+                container.addEventListener('mouseleave', () => _highlightStars(_selectedRating));
             }
-            container.addEventListener('mouseleave', () => _highlightStars(_selectedRating));
-        }
 
-        function _highlightStars(n) {
-            document.querySelectorAll('#starContainer button').forEach((btn, idx) => {
-                btn.textContent = idx < n ? '★' : '☆';
-                btn.style.color  = idx < n ? '#facc15' : '#4a6070';
+            function _highlightStars(n) {
+                document.querySelectorAll('#starContainer button').forEach((btn, idx) => {
+                    btn.textContent = idx < n ? '★' : '☆';
+                    btn.style.color = idx < n ? '#facc15' : '#4a6070';
+                });
+            }
+
+            function _selectStar(n) {
+                _selectedRating = n;
+                _highlightStars(n);
+                const submitBtn = document.getElementById('reviewSubmitBtn');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            }
+
+            // ── Populate modal with driver info ──────────────────────────────────
+            function _populate(review) {
+                const d = review.driver || {};
+                const initials = ((d.firstName || '?')[0] + (d.lastName || '?')[0]).toUpperCase();
+                document.getElementById('reviewDriverAvatar').textContent = initials;
+                document.getElementById('reviewDriverName').textContent =
+                    d.firstName ? `${d.firstName} ${d.lastName}` : 'Your driver';
+
+                const ratingEl = document.getElementById('reviewDriverRating');
+                if (d.score10) {
+                    ratingEl.textContent = `⭐ ${d.score10}/10 · ${d.ratingCount || 0} review${d.ratingCount !== 1 ? 's' : ''}`;
+                } else {
+                    ratingEl.textContent = '✨ New driver';
+                }
+            }
+
+            // ── Show the modal for the first item in the queue ───────────────────
+            function _showNext() {
+                if (_queue.length === 0) return;
+                _current = _queue[0];
+                _selectedRating = 0;
+
+                // Reset UI
+                document.getElementById('reviewComment').value = '';
+                document.getElementById('reviewCharCount').textContent = '0';
+                document.getElementById('reviewSuccess').classList.add('hidden');
+                document.getElementById('reviewSubmitBtn').disabled = true;
+                document.getElementById('reviewSubmitBtn').classList.add('opacity-40', 'cursor-not-allowed');
+                document.getElementById('reviewSkipBtn').classList.remove('hidden');
+                document.getElementById('reviewSubmitBtn').classList.remove('hidden');
+
+                _buildStars();
+                _populate(_current);
+                document.getElementById('reviewModal').classList.remove('hidden');
+            }
+
+            function _close() {
+                document.getElementById('reviewModal').classList.add('hidden');
+                _current = null;
+                _selectedRating = 0;
+                // If there are more queued, show next after a short pause
+                if (_queue.length > 0) {
+                    setTimeout(_showNext, 600);
+                }
+            }
+
+            // ── Public API ───────────────────────────────────────────────────────
+            return {
+                // Add a pending review to the queue (from socket event OR from API poll)
+                enqueue(review) {
+                    // Avoid duplicates in queue
+                    const alreadyQueued = _queue.some(r => r.bookingId === review.bookingId || r.tripId === review.tripId);
+                    if (alreadyQueued) return;
+                    _queue.push(review);
+                    if (_queue.length === 1) _showNext(); // auto-show if queue was empty
+                },
+
+                async skip() {
+                    if (!_current) { _close(); return; }
+                    const bookingId = _current.bookingId || _current.tripId;
+                    _queue.shift();
+                    try {
+                        await TripServiceAPI.skipReview(bookingId);
+                    } catch (e) { console.warn('[REVIEW] skip error (non-fatal):', e.message); }
+                    _close();
+                },
+
+                async submit() {
+                    if (!_current || _selectedRating === 0) return;
+                    const bookingId = _current.bookingId || _current.tripId;
+                    const comment = document.getElementById('reviewComment').value.trim();
+                    const submitBtn = document.getElementById('reviewSubmitBtn');
+                    const skipBtn = document.getElementById('reviewSkipBtn');
+
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Submitting…';
+
+                    try {
+                        const res = await TripServiceAPI.submitReview(bookingId, _selectedRating, comment);
+                        if (res && res.success) {
+                            _queue.shift();
+                            // Show success briefly
+                            document.getElementById('reviewSuccess').classList.remove('hidden');
+                            submitBtn.classList.add('hidden');
+                            skipBtn.classList.add('hidden');
+                            setTimeout(() => _close(), 2000);
+                        } else {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Submit';
+                            if (typeof showNotification === 'function') {
+                                showNotification(res && res.message ? res.message : 'Error submitting review', 'error');
+                            }
+                        }
+                    } catch (err) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit';
+                        const msg = err && err.message ? err.message : 'Error submitting review';
+                        if (typeof showNotification === 'function') showNotification(msg, 'error');
+                    }
+                },
+
+                // Fetch pending reviews from server and queue them (used on page load / reconnect)
+                async checkPending() {
+                    try {
+                        const res = await TripServiceAPI.getPendingReviews();
+                        if (res && res.pending && res.pending.length > 0) {
+                            console.log('[REVIEW] Found', res.pending.length, 'pending review(s) from server');
+                            res.pending.forEach(r => this.enqueue(r));
+                        }
+                    } catch (e) {
+                        console.warn('[REVIEW] checkPending error (non-fatal):', e.message);
+                    }
+                }
+            };
+        })();
+
+        // Character counter for comment textarea
+        document.getElementById('reviewComment').addEventListener('input', function () {
+            document.getElementById('reviewCharCount').textContent = this.value.length;
+        });
+
+        // Hook into the existing socket setup — listen for review popup events
+        const _origSetup = typeof setupSocketListeners === 'function' ? setupSocketListeners : null;
+        // We patch the socket AFTER it's created (when window.riderSocket is available)
+        function _attachReviewSocketListener(socket) {
+            if (!socket) return;
+            socket.on('show-review-popup', (data) => {
+                console.log('[REVIEW] Received show-review-popup event:', data);
+                ReviewManager.enqueue(data);
+            });
+            // Re-check pending on reconnect (handles offline case)
+            socket.on('connect', () => {
+                setTimeout(() => ReviewManager.checkPending(), 1500);
             });
         }
 
-        function _selectStar(n) {
-            _selectedRating = n;
-            _highlightStars(n);
-            const submitBtn = document.getElementById('reviewSubmitBtn');
-            submitBtn.disabled = false;
-            submitBtn.classList.remove('opacity-40', 'cursor-not-allowed');
-        }
-
-        // ── Populate modal with driver info ──────────────────────────────────
-        function _populate(review) {
-            const d = review.driver || {};
-            const initials = ((d.firstName || '?')[0] + (d.lastName || '?')[0]).toUpperCase();
-            document.getElementById('reviewDriverAvatar').textContent = initials;
-            document.getElementById('reviewDriverName').textContent =
-                d.firstName ? `${d.firstName} ${d.lastName}` : 'Your driver';
-
-            const ratingEl = document.getElementById('reviewDriverRating');
-            if (d.score10) {
-                ratingEl.textContent = `⭐ ${d.score10}/10 · ${d.ratingCount || 0} review${d.ratingCount !== 1 ? 's' : ''}`;
+        // Wait for socket to be ready, then attach listener
+        (function _waitForSocket() {
+            if (window.riderSocket) {
+                _attachReviewSocketListener(window.riderSocket);
             } else {
-                ratingEl.textContent = '✨ New driver';
+                setTimeout(_waitForSocket, 300);
             }
-        }
+        })();
 
-        // ── Show the modal for the first item in the queue ───────────────────
-        function _showNext() {
-            if (_queue.length === 0) return;
-            _current = _queue[0];
-            _selectedRating = 0;
-
-            // Reset UI
-            document.getElementById('reviewComment').value = '';
-            document.getElementById('reviewCharCount').textContent = '0';
-            document.getElementById('reviewSuccess').classList.add('hidden');
-            document.getElementById('reviewSubmitBtn').disabled = true;
-            document.getElementById('reviewSubmitBtn').classList.add('opacity-40', 'cursor-not-allowed');
-            document.getElementById('reviewSkipBtn').classList.remove('hidden');
-            document.getElementById('reviewSubmitBtn').classList.remove('hidden');
-
-            _buildStars();
-            _populate(_current);
-            document.getElementById('reviewModal').classList.remove('hidden');
-        }
-
-        function _close() {
-            document.getElementById('reviewModal').classList.add('hidden');
-            _current = null;
-            _selectedRating = 0;
-            // If there are more queued, show next after a short pause
-            if (_queue.length > 0) {
-                setTimeout(_showNext, 600);
-            }
-        }
-
-        // ── Public API ───────────────────────────────────────────────────────
-        return {
-            // Add a pending review to the queue (from socket event OR from API poll)
-            enqueue(review) {
-                // Avoid duplicates in queue
-                const alreadyQueued = _queue.some(r => r.bookingId === review.bookingId || r.tripId === review.tripId);
-                if (alreadyQueued) return;
-                _queue.push(review);
-                if (_queue.length === 1) _showNext(); // auto-show if queue was empty
-            },
-
-            async skip() {
-                if (!_current) { _close(); return; }
-                const bookingId = _current.bookingId || _current.tripId;
-                _queue.shift();
-                try {
-                    await TripServiceAPI.skipReview(bookingId);
-                } catch (e) { console.warn('[REVIEW] skip error (non-fatal):', e.message); }
-                _close();
-            },
-
-            async submit() {
-                if (!_current || _selectedRating === 0) return;
-                const bookingId = _current.bookingId || _current.tripId;
-                const comment   = document.getElementById('reviewComment').value.trim();
-                const submitBtn = document.getElementById('reviewSubmitBtn');
-                const skipBtn   = document.getElementById('reviewSkipBtn');
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Submitting…';
-
-                try {
-                    const res = await TripServiceAPI.submitReview(bookingId, _selectedRating, comment);
-                    if (res && res.success) {
-                        _queue.shift();
-                        // Show success briefly
-                        document.getElementById('reviewSuccess').classList.remove('hidden');
-                        submitBtn.classList.add('hidden');
-                        skipBtn.classList.add('hidden');
-                        setTimeout(() => _close(), 2000);
-                    } else {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Submit';
-                        if (typeof showNotification === 'function') {
-                            showNotification(res && res.message ? res.message : 'Error submitting review', 'error');
-                        }
-                    }
-                } catch (err) {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Submit';
-                    const msg = err && err.message ? err.message : 'Error submitting review';
-                    if (typeof showNotification === 'function') showNotification(msg, 'error');
-                }
-            },
-
-            // Fetch pending reviews from server and queue them (used on page load / reconnect)
-            async checkPending() {
-                try {
-                    const res = await TripServiceAPI.getPendingReviews();
-                    if (res && res.pending && res.pending.length > 0) {
-                        console.log('[REVIEW] Found', res.pending.length, 'pending review(s) from server');
-                        res.pending.forEach(r => this.enqueue(r));
-                    }
-                } catch (e) {
-                    console.warn('[REVIEW] checkPending error (non-fatal):', e.message);
-                }
-            }
-        };
-    })();
-
-    // Character counter for comment textarea
-    document.getElementById('reviewComment').addEventListener('input', function() {
-        document.getElementById('reviewCharCount').textContent = this.value.length;
-    });
-
-    // Hook into the existing socket setup — listen for review popup events
-    const _origSetup = typeof setupSocketListeners === 'function' ? setupSocketListeners : null;
-    // We patch the socket AFTER it's created (when window.riderSocket is available)
-    function _attachReviewSocketListener(socket) {
-        if (!socket) return;
-        socket.on('show-review-popup', (data) => {
-            console.log('[REVIEW] Received show-review-popup event:', data);
-            ReviewManager.enqueue(data);
+        // On page load, check for pending reviews (handles offline/refresh scenario)
+        window.addEventListener('load', async () => {
+            // Small delay to let auth + socket settle
+            setTimeout(() => ReviewManager.checkPending(), 2500);
         });
-        // Re-check pending on reconnect (handles offline case)
-        socket.on('connect', () => {
-            setTimeout(() => ReviewManager.checkPending(), 1500);
-        });
-    }
 
-    // Wait for socket to be ready, then attach listener
-    (function _waitForSocket() {
-        if (window.riderSocket) {
-            _attachReviewSocketListener(window.riderSocket);
-        } else {
-            setTimeout(_waitForSocket, 300);
+        // Register service worker for instant tile caching on HTTP/HTTPS
+        if (window.location.protocol.startsWith('http') && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => { });
         }
-    })();
-
-    // On page load, check for pending reviews (handles offline/refresh scenario)
-    window.addEventListener('load', async () => {
-        // Small delay to let auth + socket settle
-        setTimeout(() => ReviewManager.checkPending(), 2500);
-    });
-
-    // Register service worker for instant tile caching on HTTP/HTTPS
-    if (window.location.protocol.startsWith('http') && 'serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
     </script>
 
 </body>
+
 </html>

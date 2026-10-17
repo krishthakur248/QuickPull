@@ -395,9 +395,9 @@
     }
     .feat-panel-title {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem; color: #111; margin-bottom: 12px;
+      font-size: 1.6rem; color: var(--text, #f5f5f7); margin-bottom: 12px;
     }
-    .feat-panel-desc { color: #555; font-size: 1rem; line-height: 1.8; margin-bottom: 22px; }
+    .feat-panel-desc { color: var(--text-secondary, rgba(245, 245, 247, 0.72)); font-size: 1rem; line-height: 1.8; margin-bottom: 22px; }
     .feat-panel-btns { display: flex; gap: 12px; }
     .panel-cta {
       border: none; padding: 11px 26px; border-radius: 28px;
@@ -426,12 +426,51 @@
     }
     .about-h2 em { font-style: italic; color: #e02020; }
     .about-p { color: #555; font-size: .98rem; line-height: 1.85; margin-bottom: 16px; }
-    .about-stats { display: flex; gap: 32px; }
-    .about-stat-n {
-      font-size: 1.75rem; font-weight: 900; color: #e02020;
-      font-family: 'DM Serif Display', serif;
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 28px;
     }
-    .about-stat-l { font-size: .8rem; color: #999; margin-top: 3px; font-weight: 500; }
+    .about-stats > div,
+    .about-stat-card {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-top: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 18px;
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      min-width: 0;
+    }
+    .about-stats > div:hover,
+    .about-stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+    }
+    .about-stat-n {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #e02020;
+      font-family: 'DM Serif Display', serif;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+    .about-stat-l {
+      font-size: 0.82rem;
+      color: #777;
+      margin-top: 6px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
 
     .about-img-wrap {
       position: relative; border-radius: 24px; overflow: visible;
@@ -472,9 +511,9 @@
       font-size: 1.7rem; margin: 0 auto 14px;
       box-shadow: 0 6px 20px rgba(224,32,32,0.3);
     }
-    .team-name { font-weight: 700; color: #111; font-size: .97rem; margin-bottom: 4px; }
+    .team-name { font-weight: 700; color: var(--text, #f5f5f7); font-size: .97rem; margin-bottom: 4px; }
     .team-role { color: #e02020; font-size: .82rem; font-weight: 600; margin-bottom: 10px; }
-    .team-bio { color: #888; font-size: .82rem; line-height: 1.55; }
+    .team-bio { color: var(--text-secondary, rgba(245, 245, 247, 0.72)); font-size: .82rem; line-height: 1.55; }
 
     /* ─── CONTACT ─── */
     #contact {
@@ -739,9 +778,16 @@
       .about-grid { grid-template-columns: 1fr; gap: 36px; }
       .about-img-inner img { height: 240px; }
       .about-badge { bottom: -14px; left: -10px; padding: 12px 16px; }
-      .about-badge-year { font-size: 1.4rem; }
-      .about-stats { gap: 20px; flex-wrap: wrap; }
-      .about-stat-n { font-size: 1.4rem; }
+      .about-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 24px;
+      }
+      .about-stats > div,
+      .about-stat-card {
+        padding: 16px 12px;
+      }
+      .about-stat-n { font-size: 1.55rem; }
       .team-grid { grid-template-columns: repeat(2,1fr); gap: 14px; }
 
       /* Contact */
@@ -787,6 +833,11 @@
       #about { padding: 60px 16px 40px; }
       .about-h2 { font-size: 1.6rem; }
       .about-img-inner img { height: 200px; }
+      .about-stats { gap: 10px; margin-top: 20px; }
+      .about-stats > div,
+      .about-stat-card { padding: 14px 8px; border-radius: 14px; }
+      .about-stat-n { font-size: 1.35rem; }
+      .about-stat-l { font-size: 0.74rem; }
       .team-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .team-card { padding: 20px 14px 18px; }
       .team-emoji { width: 52px; height: 52px; font-size: 1.4rem; }
@@ -902,6 +953,7 @@
 
     [data-theme="dark"] .feat-card,
     [data-theme="dark"] .about-stats > div,
+    [data-theme="dark"] .about-stat-card,
     [data-theme="dark"] .team-card,
     [data-theme="dark"] .testi-card,
     [data-theme="dark"] .faq-item,
@@ -913,9 +965,21 @@
       box-shadow: var(--shadow-card) !important;
     }
 
+    [data-theme="dark"] .about-stat-l {
+      color: rgba(245, 245, 247, 0.65) !important;
+    }
+
+    [data-theme="dark"] .about-stats > div:hover,
+    [data-theme="dark"] .about-stat-card:hover {
+      border-color: rgba(224, 32, 32, 0.45) !important;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55), 0 0 16px rgba(224, 32, 32, 0.15) !important;
+    }
+
     [data-theme="dark"] .section-h2,
     [data-theme="dark"] .about-h2,
     [data-theme="dark"] .team-h3,
+    [data-theme="dark"] .team-name,
+    [data-theme="dark"] .feat-panel-title,
     [data-theme="dark"] .faq-q,
     [data-theme="dark"] .feat-title {
       color: #f5f5f7 !important;
@@ -924,6 +988,8 @@
     [data-theme="dark"] .section-sub,
     [data-theme="dark"] .about-p,
     [data-theme="dark"] .feat-desc,
+    [data-theme="dark"] .team-bio,
+    [data-theme="dark"] .feat-panel-desc,
     [data-theme="dark"] .faq-a {
       color: rgba(245, 245, 247, 0.72) !important;
     }
@@ -944,6 +1010,7 @@
 
     [data-theme="light"] .feat-card,
     [data-theme="light"] .about-stats > div,
+    [data-theme="light"] .about-stat-card,
     [data-theme="light"] .team-card,
     [data-theme="light"] .testi-card,
     [data-theme="light"] .faq-item,
@@ -953,6 +1020,16 @@
       border-top: 1px solid rgba(255, 255, 255, 0.9) !important;
       color: #1d1d1f !important;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    [data-theme="light"] .about-stat-l {
+      color: #6e6e73 !important;
+    }
+
+    [data-theme="light"] .about-stats > div:hover,
+    [data-theme="light"] .about-stat-card:hover {
+      border-color: rgba(224, 32, 32, 0.35) !important;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1) !important;
     }
 
     [data-theme="light"] .nav-logo {
@@ -971,6 +1048,8 @@
     [data-theme="light"] .section-h2,
     [data-theme="light"] .about-h2,
     [data-theme="light"] .team-h3,
+    [data-theme="light"] .team-name,
+    [data-theme="light"] .feat-panel-title,
     [data-theme="light"] .faq-q,
     [data-theme="light"] .feat-title {
       color: #1d1d1f !important;
@@ -979,6 +1058,8 @@
     [data-theme="light"] .section-sub,
     [data-theme="light"] .about-p,
     [data-theme="light"] .feat-desc,
+    [data-theme="light"] .team-bio,
+    [data-theme="light"] .feat-panel-desc,
     [data-theme="light"] .faq-a {
       color: #6e6e73 !important;
     }
@@ -1235,10 +1316,10 @@
           <p class="about-p">QuickPull was founded in 2022 by engineers and urban planners tired of seeing empty cars clog city streets. Our mission is simple: make ride-sharing so seamless and affordable that choosing to share becomes the obvious choice.</p>
           <p class="about-p" style="margin-bottom:32px">Today, QuickPull operates in 12 cities across India, facilitating over 2,000 rides every single day. Our community of verified drivers and riders grows by thousands each week.</p>
           <div class="about-stats">
-            <div><div class="about-stat-n">12</div><div class="about-stat-l">Cities</div></div>
-            <div><div class="about-stat-n">2K+</div><div class="about-stat-l">Daily Rides</div></div>
-            <div><div class="about-stat-n">4.9★</div><div class="about-stat-l">Rating</div></div>
-            <div><div class="about-stat-n">50K+</div><div class="about-stat-l">Users</div></div>
+            <div class="about-stat-card"><div class="about-stat-n">12</div><div class="about-stat-l">Cities</div></div>
+            <div class="about-stat-card"><div class="about-stat-n">2K+</div><div class="about-stat-l">Daily Rides</div></div>
+            <div class="about-stat-card"><div class="about-stat-n">4.9★</div><div class="about-stat-l">Rating</div></div>
+            <div class="about-stat-card"><div class="about-stat-n">50K+</div><div class="about-stat-l">Users</div></div>
           </div>
         </div>
         <div class="about-img-wrap">
@@ -1359,7 +1440,7 @@
       { name:"Krish",        role:"FrontEnd, Database",   emoji:"👨‍💼", bio:"Ex-Google engineer with a passion for urban mobility." },
       { name:"Kumar Jitin",  role:"Leader, Backend",      emoji:"👨‍💼", bio:"Built scalable systems at Uber before founding QuickPull." },
       { name:"Nitish Kumar", role:"Head of Design",       emoji:"👨‍💼", bio:"Award-winning designer focused on human-centered UX." },
-      { name:"Kapil Thakur", role:"Head of Operations",   emoji:"👨‍💼", bio:"Logistics expert ensuring smooth rides across 12 cities." },
+      { name:"Name", role:"Head of Operations",   emoji:"👨‍💼", bio:"Logistics expert ensuring smooth rides across 12 cities." },
     ];
 
     /* ══════════════════════════════════
