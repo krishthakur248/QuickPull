@@ -4,6 +4,8 @@
 # torch is the CPU-only wheel to keep the Docker image as small as possible
 # (~800 MB instead of ~3 GB for the CUDA build).
 
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # --- ML stack (pinned to training versions) ---
 # CPU-only torch build: install with the --index-url below (handled in Dockerfile)
 torch==2.6.0+cpu

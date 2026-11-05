@@ -37,6 +37,8 @@ def load_moderator(folder: str):
         text = " ".join(text.split())[:2000]
 
         enc = tok(text, truncation=True, max_length=max_len, return_tensors="pt")
+        # DistilBERT does not use token_type_ids — remove it if the tokenizer added it
+        enc = {k: v for k, v in enc.items() if k != "token_type_ids"}
         with torch.no_grad():
             p = torch.softmax(model(**enc).logits, dim=-1)[0, 1].item()
 
