@@ -1,13 +1,14 @@
 # Python dependencies for the QuickPull moderation service
 #
-# We pin to the EXACT versions recorded in moderation_config.json.
-# torch is the CPU-only wheel to keep the Docker image as small as possible
-# (~800 MB instead of ~3 GB for the CUDA build).
+# Install command (run this instead of plain pip install -r requirements.txt):
+#   pip install -r moderation-service\requirements.txt
+#
+# torch CPU wheel comes from PyTorch's own index (not PyPI).
+# The --extra-index-url line below handles this automatically.
 
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-# --- ML stack (pinned to training versions) ---
-# CPU-only torch build: install with the --index-url below (handled in Dockerfile)
+# --- ML stack ---
 torch==2.6.0+cpu
 transformers==4.51.3
 scikit-learn==1.6.1
@@ -20,7 +21,7 @@ uvicorn[standard]==0.34.3
 pydantic==2.11.4
 
 # --- Smart Replies (sentence-transformers / all-MiniLM-L6-v2) ---
-sentence-transformers>=2.7.0   # kept unpinned – compatible with torch 2.6 + transformers 4.51
+sentence-transformers>=2.7.0
 
 # --- Utilities ---
-python-multipart==0.0.20   # needed by FastAPI for form data (good to have)
+python-multipart==0.0.20
