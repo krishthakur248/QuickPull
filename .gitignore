@@ -8,8 +8,9 @@ Model/DistilBERT/model/*.bin
 Model/DistilBERT/train.csv
 Model/DistilBERT/__pycache__/
 moderation-service/model_files/
-# SmartReply model (download with sentence-transformers or copy manually)
-moderation-service/smartreply_v1/model/
+# SmartReply model weights (large files - copy manually via USB)
+moderation-service/smartreply_v1/model/*.safetensors
+moderation-service/smartreply_v1/model/*.bin
 moderation-service/smartreply_v1/bank_embeddings.npy
 *.safetensors
 

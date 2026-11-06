@@ -21,7 +21,8 @@ uvicorn[standard]==0.34.3
 pydantic==2.11.4
 
 # --- Smart Replies (sentence-transformers / all-MiniLM-L6-v2) ---
-sentence-transformers>=2.7.0
+sentence-transformers==5.7.0
+safetensors==0.4.5
 
 # --- Utilities ---
 python-multipart==0.0.20
